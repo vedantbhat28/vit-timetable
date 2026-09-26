@@ -217,36 +217,6 @@ h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,4.4vw,26px);l
 }
 @media (prefers-reduced-motion:reduce){.install-card{animation:none}}
 
-/* quick survey pop-up */
-.survey-bar{position:fixed;left:0;right:0;bottom:0;z-index:59;padding:14px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));pointer-events:none}
-.survey-bar>*{pointer-events:auto}
-.survey-card{background:var(--surface);border-top:1px solid var(--line);border-radius:16px 16px 0 0;padding:14px;margin:0 -14px -14px;box-shadow:0 -10px 30px rgba(8,12,30,.18);animation:installUp .28s ease-out}
-.survey-title{margin:0;font-weight:700;font-size:14.5px;color:var(--ink)}
-.survey-q{margin:2px 0 12px;color:var(--muted);font-size:12.5px;line-height:1.4}
-.survey-opts{display:flex;gap:8px}
-.survey-opts button{flex:1;min-height:40px;padding:8px 10px;font-size:13px;margin:0}
-.survey-skip{display:block;width:100%;margin-top:10px;padding:6px;background:none;border:0;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;text-align:center}
-.survey-other-row{margin-top:10px}
-.survey-input{width:100%;min-height:40px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--wash);color:var(--ink);font:inherit;font-size:13px}
-.survey-other-actions{display:flex;gap:8px;margin-top:10px}
-.survey-other-actions button{flex:1;min-height:40px;padding:8px 10px;font-size:13px;margin:0}
-@media (min-width:520px){.survey-bar{left:auto;right:16px;bottom:16px;max-width:340px;padding:0}.survey-card{border:1px solid var(--line);border-radius:16px;margin:0}}
-@media (prefers-reduced-motion:reduce){.survey-card{animation:none}}
-
-/* survey result bars (shown after answering) */
-.survey-results{display:flex;flex-direction:column;gap:9px}
-.sres-row{display:flex;flex-direction:column;gap:4px}
-.sres-top{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px}
-.sres-lbl{font-weight:700;color:var(--ink)}
-.sres-lbl.mine::after{content:" \u00b7 you";font-weight:600;color:var(--muted)}
-.sres-pct{font-family:var(--display);font-weight:800;font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
-.sres-track{position:relative;height:9px;border-radius:99px;background:var(--wash);border:1px solid var(--line);overflow:hidden}
-.sres-fill{position:absolute;left:0;top:0;bottom:0;width:0%;border-radius:inherit;background:var(--ink);transition:width 1s cubic-bezier(.22,1,.36,1)}
-.sres-fill.yes{background:#2F9E6B}
-.sres-fill.no{background:var(--danger)}
-.sres-note{margin:2px 0 0;color:var(--muted);font-size:11.5px;text-align:center}
-@media (prefers-reduced-motion:reduce){.sres-fill{transition:none}}
-
 /* boot loading screen (shown briefly for returning visitors while data loads) */
 #loadScreen{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:18px;background:var(--surface);padding:24px;text-align:center;transition:opacity .6s cubic-bezier(.4,0,.2,1),transform .6s cubic-bezier(.4,0,.2,1)}
@@ -679,26 +649,6 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
     </div>
   </div>
 
-  <div id="surveyBar" class="survey-bar" hidden role="dialog" aria-label="Quick survey" aria-describedby="surveySub">
-    <div class="survey-card">
-      <p class="survey-title">Quick survey</p>
-      <p class="survey-q" id="surveySub">Have your English classes started yet?</p>
-      <div class="survey-opts" id="surveyOpts">
-        <button type="button" class="btn2" data-act="survey-ans" data-v="yes">Yes</button>
-        <button type="button" class="btn2" data-act="survey-ans" data-v="no">No</button>
-        <button type="button" class="btn2" data-act="survey-other-open">Other</button>
-      </div>
-      <div class="survey-other-row" id="surveyOtherRow" hidden>
-        <input type="text" id="surveyOtherInput" class="survey-input" placeholder="Tell us…" maxlength="200" autocomplete="off">
-      </div>
-      <div class="survey-other-actions" id="surveyOtherActions" hidden>
-        <button type="button" class="btn2" data-act="survey-other-back">Back</button>
-        <button type="button" class="btn" data-act="survey-other-submit">Submit</button>
-      </div>
-      <div class="survey-results" id="surveyResults" hidden></div>
-      <button type="button" class="survey-skip" id="surveySkipBtn" data-act="survey-skip">Skip</button>
-    </div>
-  </div>
   <noscript><p>This timetable needs JavaScript to show your live schedule.</p></noscript>
 </div>
 
@@ -1512,14 +1462,6 @@ document.addEventListener('click',function(e){
   if(a==='admin-range'){ADM.range=b.getAttribute('data-v');renderAdmin();return;}
   if(a==='install-yes'){installNow();return;}
   if(a==='install-no'){dismissInstall();return;}
-  if(a==='survey-ans'){surveyDone(b.getAttribute('data-v'));return;}
-  if(a==='survey-other-open'){surveyOpenOther();return;}
-  if(a==='survey-other-back'){surveyCloseOther();return;}
-  if(a==='survey-other-submit'){
-    var otxt=($('#surveyOtherInput')||{}).value||'';
-    surveyDone('other',otxt);return;
-  }
-  if(a==='survey-skip'){hideSurveyBar();return;}
   if(a==='change'){openPicker(true);return;}
   if(a.indexOf('pk-')===0){pickerAct(a,b);return;}
   if(a==='open'){openDetail(+b.getAttribute('data-sid'),+b.getAttribute('data-date')||0,b.getAttribute('data-key'));return;}
@@ -1587,89 +1529,6 @@ if('serviceWorker' in navigator){
   });
 }
 
-/* ---------- Quick survey: have English classes started? (anon, skippable, asked once) ---------- */
-var SURVEY_KEY='english_classes_sem1';
-var SURVEY_DONE_LS='tt-survey-'+SURVEY_KEY+'-done';
-var SURVEY_EXPIRES=new Date('2026-09-28T23:59:59');
-function surveyAnswered(){ return !!store.get(SURVEY_DONE_LS,''); }
-function surveyExpired(){ return new Date()>SURVEY_EXPIRES; }
-function surveySubmit(answer,otherText){
-  try{
-    if(location.protocol==='file:') return Promise.resolve();
-    var row={survey_key:SURVEY_KEY,answer:answer};
-    if(answer==='other') row.other_text=(otherText||'').trim().slice(0,200)||null;
-    return fetch(SUPA_URL+'/rest/v1/survey_responses',{
-      method:'POST',
-      headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
-      body:JSON.stringify(row),keepalive:true
-    }).catch(function(){});
-  }catch(e){ return Promise.resolve(); }
-}
-function showSurveyBar(){
-  if(surveyAnswered()) return;
-  if(surveyExpired()) return;
-  if(!$('#picker').hidden) return;        // don't interrupt first-time class selection
-  if(!$('#installBar').hidden) return;    // don't stack on top of the install prompt
-  var el=$('#surveyBar');if(!el) return;
-  el.hidden=false;
-}
-function hideSurveyBar(){ var el=$('#surveyBar');if(el) el.hidden=true; }
-function surveyDone(answer,otherText){
-  var submitP=surveySubmit(answer,otherText);
-  store.set(SURVEY_DONE_LS,'1');
-  if(answer==='yes'||answer==='no'){
-    Promise.resolve(submitP).then(function(){ surveyShowResults(answer); });
-  } else { hideSurveyBar(); }
-}
-/* fetch current yes/no split and animate it in, then auto-dismiss */
-function surveyShowResults(mine){
-  var opts=$('#surveyOpts'),res=$('#surveyResults'),skip=$('#surveySkipBtn');
-  if(opts) opts.hidden=true;
-  if(skip) skip.hidden=true;
-  if(!res) return;
-  res.hidden=false;
-  res.innerHTML=
-    '<div class="sres-row"><div class="sres-top"><span class="sres-lbl'+(mine==='yes'?' mine':'')+'">Yes</span><span class="sres-pct" id="sresYesPct">\u2026</span></div>'+
-    '<div class="sres-track"><span class="sres-fill yes" id="sresYesFill"></span></div></div>'+
-    '<div class="sres-row"><div class="sres-top"><span class="sres-lbl'+(mine==='no'?' mine':'')+'">No</span><span class="sres-pct" id="sresNoPct">\u2026</span></div>'+
-    '<div class="sres-track"><span class="sres-fill no" id="sresNoFill"></span></div></div>';
-  try{
-    if(location.protocol==='file:') throw 0;
-    fetch(SUPA_URL+'/rest/v1/rpc/survey_counts',{
-      method:'POST',
-      headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
-      body:JSON.stringify({p_survey_key:SURVEY_KEY})
-    }).then(function(r){ return r.ok?r.json():{yes:0,no:0}; }).then(function(j){
-      var yes=(j&&j.yes)||0,no=(j&&j.no)||0;
-      var total=yes+no;
-      var yesPct=total?Math.round((yes/total)*100):0;
-      var noPct=total?100-yesPct:0;
-      requestAnimationFrame(function(){
-        var yf=$('#sresYesFill'),nf=$('#sresNoFill'),yp=$('#sresYesPct'),np=$('#sresNoPct');
-        if(yf) yf.style.width=yesPct+'%';
-        if(nf) nf.style.width=noPct+'%';
-        if(yp) yp.textContent=yesPct+'%';
-        if(np) np.textContent=noPct+'%';
-      });
-    }).catch(function(){});
-  }catch(e){}
-  setTimeout(hideSurveyBar,4200);
-}
-function surveyOpenOther(){
-  $('#surveyOpts').hidden=true;
-  $('#surveyOtherRow').hidden=false;
-  $('#surveyOtherActions').hidden=false;
-  $('#surveySkipBtn').hidden=true;
-  var inp=$('#surveyOtherInput');if(inp) setTimeout(function(){inp.focus();},50);
-}
-function surveyCloseOther(){
-  $('#surveyOpts').hidden=false;
-  $('#surveyOtherRow').hidden=true;
-  $('#surveyOtherActions').hidden=true;
-  $('#surveySkipBtn').hidden=false;
-}
-setTimeout(showSurveyBar,2600);
-
 /* ---------- Hidden admin panel: tap the college name 9x within 6s ---------- */
 var TAP_NEEDED=8,TAP_WINDOW=6000,taps=[];
 document.addEventListener('click',function(e){
@@ -1691,7 +1550,6 @@ function openAdmin(){
   var dlg=$('#admin');
   if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open','');
   if(ADM.pin) loadAdmin(); else renderPinForm();
-  store.set(SURVEY_DONE_LS,'');   // reset survey so it's asked again after opening admin
 }
 function closeAdmin(){
   var dlg=$('#admin');
@@ -1801,15 +1659,6 @@ function renderAdmin(){
     '<div><p class="adm-h">Referrers</p>'+rankList(d.referrers,'k','n')+'</div>'+
   '</div>';
   html+='<p class="adm-h">Classes</p>'+rankList(d.classes,'k','n');
-  var srv=d.survey||{};
-  html+='<p class="adm-h">Survey \u00b7 English classes started? <span style="font-weight:400;color:var(--muted)">('+(srv.total||0)+' response'+((srv.total||0)===1?'':'s')+')</span></p>';
-  html+=rankList([{k:'Yes',n:srv.yes||0},{k:'No',n:srv.no||0},{k:'Other',n:srv.other||0}],'k','n');
-  var srvOther=srv.other_texts||[];
-  if(srvOther.length){
-    html+='<div class="adm-recent">'+srvOther.map(function(r){
-      return '<div class="adm-row"><span class="t">'+escHtml(fmtAdmTime(r.created_at))+'</span><span class="d">'+escHtml(r.text||'(no text)')+'</span></div>';
-    }).join('')+'</div>';
-  }
   html+='<p class="adm-h">Link clicks <span style="font-weight:400;color:var(--muted)">(30d)</span></p>'+rankList(d.link_clicks,'k','n');
   html+='<p class="adm-h">Latest visits</p>';
   var recent=d.recent||[];
