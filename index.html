@@ -242,6 +242,23 @@ h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,4.4vw,26px);l
 .hi-sub{margin:4px 0 0;font-size:13.5px;opacity:.9}
 @media (prefers-reduced-motion:reduce){#holidayIntro,.hi-emoji{animation:none}}
 
+/* timetable-update notice (full-screen, shown once until dismissed) */
+#ttNotice{position:fixed;inset:0;z-index:82;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0;text-align:center;padding:24px;background:var(--surface);color:var(--ink);
+  animation:hiIn .4s ease-out;transition:opacity .4s ease,transform .4s ease}
+#ttNotice.out{opacity:0;transform:scale(1.04);pointer-events:none}
+.tn-card{max-width:420px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.tn-emoji{font-size:44px;line-height:1;animation:hiPop .6s ease-out}
+.tn-kicker{margin:4px 0 0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--danger)}
+.tn-title{margin:2px 0 0;font-family:var(--display);font-weight:800;font-size:clamp(24px,6.5vw,30px);line-height:1.15}
+.tn-body{margin:4px 0 0;font-size:13.5px;line-height:1.5;color:var(--muted)}
+.tn-body b{color:var(--ink)}
+.tn-link{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-weight:700;color:var(--focus);text-decoration:none}
+.tn-link:hover{text-decoration:underline}
+.tn-btn{margin-top:16px;min-height:44px;padding:9px 22px;border:0;border-radius:11px;background:var(--ink);color:var(--surface);font-weight:700;font-size:14px;cursor:pointer}
+.tn-btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){#ttNotice,.tn-emoji{animation:none}}
+
 /* phones: compact chrome, week grid fits the screen (no sideways scroll) */
 @media (max-width:600px){
   :root{--hr:56px;--hrw:56px}
@@ -552,6 +569,15 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
     <p class="ls-msg" id="lsMsg">Loading your timetable&hellip;</p>
     <p class="ls-brand">VIT Pune &middot; FY Timetable</p>
     <button type="button" class="chg ls-about" data-act="about-open"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="5.3" r="2.6"/><path d="M2.6 13.2c.9-3 3-4.4 5.4-4.4s4.5 1.4 5.4 4.4"/></svg>About Me</button>
+  </div>
+  <div id="ttNotice" hidden>
+    <div class="tn-card">
+      <div class="tn-emoji" aria-hidden="true">&#128226;</div>
+      <p class="tn-kicker">Timetable update</p>
+      <p class="tn-title">College updated timetables for a few divisions</p>
+      <p class="tn-body">It's currently correct for <b>most divisions</b>, but a few have changed. Please check <b>VIERP</b> (<a class="tn-link" href="https://learner.vierp.in" target="_blank" rel="noopener">learner.vierp.in</a>) to verify it matches yours. This dashboard will be updated soon to match.</p>
+      <button type="button" class="tn-btn" id="ttNoticeOk">Got it</button>
+    </div>
   </div>
   <div id="holidayIntro" hidden>
     <div class="hi-emoji" id="hiEmoji" aria-hidden="true">&#127881;</div>
@@ -1750,7 +1776,22 @@ function maybeShowHolidayIntro(){
   }catch(e){}
 }
 
+/* ---------- Timetable-update notice (full-screen on every landing) ---------- */
+function maybeShowTTNotice(){
+  try{
+    var el=$('#ttNotice');if(!el) return;
+    el.hidden=false;
+    var closeIt=function(){
+      el.classList.add('out');
+      setTimeout(function(){el.hidden=true;},420);
+    };
+    var btn=$('#ttNoticeOk');
+    if(btn) btn.addEventListener('click',closeIt,{once:true});
+  }catch(e){}
+}
+
 function boot(){
+  maybeShowTTNotice();
   $('#view').hidden=true;$('#picker').hidden=true;$('#pkCancel').hidden=true;
   // saved choice: branch + division + batch. If we already know it, show the animated
   // loading screen instead of flashing the bare picker form while data is fetched.
