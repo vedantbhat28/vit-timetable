@@ -1177,7 +1177,7 @@ function render(){
     var off=Math.round((st.dayMs-today.getTime())/864e5);
     if(off>=0&&off<=6) sel=off; else st.dayMs=null;
   }
-  if(sel===null) sel=focus&&focus.offset<=6?focus.offset:0;
+  if(sel===null) sel=0;
 
   var headTitle=branchLabel(st.branch)+'-'+st.div;
   $('#h1').textContent=headTitle;
