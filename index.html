@@ -1428,6 +1428,7 @@ function pickerAct(a,b){
       if(!ok){ $('#pkGo').disabled=false; showPickerStatus('Could not load that timetable. Check your connection and try again.'); return; }
       st.batch=goBatch;
       store.set('tt-branch',goBranch);store.set('tt-div',goDiv);store.set('tt-batch',goBatch);
+      if(ttVerified(goBranch,goDiv)) hideTTNotice(true);
       closePicker();
       maybeShowHolidayIntro();
     });
@@ -1782,16 +1783,25 @@ function maybeShowHolidayIntro(){
 }
 
 /* ---------- Timetable-update notice (full-screen on every landing) ---------- */
+// divisions whose timetable has been verified against VIERP: no update notice for these
+var TT_VERIFIED={'CSSE-C':1,'ET-F':1,'CSDS-A':1};
+function ttVerified(b,d){return !!TT_VERIFIED[b+'-'+d];}
+function hideTTNotice(instant){
+  var el=$('#ttNotice');if(!el||el.hidden) return;
+  if(instant){el.hidden=true;return;}
+  el.classList.add('out');
+  setTimeout(function(){el.hidden=true;},420);
+}
 function maybeShowTTNotice(){
   try{
     var el=$('#ttNotice');if(!el) return;
+    // returning visitor with a saved verified division -> never show it
+    var sb=store.get('tt-branch',''),sd=store.get('tt-div','');
+    if(!sb&&!sd&&store.get('tt-batch','')){sb='CSSE';sd='C';}   // old CSSE-C-only saves
+    if(ttVerified(sb,sd)) return;
     el.hidden=false;
-    var closeIt=function(){
-      el.classList.add('out');
-      setTimeout(function(){el.hidden=true;},420);
-    };
     var btn=$('#ttNoticeOk');
-    if(btn) btn.addEventListener('click',closeIt,{once:true});
+    if(btn) btn.addEventListener('click',function(){hideTTNotice();},{once:true});
   }catch(e){}
 }
 
