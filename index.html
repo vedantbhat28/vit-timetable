@@ -851,6 +851,7 @@ function loadDivisionData(meta){
         }
       });
       meta.sess=sess;meta.fac=fac;
+      daySet[6]=true; // always show Saturday in the week view, even with no classes yet
       meta.days=Object.keys(daySet).map(Number).sort(function(a,b){return a-b});
       if(!meta.days.length) meta.days=[1,2,3,4,5,6];
       meta.loaded=true;
@@ -1143,10 +1144,14 @@ function panelHTML(now,occ,sel){
 /* ---------- Week ---------- */
 function weekHTML(now){
   var wd=WEEK,last=wd[wd.length-1];
+  // last day that actually has classes (Saturday is always shown, but may be empty)
+  var lastCls=last;
+  while(lastCls>wd[0]&&!forDay(lastCls,st.batch).length) lastCls--;
   var dow=now.getDay(),mo=dow===0?1:dow>last?8-dow:1-dow;
   // once the last class day of the week is over, show the coming week instead
-  var lastEnd=Math.max.apply(null,forDay(last,st.batch).map(function(x){return x.e}));
-  var rolled=dow===last&&mins(now)>=lastEnd;
+  var lastEnds=forDay(lastCls,st.batch).map(function(x){return x.e});
+  var lastEnd=lastEnds.length?Math.max.apply(null,lastEnds):0;
+  var rolled=(dow===lastCls&&mins(now)>=lastEnd)||(dow>lastCls&&dow<=last);
   if(rolled) mo=8-dow;
   var cols=[];
   for(var i=0;i<wd.length;i++){var d=dayStart(now,mo+i);cols.push({d:d,list:inRange(d)?forDay(d.getDay(),st.batch):[]});}
@@ -1179,7 +1184,7 @@ function weekHTML(now){
   var tot={Theory:0,Lab:0,Tutorial:0};
   for(var w=0;w<wd.length;w++) forDay(wd[w],st.batch).forEach(function(x){tot[x.type]+=(x.e-x.s)/60});
   var title=(dow===0||dow>last||rolled)?'Next week':'This week';
-  var offDays=last===6?'Sunday has':'Saturday and Sunday have';
+  var offDays=forDay(6,st.batch).length?'Sunday has':'Saturday and Sunday have';
   return '<div class="weekp-head"><h2>'+title+'</h2><p>'+shortDate(cols[0].d)+' to '+shortDate(cols[cols.length-1].d)+', batch '+st.batch+'</p></div>'+
     '<div class="wk-scroll"><div class="wk'+(wd.length>5?' six':'')+'" style="--rows:'+rows+';--nc:'+wd.length+'">'+head+
     '<div class="wk-gut" aria-hidden="true">'+gut+'</div>'+body+line+'</div></div>'+
