@@ -243,10 +243,12 @@ h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,4.4vw,26px);l
 @media (prefers-reduced-motion:reduce){#holidayIntro,.hi-emoji{animation:none}}
 
 /* timetable-update notice (full-screen, shown once until dismissed) */
-#ttNotice{position:fixed;inset:0;z-index:82;display:flex;flex-direction:column;align-items:center;justify-content:center;
+#ttNotice,#labNotice{position:fixed;inset:0;z-index:82;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:0;text-align:center;padding:24px;background:var(--surface);color:var(--ink);
   animation:hiIn .4s ease-out;transition:opacity .4s ease,transform .4s ease}
-#ttNotice.out{opacity:0;transform:scale(1.04);pointer-events:none}
+#ttNotice.out,#labNotice.out{opacity:0;transform:scale(1.04);pointer-events:none}
+#labNotice{z-index:83}
+#labNotice[hidden]{display:none}
 .tn-card{max-width:420px;display:flex;flex-direction:column;align-items:center;gap:10px}
 .tn-emoji{font-size:44px;line-height:1;animation:hiPop .6s ease-out}
 .tn-kicker{margin:4px 0 0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--danger)}
@@ -257,7 +259,7 @@ h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,4.4vw,26px);l
 .tn-link:hover{text-decoration:underline}
 .tn-btn{margin-top:16px;min-height:44px;padding:9px 22px;border:0;border-radius:11px;background:var(--ink);color:var(--surface);font-weight:700;font-size:14px;cursor:pointer}
 .tn-btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){#ttNotice,.tn-emoji{animation:none}}
+@media (prefers-reduced-motion:reduce){#ttNotice,#labNotice,.tn-emoji{animation:none}}
 
 /* phones: compact chrome, week grid fits the screen (no sideways scroll) */
 @media (max-width:600px){
@@ -577,6 +579,15 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       <p class="tn-title">College updated timetables for a few divisions</p>
       <p class="tn-body">It's currently correct for <b>most divisions</b>, but a few have changed. Please check <b>VIERP</b> (<a class="tn-link" href="https://learner.vierp.in" target="_blank" rel="noopener">learner.vierp.in</a>) to verify it matches yours. This dashboard will be updated soon to match.</p>
       <button type="button" class="tn-btn" id="ttNoticeOk">Got it</button>
+    </div>
+  </div>
+  <div id="labNotice" hidden role="alertdialog" aria-modal="true" aria-labelledby="labTitle">
+    <div class="tn-card">
+      <div class="tn-emoji" aria-hidden="true">&#129514;</div>
+      <p class="tn-kicker">Important Notice</p>
+      <p class="tn-title" id="labTitle">Lab practical <span id="labDay">tomorrow</span></p>
+      <p class="tn-body">There will be a <b>LAB practical period <span id="labDay2">tomorrow</span></b> for an hour, <b>12pm to 1pm</b>.<br>Please <b>come early at 12pm to D307</b>.</p>
+      <button type="button" class="tn-btn" id="labNoticeOk">Got it</button>
     </div>
   </div>
   <div id="holidayIntro" hidden>
@@ -1412,6 +1423,7 @@ function closePicker(fromBoot){
   if(fromBoot){
     stopLoadScreen();
     maybeShowHolidayIntro();
+    maybeShowLabNotice();
   }
   var c=document.querySelector('.chg');
   if(c) c.focus({preventScroll:true});
@@ -1428,9 +1440,9 @@ function pickerAct(a,b){
       if(!ok){ $('#pkGo').disabled=false; showPickerStatus('Could not load that timetable. Check your connection and try again.'); return; }
       st.batch=goBatch;
       store.set('tt-branch',goBranch);store.set('tt-div',goDiv);store.set('tt-batch',goBatch);
-      if(ttVerified(goBranch,goDiv)) hideTTNotice(true);
       closePicker();
       maybeShowHolidayIntro();
+      maybeShowLabNotice();
     });
     return;
   }
@@ -1498,7 +1510,7 @@ document.addEventListener('click',function(e){
   if(a.indexOf('pk-')===0){pickerAct(a,b);return;}
   if(a==='open'){openDetail(+b.getAttribute('data-sid'),+b.getAttribute('data-date')||0,b.getAttribute('data-key'));return;}
   if(a==='close'){closeSheet();return;}
-  if(a==='batch'){st.batch=b.getAttribute('data-v');store.set('tt-batch',st.batch);}
+  if(a==='batch'){st.batch=b.getAttribute('data-v');store.set('tt-batch',st.batch);maybeShowLabNotice();}
   else if(a==='fmt'){st.fmt=b.getAttribute('data-v');store.set('tt-fmt',st.fmt);}
   else if(a==='day'){st.dayMs=dayStart(nowFloor(),+b.getAttribute('data-off')).getTime();centerTab=true;}
   render();
@@ -1783,9 +1795,6 @@ function maybeShowHolidayIntro(){
 }
 
 /* ---------- Timetable-update notice (full-screen on every landing) ---------- */
-// divisions whose timetable has been verified against VIERP: no update notice for these
-var TT_VERIFIED={'CSSE-C':1,'ET-F':1,'CSDS-A':1};
-function ttVerified(b,d){return !!TT_VERIFIED[b+'-'+d];}
 function hideTTNotice(instant){
   var el=$('#ttNotice');if(!el||el.hidden) return;
   if(instant){el.hidden=true;return;}
@@ -1795,13 +1804,31 @@ function hideTTNotice(instant){
 function maybeShowTTNotice(){
   try{
     var el=$('#ttNotice');if(!el) return;
-    // returning visitor with a saved verified division -> never show it
-    var sb=store.get('tt-branch',''),sd=store.get('tt-div','');
-    if(!sb&&!sd&&store.get('tt-batch','')){sb='CSSE';sd='C';}   // old CSSE-C-only saves
-    if(ttVerified(sb,sd)) return;
+    // shown to everyone on every landing
     el.hidden=false;
     var btn=$('#ttNoticeOk');
     if(btn) btn.addEventListener('click',function(){hideTTNotice();},{once:true});
+  }catch(e){}
+}
+
+/* ---------- CSSE-C B1 lab notice (until 30 Sep 2026, 2:00 PM IST) ---------- */
+var LAB_UNTIL=new Date('2026-09-30T14:00:00+05:30').getTime();
+var LAB_DAY_START=new Date('2026-09-30T00:00:00+05:30').getTime();
+var labShown=false;
+function maybeShowLabNotice(){
+  try{
+    if(labShown) return;
+    if(st.branch!=='CSSE'||st.div!=='C'||st.batch!=='B1') return;
+    var n=Date.now();
+    if(n>=LAB_UNTIL) return;
+    var el=$('#labNotice');if(!el) return;
+    var w=n<LAB_DAY_START?'tomorrow':'today';
+    $('#labDay').textContent=w;$('#labDay2').textContent=w;
+    labShown=true;
+    el.classList.remove('out');el.hidden=false;
+    $('#labNoticeOk').addEventListener('click',function(){
+      el.classList.add('out');setTimeout(function(){el.hidden=true;},420);
+    },{once:true});
   }catch(e){}
 }
 
