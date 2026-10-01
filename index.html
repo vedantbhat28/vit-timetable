@@ -242,7 +242,7 @@ h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,4.4vw,26px);l
 .hi-sub{margin:4px 0 0;font-size:13.5px;opacity:.9}
 @media (prefers-reduced-motion:reduce){#holidayIntro,.hi-emoji{animation:none}}
 
-/* timetable-update notice (full-screen, shown once until dismissed) */
+/* new-schedule notice (full-screen, once a day for 2 days) + confetti + latest badge */
 #ttNotice,#labNotice{position:fixed;inset:0;z-index:82;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:0;text-align:center;padding:24px;background:var(--surface);color:var(--ink);
   animation:hiIn .4s ease-out;transition:opacity .4s ease,transform .4s ease}
@@ -255,6 +255,11 @@ h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,4.4vw,26px);l
 .tn-title{margin:2px 0 0;font-family:var(--display);font-weight:800;font-size:clamp(24px,6.5vw,30px);line-height:1.15}
 .tn-body{margin:4px 0 0;font-size:13.5px;line-height:1.5;color:var(--muted)}
 .tn-body b{color:var(--ink)}
+.tn-good{color:var(--focus)}
+#confetti{position:fixed;inset:0;width:100%;height:100%;z-index:90;pointer-events:none}
+.latest-badge{display:inline-flex;align-items:center;gap:6px;margin:8px 0 0;padding:4px 11px 4px 9px;border-radius:999px;font-size:11.5px;font-weight:700;letter-spacing:.02em;color:#fff;background:linear-gradient(135deg,#16a34a,#0d9488);box-shadow:0 2px 8px rgba(13,148,136,.3)}
+.latest-badge[hidden]{display:none}
+.latest-badge i{width:7px;height:7px;border-radius:50%;background:#fff;animation:pulseW 1.8s infinite}
 .tn-link{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-weight:700;color:var(--focus);text-decoration:none}
 .tn-link:hover{text-decoration:underline}
 .tn-btn{margin-top:16px;min-height:44px;padding:9px 22px;border:0;border-radius:11px;background:var(--ink);color:var(--surface);font-weight:700;font-size:14px;cursor:pointer}
@@ -523,6 +528,7 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
   <header class="top">
     <div>
       <h1 id="h1">Timetable</h1>
+      <span class="latest-badge" id="latestBadge" hidden><i aria-hidden="true"></i><span id="latestTxt">Latest schedule</span></span>
       <p class="campus" id="campusLine">&nbsp;</p>
       <p class="sub" id="subLine">First year, semester 1.</p>
       <div class="hdr-actions">
@@ -572,13 +578,13 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
     <p class="ls-brand">VIT Pune &middot; FY Timetable</p>
     <button type="button" class="chg ls-about" data-act="about-open"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="5.3" r="2.6"/><path d="M2.6 13.2c.9-3 3-4.4 5.4-4.4s4.5 1.4 5.4 4.4"/></svg>About Me</button>
   </div>
-  <div id="ttNotice" hidden>
+  <div id="ttNotice" hidden role="dialog" aria-modal="true" aria-labelledby="ttnTitle">
     <div class="tn-card">
-      <div class="tn-emoji" aria-hidden="true">&#128226;</div>
-      <p class="tn-kicker">Timetable update</p>
-      <p class="tn-title">College updated timetables for a few divisions</p>
-      <p class="tn-body">It's currently correct for <b>most divisions</b>, but a few have changed. Please check <b>VIERP</b> (<a class="tn-link" href="https://learner.vierp.in" target="_blank" rel="noopener">learner.vierp.in</a>) to verify it matches yours. This dashboard will be updated soon to match.</p>
-      <button type="button" class="tn-btn" id="ttNoticeOk">Got it</button>
+      <div class="tn-emoji" aria-hidden="true">&#127881;</div>
+      <p class="tn-kicker tn-good">What's new</p>
+      <p class="tn-title" id="ttnTitle">The latest schedule is live!</p>
+      <p class="tn-body">This app now shows the <b>college's latest updated timetable</b> &mdash; new timings, rooms and faculty. Pick your class and you're all set.</p>
+      <button type="button" class="tn-btn" id="ttNoticeOk">Check it out</button>
     </div>
   </div>
   <div id="labNotice" hidden role="alertdialog" aria-modal="true" aria-labelledby="labTitle">
@@ -1225,6 +1231,7 @@ function render(){
   $('#h1').textContent=headTitle;
   document.title=headTitle+' timetable';
   $('#campusLine').innerHTML='<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 14.5S13 10.2 13 6.5a5 5 0 10-10 0C3 10.2 8 14.5 8 14.5z"/><circle cx="8" cy="6.5" r="1.8"/></svg><span>'+campusFor(st.branch)+'</span>';
+  var lb=$('#latestBadge');if(lb){$('#latestTxt').textContent='Latest schedule \u00b7 '+CUR.version+' \u00b7 from '+fmtDateLong(CUR.effFrom);lb.hidden=false;}
   $('#subLine').textContent='First year, semester 1. Timetable version '+CUR.version+', valid '+fmtDateLong(CUR.effFrom)+' to '+fmtDateLong(CUR.effTo)+'.';
   $('#footTxt').textContent="Built from timetable Form FF957 for First Year "+CUR.pdf+", version "+CUR.version+", effective "+fmtDateLong(CUR.effFrom)+" to "+fmtDateLong(CUR.effTo)+". Class blocks show faculty initials; tap a class for full names from the faculty list on page 2 of the PDF, pulled live from the TimeTable_VIT database. Holidays and exam windows follow the FY Academic Calendar 2026-27, Sem I.";
   $('#clockTime').textContent=fmtT(mins(now));
@@ -1794,20 +1801,45 @@ function maybeShowHolidayIntro(){
   }catch(e){}
 }
 
-/* ---------- Timetable-update notice (full-screen on every landing) ---------- */
+/* ---------- New-schedule notice: once a day on 1-2 Oct 2026 (IST), with confetti ---------- */
+var NS_DAYS=['2026-10-01','2026-10-02'];
 function hideTTNotice(instant){
   var el=$('#ttNotice');if(!el||el.hidden) return;
   if(instant){el.hidden=true;return;}
   el.classList.add('out');
   setTimeout(function(){el.hidden=true;},420);
 }
+function launchConfetti(){
+  try{
+    if(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+    var c=document.createElement('canvas');c.id='confetti';c.setAttribute('aria-hidden','true');document.body.appendChild(c);
+    var x=c.getContext('2d'),dpr=Math.min(window.devicePixelRatio||1,2),W=innerWidth,H=innerHeight;
+    c.width=W*dpr;c.height=H*dpr;x.scale(dpr,dpr);
+    var cols=['#ef4444','#f59e0b','#22c55e','#06b6d4','#6366f1','#ec4899'],P=[],i;
+    for(i=0;i<140;i++){var left=i%2===0;P.push({x:left?-10:W+10,y:H*0.75,vx:(left?1:-1)*(3+Math.random()*7),vy:-(9+Math.random()*10),
+      w:6+Math.random()*6,h:4+Math.random()*5,r:Math.random()*6.28,vr:(Math.random()-.5)*.4,c:cols[i%cols.length]});}
+    var t0=performance.now();
+    (function f(t){
+      var el=t-t0;x.clearRect(0,0,W,H);var alive=false;
+      P.forEach(function(p){
+        p.vy+=.35;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;
+        if(p.y<H+20){alive=true;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.globalAlpha=el>2600?Math.max(0,1-(el-2600)/900):1;
+          x.fillStyle=p.c;x.fillRect(-p.w/2,-p.h/2,p.w,p.h);x.restore();}
+      });
+      if(alive&&el<3500) requestAnimationFrame(f); else c.remove();
+    })(t0);
+  }catch(e){}
+}
 function maybeShowTTNotice(){
   try{
     var el=$('#ttNotice');if(!el) return;
-    // shown to everyone on every landing
+    var today=new Date(Date.now()+19800000).toISOString().slice(0,10);   // IST date
+    if(NS_DAYS.indexOf(today)<0||store.get('tt-newsched-seen','')===today) return;
+    store.set('tt-newsched-seen',today);
     el.hidden=false;
+    setTimeout(launchConfetti,350);
     var btn=$('#ttNoticeOk');
-    if(btn) btn.addEventListener('click',function(){hideTTNotice();},{once:true});
+    if(btn) btn.addEventListener('click',function(){hideTTNotice();launchConfetti();},{once:true});
   }catch(e){}
 }
 
