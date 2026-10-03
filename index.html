@@ -1800,8 +1800,7 @@ function maybeShowHolidayIntro(){
   }catch(e){}
 }
 
-/* ---------- New-schedule notice: once a day on 1-2 Oct 2026 (IST) ---------- */
-var NS_DAYS=['2026-10-01','2026-10-02'];
+/* ---------- New-schedule notice: shown on every visit ---------- */
 function hideTTNotice(instant){
   var el=$('#ttNotice');if(!el||el.hidden) return;
   if(instant){el.hidden=true;return;}
@@ -1811,9 +1810,7 @@ function hideTTNotice(instant){
 function maybeShowTTNotice(){
   try{
     var el=$('#ttNotice');if(!el) return;
-    var today=new Date(Date.now()+19800000).toISOString().slice(0,10);   // IST date
-    if(NS_DAYS.indexOf(today)<0||store.get('tt-newsched-seen','')===today) return;
-    store.set('tt-newsched-seen',today);
+    el.classList.remove('out');
     el.hidden=false;
     var btn=$('#ttNoticeOk');
     if(btn) btn.addEventListener('click',function(){hideTTNotice();},{once:true});
