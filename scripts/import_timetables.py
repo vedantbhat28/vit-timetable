@@ -38,6 +38,7 @@ from pathlib import Path
 DEFAULT_SUPABASE_URL = "https://fqfzygubyjqkimsphmdn.supabase.co"
 EXTRACT_MODEL = os.environ.get("EXTRACT_MODEL", "claude-sonnet-5-5")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
+STATS = {"read": 0}  # PDFs that actually needed a model call in this run (for --limit)
 MAX_PAGES = 10
 LARGE_DIFF_RATIO = 0.5
 
@@ -141,28 +142,43 @@ class Supa:
         self.s.headers.update({"apikey": key, "Authorization": f"Bearer {key}",
                                "Content-Type": "application/json"})
 
-    def _check(self, r, what):
-        if not r.ok:
-            raise RuntimeError(f"Supabase {what} failed: {r.status_code} {r.text[:400]}")
-        return r
+    def _req(self, method: str, url: str, what: str, **kw):
+        """Retries timeouts, dropped connections and 5xx (Supabase free projects stall now and then)."""
+        import requests
+        import time
+        last = None
+        for attempt in range(5):
+            try:
+                r = self.s.request(method, url, timeout=120, **kw)
+                if r.status_code in (502, 503, 504, 522, 524):
+                    last = f"HTTP {r.status_code}"
+                else:
+                    if not r.ok:
+                        raise RuntimeError(f"Supabase {what} failed: {r.status_code} {r.text[:400]}")
+                    return r
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+                last = type(e).__name__
+            wait = (3, 8, 20, 45)[min(attempt, 3)]
+            log(f"   Supabase {what}: {last}; retrying in {wait}s")
+            time.sleep(wait)
+        raise RuntimeError(f"Supabase {what} kept failing ({last})")
 
     def get_all(self, table: str, params: dict) -> list[dict]:
         out, offset = [], 0
         while True:  # PostgREST caps responses at 1000 rows by default
             p = dict(params, limit=1000, offset=offset)
-            rows = self._check(self.s.get(self.base + table, params=p, timeout=60), f"GET {table}").json()
+            rows = self._req("GET", self.base + table, f"GET {table}", params=p).json()
             out += rows
             if len(rows) < 1000:
                 return out
             offset += 1000
 
     def insert(self, table: str, row: dict) -> None:
-        self._check(self.s.post(self.base + table, data=json.dumps(row),
-                                headers={"Prefer": "return=minimal"}, timeout=60), f"INSERT {table}")
+        self._req("POST", self.base + table, f"INSERT {table}", data=json.dumps(row),
+                  headers={"Prefer": "return=minimal"})
 
     def rpc(self, fn: str, payload: dict) -> dict:
-        r = self._check(self.s.post(self.base + "rpc/" + fn, data=json.dumps(payload), timeout=120), f"RPC {fn}")
-        return r.json()
+        return self._req("POST", self.base + "rpc/" + fn, f"RPC {fn}", data=json.dumps(payload)).json()
 
 
 # --------------------------------------------------------------------------- rendering
@@ -219,8 +235,27 @@ def call_claude(client, images) -> dict:
     raise RuntimeError("model returned no structured result")
 
 
+class GeminiUnavailable(RuntimeError):
+    """Every configured Gemini model is overloaded / rate-limited right now."""
+
+
+_cooldown: dict = {}   # model -> monotonic time until which we leave it alone
+_dead: set = set()     # models that do not exist for this key (404)
+
+
+def gemini_models() -> list[str]:
+    raw = os.environ.get("GEMINI_MODELS", "").strip() or \
+        f"{GEMINI_MODEL},gemini-flash-lite-latest,gemini-2.5-flash,gemini-2.5-flash-lite"
+    out = []
+    for m in (x.strip() for x in raw.split(",")):
+        if m and m not in out:
+            out.append(m)
+    return out
+
+
 def call_gemini(api_key: str, images) -> dict:
-    """Google AI Studio free tier. Retries on 429 (free-tier rate limit)."""
+    """Google AI Studio free tier. 503/429 on one model -> immediately try the next model; if all are busy,
+    wait for the earliest cooldown and go round again (4 rounds), then give up with GeminiUnavailable."""
     import requests
     import time
     parts = []
@@ -233,24 +268,51 @@ def call_gemini(api_key: str, images) -> dict:
                 "Call submit_timetable exactly once.", "Reply with a single JSON object only.")}]},
             "contents": [{"role": "user", "parts": parts}],
             "generationConfig": {"responseMimeType": "application/json", "temperature": 0}}
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
-    for attempt in range(5):
-        r = requests.post(url, headers={"x-goog-api-key": api_key, "Content-Type": "application/json"},
-                          data=json.dumps(body), timeout=300)
-        if r.status_code in (429, 500, 503):
-            wait = 20 * (attempt + 1)
-            log(f"   Gemini busy/rate-limited ({r.status_code}); waiting {wait}s")
+    models = gemini_models()
+    for rnd in range(4):
+        tried = False
+        for model in models:
+            if model in _dead or _cooldown.get(model, 0) > time.monotonic():
+                continue
+            tried = True
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+            try:
+                r = requests.post(url, headers={"x-goog-api-key": api_key, "Content-Type": "application/json"},
+                                  data=json.dumps(body), timeout=300)
+            except requests.exceptions.RequestException as e:
+                log(f"   {model}: network error ({type(e).__name__}); trying next model")
+                _cooldown[model] = time.monotonic() + 30
+                continue
+            if r.status_code in (429, 500, 502, 503, 504):
+                log(f"   {model}: busy ({r.status_code}); trying next model")
+                _cooldown[model] = time.monotonic() + 90
+                continue
+            if r.status_code == 404:
+                log(f"   {model}: model not available for this key; skipping it")
+                _dead.add(model)
+                continue
+            if not r.ok:
+                raise RuntimeError(f"Gemini error {r.status_code} on {model}: {r.text[:300]}")
+            try:
+                text = "".join(p.get("text", "") for p in r.json()["candidates"][0]["content"]["parts"])
+            except (KeyError, IndexError, ValueError):
+                log(f"   {model}: empty answer ({r.text[:120]!r}); trying next model")
+                _cooldown[model] = time.monotonic() + 30
+                continue
+            text = re.sub(r"^```(?:json)?|```$", "", text.strip()).strip()
+            try:
+                return json.loads(text)
+            except ValueError:
+                log(f"   {model}: answer was not valid JSON; trying next model")
+                continue
+        if not tried:
+            live = [m for m in models if m not in _dead]
+            if not live:
+                raise RuntimeError("none of the configured Gemini models exist for this key; set GEMINI_MODELS")
+            wait = max(10, min(_cooldown.get(m, 0) for m in live) - time.monotonic())
+            log(f"   all Gemini models are busy; waiting {int(wait)}s (round {rnd + 1}/4)")
             time.sleep(wait)
-            continue
-        if not r.ok:
-            raise RuntimeError(f"Gemini error {r.status_code}: {r.text[:300]}")
-        try:
-            text = "".join(p.get("text", "") for p in r.json()["candidates"][0]["content"]["parts"])
-        except (KeyError, IndexError):
-            raise RuntimeError(f"Gemini returned no answer: {r.text[:300]}")
-        text = re.sub(r"^```(?:json)?|```$", "", text.strip()).strip()
-        return json.loads(text)
-    raise RuntimeError("Gemini kept rate-limiting; try again later (free tier quota)")
+    raise GeminiUnavailable("Gemini is overloaded or out of free quota on every model")
 
 
 def make_extractor():
@@ -530,13 +592,16 @@ def process_pdf(path: Path, sb: Supa, extractor, known, args, done_slugs: set) -
     log(f"\n== {path}")
     model_name = extractor[0] if extractor else "none"
     sha = hashlib.sha256(path.read_bytes()).hexdigest()
-    prior = sb.get_all("tt_import_log", {"pdf_sha256": f"eq.{sha}", "select": "id,status,extracted,division_slug",
-                                         "order": "id.desc"})
+    prior = sb.get_all("tt_import_log", {"pdf_sha256": f"eq.{sha}", "select": "id,status", "order": "id.desc"})
     if any(p["status"] == "imported" for p in prior) and not args.force:
         log("   unchanged since last import - skipped")
         return True
 
-    cached = next((p["extracted"] for p in prior if p["extracted"] and p["status"] in ("dry_run",)), None)
+    cached = None
+    if any(p["status"] == "dry_run" for p in prior):
+        rows = sb.get_all("tt_import_log", {"pdf_sha256": f"eq.{sha}", "status": "eq.dry_run",
+                                            "select": "extracted", "order": "id.desc", "limit": 1})
+        cached = next((r["extracted"] for r in rows if r["extracted"]), None)
     known_fac, known_sub = known
     if args.from_json:
         data = json.loads(Path(args.from_json).read_text())
@@ -549,6 +614,7 @@ def process_pdf(path: Path, sb: Supa, extractor, known, args, done_slugs: set) -
         if extractor is None:
             log("   ERROR: no GEMINI_API_KEY (or ANTHROPIC_API_KEY) set - cannot read this PDF; Supabase left as is")
             return False
+        STATS["read"] += 1
         errors, warnings, rows, header, data = extract_pdf(extractor[1], path, known_fac, known_sub)
 
     for w in warnings:
@@ -625,6 +691,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--pdf-dir", default="pdfs")
     ap.add_argument("--only", help="process just this PDF filename")
+    ap.add_argument("--limit", type=int, help="process at most this many PDFs that still need reading")
     ap.add_argument("--dry-run", action="store_true", help="extract + diff, write nothing to the timetable")
     ap.add_argument("--force", action="store_true", help="re-import even if this exact PDF was imported before")
     ap.add_argument("--allow-new", action="store_true", help="allow creating a division not in tt_divisions")
@@ -656,13 +723,23 @@ def main() -> int:
         log(f"Cannot reach Supabase ({e}); leaving everything as is")
         return 1
 
-    ok, done = True, set()
+    ok, done, down = True, set(), 0
     for p in pdfs:
+        if args.limit is not None and STATS["read"] >= args.limit:
+            log(f"\nReached --limit {args.limit}; remaining PDFs are left for the next run.")
+            break
         try:
             ok &= process_pdf(p, sb, extractor, known, args, done)
             if extractor and extractor[0].startswith("gemini") and p is not pdfs[-1]:
                 import time
                 time.sleep(8)  # stay under the free-tier requests-per-minute limit
+        except GeminiUnavailable as e:
+            log(f"   ERROR: {e}")
+            ok, down = False, down + 1
+            if down >= 2:
+                log("\nGemini is unavailable right now, so I am stopping instead of burning the whole run. "
+                    "Re-run later: PDFs that were already read are cached and will not be read again.")
+                break
         except Exception as e:
             log(f"   ERROR: {type(e).__name__}: {e}")
             ok = False
