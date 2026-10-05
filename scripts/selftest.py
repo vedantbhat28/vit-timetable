@@ -261,4 +261,121 @@ check("provider: gemini chosen when its key is set", it.make_extractor()[0].star
 os.environ.pop("GEMINI_API_KEY")
 check("provider: none when no key", it.make_extractor() is None)
 
+# ---------------------------------------------------------------- resilience (what went wrong in the first real run)
+import time as _time
+from PIL import Image as _Image
+
+os.environ.pop("GEMINI_MODELS", None)
+_sleeps = []
+_real_sleep = _time.sleep
+_time.sleep = lambda s_: _sleeps.append(s_)
+real_post2 = requests.post
+good = {"candidates": [{"content": {"parts": [{"text": _json.dumps(fixture())}]}}]}
+
+
+def run_gemini(script):
+    """script: dict model -> list of status codes (last one repeats)."""
+    seq = {m: list(v) for m, v in script.items()}
+    seen = []
+
+    def post(url, headers=None, data=None, timeout=None):
+        model = url.split("/models/")[1].split(":")[0]
+        seen.append(model)
+        codes = seq.get(model, [200])
+        code = codes.pop(0) if len(codes) > 1 else codes[0]
+        return FakeResp(code, good if code == 200 else {})
+    requests.post = post
+    it._cooldown.clear(); it._dead.clear(); _sleeps.clear()
+    try:
+        return it.call_gemini("K", [_Image.new("RGB", (20, 20), "white")]), seen
+    finally:
+        requests.post = real_post2
+
+
+M = it.gemini_models()
+out, seen = run_gemini({M[0]: [503], M[1]: [200]})
+check("503 on first model -> next model answers at once, no long waiting", out["header"]["division_label"] == "CSSE-C"
+      and seen == [M[0], M[1]] and not _sleeps)
+out, seen = run_gemini({M[0]: [404], M[1]: [404], M[2]: [200]})
+check("unknown model names (404) are skipped", out is not None and seen[-1] == M[2])
+try:
+    run_gemini({m: [503] for m in it.gemini_models()})
+    check("all models busy -> GeminiUnavailable", False)
+except it.GeminiUnavailable:
+    check("all models busy -> GeminiUnavailable after 4 rounds, not 5 minutes per PDF", True)
+check("waiting between rounds is capped small", all(s_ <= 100 for s_ in _sleeps))
+os.environ["GEMINI_MODELS"] = "model-a, model-b ,model-a"
+check("GEMINI_MODELS overrides the list and dedupes", it.gemini_models() == ["model-a", "model-b"])
+os.environ["GEMINI_MODELS"] = ""
+check("empty GEMINI_MODELS (unset repo variable) uses defaults", len(it.gemini_models()) >= 3)
+os.environ.pop("GEMINI_MODELS")
+
+# Supabase: ReadTimeout then success is retried
+class FakeSession:
+    def __init__(self):
+        self.n = 0
+        self.headers = {}
+
+    def request(self, method, url, timeout=None, **kw):
+        self.n += 1
+        if self.n < 3:
+            raise requests.exceptions.ReadTimeout("read timed out")
+        return FakeResp(200, [{"id": 1}])
+
+
+sb = it.Supa("https://x.supabase.co", "k")
+sb.s = FakeSession()
+_sleeps.clear()
+rows = sb.get_all("tt_import_log", {"select": "id"})
+check("supabase ReadTimeout is retried (twice) then succeeds", rows == [{"id": 1}] and sb.s.n == 3 and len(_sleeps) == 2)
+
+
+class DeadSession(FakeSession):
+    def request(self, *a, **k):
+        raise requests.exceptions.ConnectionError("down")
+
+
+sb.s = DeadSession()
+try:
+    sb.get_all("t", {})
+    check("supabase down -> clear error", False)
+except RuntimeError as e:
+    check("supabase down -> clear error after retries", "kept failing" in str(e))
+_time.sleep = _real_sleep
+
+# ---------------------------------------------------------------- repair pass, verification, shift detection
+import types
+_gone = [dict(weekday=2, start_time="12:00", subject_code="ES26101", session_type="Tutorial", batch="B2", room="D211", faculty_initials="PAK", faculty_id="12095")]
+_new = [dict(_gone[0], start_time="13:00")]
+sp = it.shifted_pairs(_new, _gone)
+check("1h shift of the same session is flagged", len(sp) == 1)
+check("unrelated add/remove is not flagged", it.shifted_pairs([dict(_new[0], subject_code="X")], _gone) == [])
+a = dict(_gone[0], faculty_id="Visiting_06"); b = dict(_gone[0], faculty_id="Visiting 06")
+check("faculty id formatting noise is not a change", it.diff_rows([a], [b])[2] == [])
+c = dict(_gone[0], room="E999")
+check("a real room change is shown readably", "room D211 -> E999" in it.fmt_change(_gone[0], c))
+
+# repair pass: first reads miss sessions, the repair read returns the full fixture
+bad = fixture(); bad["sessions"] = bad["sessions"][:-3]
+calls2 = []
+def fake_extractor(images, hint=None, variant=0, max_side=2600):
+    calls2.append((hint is not None, variant))
+    return fixture() if hint else bad
+it.render_pages = lambda path, dpi=220: [_Image.new("RGB", (30, 30), "white")]
+it._ROT_ORDER[:] = [0, 90, 270]
+errs, warns, rws, hdr, dat, deg = it.extract_pdf(fake_extractor, Path("x.pdf"), {}, {})
+check("repair pass fixes a short read after the rotations fail", not errs and len(calls2) == 4 and calls2[3][0] is True)
+check("a successful rotation is remembered for the next PDF", it._ROT_ORDER[0] == deg)
+
+calls2.clear()
+errs, *_ = it.extract_pdf(lambda im, h=None, v=0, m=2600: fixture(), Path("x.pdf"), {}, {})
+check("a clean first read costs exactly one call", not errs)
+
+# verification: agreeing second read -> no differences; disagreeing -> listed
+_, _, good_rows, _ = it.build_rows(fixture(), {}, {})
+check("verify: identical second read confirms", it.verify_read(lambda im, h=None, v=0, m=2600: fixture(), Path("x.pdf"), {}, {}, good_rows) == [])
+other = fixture(); other["sessions"][0] = dict(other["sessions"][0], room="Z999")
+d = it.verify_read(lambda im, h=None, v=0, m=2600: other, Path("x.pdf"), {}, {}, good_rows)
+check("verify: a different second read is reported", len(d) >= 1)
+
 sys.exit(1 if check.failed else 0)

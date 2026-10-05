@@ -37,7 +37,7 @@ from pathlib import Path
 
 DEFAULT_SUPABASE_URL = "https://fqfzygubyjqkimsphmdn.supabase.co"
 EXTRACT_MODEL = os.environ.get("EXTRACT_MODEL", "claude-sonnet-5-5")
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3-flash-preview")
 STATS = {"read": 0}  # PDFs that actually needed a model call in this run (for --limit)
 MAX_PAGES = 10
 LARGE_DIFF_RATIO = 0.5
@@ -56,7 +56,8 @@ Rules for both layouts
 - Header fields: division_label is the division only, e.g. "CSAI-A" or "CSSE-C" (drop FY / First Year). Copy dates (W.E.F. and To Date) exactly as printed, e.g. "15-Sep-2026" or "15-09-2026".
 - Footer: "Theory = 16 Lab = 18 Tutorial = 3 ... Total : 37". Report the printed totals; never compute them yourself. Ignore Seminar / Project / General if blank.
 - Legend rows: faculty id, initials, full name, load type, subject abbreviation, code, subject name. "12402 SCB (SACHIN CHANDRAKANT BIDWAI)" = id 12402, initials SCB, name SACHIN CHANDRAKANT BIDWAI. Transcribe every row. Subject name is the text after the code.
-- Several blocks in one slot are parallel batches (B1, B2, B3). Emit one session per block per one-hour slot.
+- Several blocks in one slot are parallel batches (B1, B2, B3): up to three blocks can sit side by side or stacked in ONE hourly slot. Emit one session per block per one-hour slot and never skip one; a lab hour normally has all three batches.
+- Before answering, count your sessions per type and compare with the printed footer totals. If a count is short, look again for missed blocks (usually parallel lab batches or hours of a block that spans several slots).
 - A block drawn across several hourly slots (layout A) must be emitted once per hour. In layout B each hourly cell already holds its own copy; emit one session per cell.
 - batch is the Bn suffix after the subject name (it may wrap, e.g. ":B" then "2"). Blocks without a Bn tag (theory) have batch null.
 - Copy subject codes, rooms and initials exactly as printed, keeping capitalisation (NbK, vss). If a cell shows two initials such as "ASG/ASG", copy them exactly as printed.
@@ -221,11 +222,11 @@ def png_block(im, max_side: int = 2600) -> dict:
                                         "data": base64.b64encode(data).decode()}}
 
 
-def call_claude(client, images) -> dict:
+def call_claude(client, images, hint=None, variant=0, max_side=2600) -> dict:
     content = []
     for i, im in enumerate(images, 1):
-        content += [{"type": "text", "text": f"Page {i}:"}, png_block(im)]
-    content.append({"type": "text", "text": "Transcribe this timetable by calling submit_timetable."})
+        content += [{"type": "text", "text": f"Page {i}:"}, png_block(im, max_side)]
+    content.append({"type": "text", "text": "Transcribe this timetable by calling submit_timetable." + (("\n\n" + hint) if hint else "")})
     r = client.messages.create(model=EXTRACT_MODEL, max_tokens=12000, system=SYSTEM_PROMPT, tools=[TOOL],
                                tool_choice={"type": "tool", "name": "submit_timetable"},
                                messages=[{"role": "user", "content": content}])
@@ -245,7 +246,7 @@ _dead: set = set()     # models that do not exist for this key (404)
 
 def gemini_models() -> list[str]:
     raw = os.environ.get("GEMINI_MODELS", "").strip() or \
-        f"{GEMINI_MODEL},gemini-flash-lite-latest,gemini-2.5-flash,gemini-2.5-flash-lite"
+        f"{GEMINI_MODEL},gemini-flash-latest,gemini-3.1-flash-lite,gemini-2.5-flash,gemini-2.5-flash-lite"
     out = []
     for m in (x.strip() for x in raw.split(",")):
         if m and m not in out:
@@ -253,22 +254,26 @@ def gemini_models() -> list[str]:
     return out
 
 
-def call_gemini(api_key: str, images) -> dict:
+def call_gemini(api_key: str, images, hint=None, variant=0, max_side=2600) -> dict:
     """Google AI Studio free tier. 503/429 on one model -> immediately try the next model; if all are busy,
     wait for the earliest cooldown and go round again (4 rounds), then give up with GeminiUnavailable."""
     import requests
     import time
     parts = []
     for i, im in enumerate(images, 1):
-        blk = png_block(im)["source"]
+        blk = png_block(im, max_side)["source"]
         parts += [{"text": f"Page {i}:"}, {"inline_data": {"mime_type": blk["media_type"], "data": blk["data"]}}]
     parts.append({"text": "Transcribe this timetable. Reply with ONE JSON object that follows this JSON schema "
-                          "exactly, and nothing else:\n" + json.dumps(TOOL["input_schema"])})
+                          "exactly, and nothing else:\n" + json.dumps(TOOL["input_schema"])
+                          + (("\n\n" + hint) if hint else "")})
     body = {"systemInstruction": {"parts": [{"text": SYSTEM_PROMPT.replace(
                 "Call submit_timetable exactly once.", "Reply with a single JSON object only.")}]},
             "contents": [{"role": "user", "parts": parts}],
             "generationConfig": {"responseMimeType": "application/json", "temperature": 0}}
     models = gemini_models()
+    if models and variant:  # a different model goes first on repair / verification reads
+        k = variant % len(models)
+        models = models[k:] + models[:k]
     for rnd in range(4):
         tried = False
         for model in models:
@@ -322,11 +327,11 @@ def make_extractor():
     if want == "gemini" or (not want and gk):
         if not gk:
             return None
-        return f"gemini:{GEMINI_MODEL}", lambda imgs: call_gemini(gk, imgs)
+        return f"gemini:{GEMINI_MODEL}", lambda imgs, hint=None, variant=0, max_side=2600: call_gemini(gk, imgs, hint, variant, max_side)
     if ak:
         import anthropic
         client = anthropic.Anthropic()
-        return f"claude:{EXTRACT_MODEL}", lambda imgs: call_claude(client, imgs)
+        return f"claude:{EXTRACT_MODEL}", lambda imgs, hint=None, variant=0, max_side=2600: call_claude(client, imgs, hint, variant, max_side)
     return None
 
 
@@ -498,6 +503,35 @@ def build_rows(data: dict, known_fac: dict, known_sub: dict):
     return errors, warnings, rows, header
 
 
+def fmt_change(a: dict, b: dict) -> str:
+    bits = []
+    if a["room"] != b["room"]:
+        bits.append(f"room {a['room']} -> {b['room']}")
+    if a["faculty_initials"] != b["faculty_initials"]:
+        bits.append(f"teacher {a['faculty_initials']} -> {b['faculty_initials']}")
+    if _key(a.get("faculty_id")) != _key(b.get("faculty_id")):
+        bits.append(f"teacher id {a.get('faculty_id')} -> {b.get('faculty_id')}")
+    return f"{DAYS[a['weekday']]} {a['start_time'][:5]} {a['subject_code']} {a['session_type']}" \
+           f"{' ' + a['batch'] if a.get('batch') else ''}: " + ", ".join(bits)
+
+
+def shifted_pairs(added: list, removed: list):
+    """A session that vanished at one time and appeared 1-2 h away is more often a misread column than a real move."""
+    out = []
+    for r in removed:
+        for a in added:
+            same = (r["weekday"], r["subject_code"], r["session_type"], r.get("batch")) == \
+                   (a["weekday"], a["subject_code"], a["session_type"], a.get("batch"))
+            if same and 60 <= abs(mins(a["start_time"][:5]) - mins(r["start_time"][:5])) <= 120:
+                out.append((r, a))
+                break
+    return out
+
+
+def _key(x) -> str:
+    return re.sub(r"[^a-z0-9]", "", str(x if x is not None else "").lower())
+
+
 def row_key(r: dict):
     return (r["weekday"], r["start_time"][:5], r["subject_code"], r["session_type"], r.get("batch"))
 
@@ -510,8 +544,8 @@ def diff_rows(old: list[dict], new: list[dict]):
     changed = []
     for k in n.keys() & o.keys():
         a, b = o[k], n[k]
-        if (a["room"], a["faculty_initials"], str(a.get("faculty_id"))) != \
-           (b["room"], b["faculty_initials"], str(b.get("faculty_id"))):
+        if (a["room"], a["faculty_initials"], _key(a.get("faculty_id"))) != \
+           (b["room"], b["faculty_initials"], _key(b.get("faculty_id"))):
             changed.append((a, b))
     return added, removed, changed
 
@@ -522,10 +556,6 @@ DAYS = {1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat", 7: "Sun"}
 def fmt(r):
     return (f"{DAYS[r['weekday']]} {r['start_time'][:5]} {r['subject_code']} {r['session_type']}"
             f"{' ' + r['batch'] if r.get('batch') else ''} {r['room']} {r['faculty_initials']}")
-
-
-def _key(x: str) -> str:
-    return re.sub(r"[^a-z0-9]", "", (x or "").lower())
 
 
 def find_division(divs: list[dict], label: str):
@@ -570,22 +600,64 @@ def load_known(sb: Supa):
     return fac, sub
 
 
-def extract_pdf(extractor, path: Path, known_fac, known_sub):
-    """Render and extract. PDFs should be uploaded upright; if the first read fails validation the pages
-    are retried rotated 90 and 270 degrees (the common sideways 'print to PDF' orientation)."""
-    pages = render_pages(path)
+_ROT_ORDER = [0, 90, 270]   # the rotation that worked last time is tried first (saves calls on a batch of sideways PDFs)
+
+
+def repair_hint(errors: list, data: dict) -> str:
+    prev = json.dumps({"header": data.get("header"), "sessions": data.get("sessions")})
+    return ("Your previous answer failed these checks against the printed footer / legend:\n- "
+            + "\n- ".join(errors[:12])
+            + "\n\nYour previous answer was:\n" + prev
+            + "\n\nLook at the images again. Find every block you missed or put in the wrong day or hour "
+              "(especially parallel lab batches B1/B2/B3 in the same slot, and blocks that span several hours) "
+              "and return the COMPLETE corrected JSON object, including the legend.")
+
+
+def extract_pdf(extractor, path: Path, known_fac, known_sub, hi_res: bool = False, variant: int = 0):
+    """Render and extract. Tries the remembered rotation first, then the others. If every read still fails
+    validation, up to two repair passes feed the failed checks back to the model together with its own answer.
+    Returns (errors, warnings, rows, header, data, rotation)."""
+    pages = render_pages(path, dpi=300 if hi_res else 220)
+    side = 3600 if hi_res else 2600
     log(f"   {len(pages)} page(s)")
     best = None
-    for n, deg in enumerate((0, 90, 270), 1):
-        data = extractor([rotate_cw(im, deg) for im in pages])
+
+    def attempt(deg, hint=None, var=variant):
+        nonlocal best
+        data = extractor([rotate_cw(im, deg) for im in pages], hint, var, side)
         errors, warnings, rows, header = build_rows(data, known_fac, known_sub)
         if best is None or len(errors) < len(best[0]):
-            best = (errors, warnings, rows, header, data)
-        if not errors:
-            break
+            best = (errors, warnings, rows, header, data, deg)
+        return errors
+
+    for n, deg in enumerate(list(_ROT_ORDER), 1):
+        if not attempt(deg):
+            _ROT_ORDER.remove(deg)
+            _ROT_ORDER.insert(0, deg)
+            return best
         if n < 3:
-            log(f"   read at {deg} deg had {len(errors)} problem(s); retrying rotated")
+            log(f"   read at {deg} deg had {len(best[0])} problem(s); retrying rotated")
+    for k in (1, 2):
+        log(f"   repair pass {k}: sending the failed checks back to the model ({len(best[0])} problem(s))")
+        if not attempt(best[5], repair_hint(best[0], best[4]), variant + k):
+            _ROT_ORDER.remove(best[5])
+            _ROT_ORDER.insert(0, best[5])
+            break
     return best
+
+
+def verify_read(extractor, path: Path, known_fac, known_sub, first_rows: list):
+    """A second, independent read (higher resolution, a different model first). The changes a PDF would make are only
+    trusted when both reads agree on every session. Returns a list of disagreements (empty = confirmed)."""
+    errors, _w, rows2, _h, _d, _deg = extract_pdf(extractor, path, known_fac, known_sub, hi_res=True, variant=1)
+    if errors:
+        return [f"second read could not be validated: {errors[0]}"]
+    a = {row_key(r): (r["room"], r["faculty_initials"]) for r in first_rows}
+    b = {row_key(r): (r["room"], r["faculty_initials"]) for r in rows2}
+    out = [f"only in 1st read: {fmt(r)}" for r in first_rows if row_key(r) not in b]
+    out += [f"only in 2nd read: {fmt(r)}" for r in rows2 if row_key(r) not in a]
+    out += [f"room/teacher differ: {fmt(r)}" for r in first_rows if row_key(r) in b and a[row_key(r)] != b[row_key(r)]]
+    return out
 
 
 def process_pdf(path: Path, sb: Supa, extractor, known, args, done_slugs: set) -> bool:
@@ -615,7 +687,7 @@ def process_pdf(path: Path, sb: Supa, extractor, known, args, done_slugs: set) -
             log("   ERROR: no GEMINI_API_KEY (or ANTHROPIC_API_KEY) set - cannot read this PDF; Supabase left as is")
             return False
         STATS["read"] += 1
-        errors, warnings, rows, header, data = extract_pdf(extractor[1], path, known_fac, known_sub)
+        errors, warnings, rows, header, data, _deg = extract_pdf(extractor[1], path, known_fac, known_sub)
 
     for w in warnings:
         log(f"   warn: {w}")
@@ -651,7 +723,9 @@ def process_pdf(path: Path, sb: Supa, extractor, known, args, done_slugs: set) -
     for r in removed:
         log(f"     - {fmt(r)}")
     for a, b in changed:
-        log(f"     ~ {fmt(a)}  ->  {b['room']} {b['faculty_initials']}")
+        log(f"     ~ {fmt_change(a, b)}")
+    for r, a in shifted_pairs(added, removed):
+        log(f"   warn: {fmt(r)} seems to have moved to {a['start_time'][:5]} (a 1-2 h shift can be a misread column)")
 
     churn = (len(added) + len(removed) + len(changed)) / max(len(old), len(rows), 1)
     if old and churn > LARGE_DIFF_RATIO and not args.accept_large_diff:
@@ -660,6 +734,22 @@ def process_pdf(path: Path, sb: Supa, extractor, known, args, done_slugs: set) -
         sb.insert("tt_import_log", {"pdf_sha256": sha, "filename": path.name, "division_slug": div["slug"],
                                     "status": "failed", "extracted": data, "notes": msg, "model": model_name})
         return False
+
+    if (added or removed or changed) and extractor and not args.no_verify and not args.from_json \
+            and not data.get("_verified"):
+        log("   changes found - confirming with a second independent read")
+        diffs = verify_read(extractor[1], path, known_fac, known_sub, rows)
+        if diffs:
+            for d in diffs[:15]:
+                log(f"   ERROR: {d}")
+            msg = f"two reads of the PDF disagree ({len(diffs)} difference(s)); check the PDF by hand or rerun"
+            log(f"   {msg}. NOT imported - Supabase left as is")
+            sb.insert("tt_import_log", {"pdf_sha256": sha, "filename": path.name, "division_slug": div["slug"],
+                                        "status": "failed", "extracted": data, "notes": msg + "; " + "; ".join(diffs)[:1200],
+                                        "model": model_name})
+            return False
+        data["_verified"] = True
+        log("   second read agrees - changes confirmed")
 
     if args.dry_run:
         sb.insert("tt_import_log", {"pdf_sha256": sha, "filename": path.name, "division_slug": div["slug"],
@@ -690,7 +780,8 @@ def process_pdf(path: Path, sb: Supa, extractor, known, args, done_slugs: set) -
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--pdf-dir", default="pdfs")
-    ap.add_argument("--only", help="process just this PDF filename")
+    ap.add_argument("--only", help="process just PDFs whose file name contains this text (case-insensitive)")
+    ap.add_argument("--no-verify", action="store_true", help="skip the second confirming read of changed divisions")
     ap.add_argument("--limit", type=int, help="process at most this many PDFs that still need reading")
     ap.add_argument("--dry-run", action="store_true", help="extract + diff, write nothing to the timetable")
     ap.add_argument("--force", action="store_true", help="re-import even if this exact PDF was imported before")
@@ -702,7 +793,7 @@ def main() -> int:
     pdf_dir = Path(args.pdf_dir)
     pdfs = sorted(p for p in pdf_dir.rglob("*") if p.is_file() and p.suffix.lower() == ".pdf") if pdf_dir.is_dir() else []  # any name, any subfolder
     if args.only:
-        pdfs = [p for p in pdfs if p.name == args.only]
+        pdfs = [p for p in pdfs if args.only.lower() in p.name.lower()]
     if not pdfs:
         log(f"No PDFs found in {pdf_dir}/ - nothing to import. The app keeps using the data already in Supabase.")
         return 0
