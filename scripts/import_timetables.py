@@ -38,31 +38,29 @@ from pathlib import Path
 DEFAULT_SUPABASE_URL = "https://fqfzygubyjqkimsphmdn.supabase.co"
 EXTRACT_MODEL = os.environ.get("EXTRACT_MODEL", "claude-sonnet-5-5")
 GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
-MAX_PAGES = 4
+MAX_PAGES = 10
 LARGE_DIFF_RATIO = 0.5
 
 SESSION_TYPES = {"theory": "Theory", "lab": "Lab", "tutorial": "Tutorial"}
-YEARS = {"first": ("fy", 1), "second": ("sy", 2), "third": ("ty", 3), "final": ("ly", 4), "fourth": ("ly", 4)}
+YEARS = {"first": ("fy", 1), "fy": ("fy", 1), "second": ("sy", 2), "sy": ("sy", 2), "third": ("ty", 3),
+         "ty": ("ty", 3), "final": ("ly", 4), "fourth": ("ly", 4), "ly": ("ly", 4)}
 
 SYSTEM_PROMPT = """You transcribe weekly division timetables of Vishwakarma Institute of Technology (VIT), Pune from page images into structured data. Call submit_timetable exactly once.
 
-Pages
-- Page 1 is the timetable grid. Header row: "Division : First Year - CSSE-C", Program, Academic Year, Semester, Version, W.E.F. date, To_Date. Footer: "Theory = 16  Lab = 18  Tutorial = 3  Total : 37". Report the footer totals exactly as printed; never compute them yourself.
-- Page 2 (if present) is a legend table: Sr No, Teacher ("12390 MBD( Machindranath Bansilal Diwate)" = faculty id, initials, full name), Load Type, Subject ("LA - ES26101 - Linear Algebra" = abbreviation, code, name).
-- Pages may be rotated or scanned. Read them in whatever orientation makes the text upright.
+The PDFs come in two layouts (and may have any file name). Work out which one you are looking at.
+Layout A: the first page is a grid with DAYS as columns (Sunday..Saturday) and one-hour slots as rows ("14:00 : 15:00"). Header: "Division : First Year - CSSE-C". Each block shows: faculty initials | "CODE - subject name:Bn" | session type | room. A teacher legend table is on a later page.
+Layout B: the grid has DAYS as rows (Monday, Tuesday...) and one-hour slots as columns ("08:00-09:00"). Header: "Division : FY CSAI-A". Each block is a small text stack: "FY CSAI-A", faculty initials, "CODE - subject name:Bn" (the name wraps over lines), session type, room. The table continues over several pages; the column header row repeats on every page and a day's row can continue on the next page without a new day label (continue the previous day). The legend table is at the end.
 
-Grid rules
-- Columns are days Sunday..Saturday. Rows are one-hour slots such as "14:00 : 15:00". Many rows are empty.
-- Each class block shows: faculty initials | "CODE - subject name:Bn" | session type (Theory/Lab/Tutorial) | room.
-- Several blocks stacked inside one slot are parallel batches (B1, B2, B3). Emit one session per block.
-- A block that spans several hourly rows (for example a lab drawn across 14:00-16:00) must be emitted as one session per hour (14:00-15:00 and 15:00-16:00).
-- batch is the Bn suffix after the subject name (it may wrap, e.g. ":B" then "2"). Theory blocks have no batch (null).
+Rules for both layouts
+- Header fields: division_label is the division only, e.g. "CSAI-A" or "CSSE-C" (drop FY / First Year). Copy dates (W.E.F. and To Date) exactly as printed, e.g. "15-Sep-2026" or "15-09-2026".
+- Footer: "Theory = 16 Lab = 18 Tutorial = 3 ... Total : 37". Report the printed totals; never compute them yourself. Ignore Seminar / Project / General if blank.
+- Legend rows: faculty id, initials, full name, load type, subject abbreviation, code, subject name. "12402 SCB (SACHIN CHANDRAKANT BIDWAI)" = id 12402, initials SCB, name SACHIN CHANDRAKANT BIDWAI. Transcribe every row. Subject name is the text after the code.
+- Several blocks in one slot are parallel batches (B1, B2, B3). Emit one session per block per one-hour slot.
+- A block drawn across several hourly slots (layout A) must be emitted once per hour. In layout B each hourly cell already holds its own copy; emit one session per cell.
+- batch is the Bn suffix after the subject name (it may wrap, e.g. ":B" then "2"). Blocks without a Bn tag (theory) have batch null.
+- Copy subject codes, rooms and initials exactly as printed, keeping capitalisation (NbK, vss). If a cell shows two initials such as "ASG/ASG", copy them exactly as printed.
 - weekday: Monday=1 ... Saturday=6, Sunday=7. Times are 24h "HH:MM".
-- Copy codes, initials (keep exact capitalisation such as NbK, VsS) and rooms exactly as printed. The subject name inside the grid is truncated; the code is what matters.
-- Never invent anything. If something is hard to read, give your best reading and add a short note to "uncertain".
-
-Legend rules
-- Transcribe every row. faculty_name is exactly what is printed inside the brackets. subject_name is the text after the code."""
+- Never invent anything. If something is hard to read, give your best reading and add a short note to "uncertain"."""
 
 TOOL = {
     "name": "submit_timetable",
@@ -284,16 +282,37 @@ def mins(t: str) -> int:
     return int(t[:2]) * 60 + int(t[3:5])
 
 
+MONTHS = {m: i for i, m in enumerate(["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"], 1)}
+
+
 def norm_date(s: str) -> str | None:
-    m = re.fullmatch(r"\s*(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})\s*", str(s))
-    if not m:
-        return None
-    d, mo, y = map(int, m.groups())
+    """15-09-2026, 15/09/2026, 15-Sep-2026, 15 September 2026 -> 2026-09-15"""
+    from datetime import date
+    t = str(s).strip()
+    m = re.fullmatch(r"(\d{1,2})[-/. ](\d{1,2})[-/. ](\d{4})", t)
+    if m:
+        d, mo, y = map(int, m.groups())
+    else:
+        m = re.fullmatch(r"(\d{1,2})[-/. ]([A-Za-z]{3,9})[-/. ,]*(\d{4})", t)
+        if not m or m.group(2)[:3].lower() not in MONTHS:
+            return None
+        d, mo, y = int(m.group(1)), MONTHS[m.group(2)[:3].lower()], int(m.group(3))
     try:
-        from datetime import date
         return date(y, mo, d).isoformat()
     except ValueError:
         return None
+
+
+YEAR_PREFIX = re.compile(r"^\s*(FY|SY|TY|LY|First\s+Year|Second\s+Year|Third\s+Year|Final\s+Year|Fourth\s+Year)\s*[-:]?\s*(.+?)\s*$", re.I)
+
+
+def split_division_label(raw: str, year_label: str = ""):
+    """'FY CSAI-A' / 'First Year - CSSE-C' / 'CSAI-A' -> ('CSAI-A', 'FY' or 'First Year')"""
+    raw = (raw or "").strip()
+    m = YEAR_PREFIX.match(raw)
+    if m:
+        return m.group(2).strip(), (year_label or m.group(1)).strip()
+    return raw, (year_label or "").strip()
 
 
 def build_rows(data: dict, known_fac: dict, known_sub: dict):
@@ -313,6 +332,7 @@ def build_rows(data: dict, known_fac: dict, known_sub: dict):
 
     # legend lookups (this PDF first, existing Supabase data as fallback)
     fac, sub = {}, {}
+    legend_ini, warned_db = set(), set()
     for r in data.get("legend") or []:
         ini = (r.get("initials") or "").strip()
         if ini:
@@ -320,6 +340,7 @@ def build_rows(data: dict, known_fac: dict, known_sub: dict):
             if ini.lower() in fac and fac[ini.lower()][1:] != (entry[0], entry[1]):
                 errors.append(f"legend: initials {ini} appear twice with different id/name")
             fac[ini.lower()] = (ini,) + entry
+            legend_ini.add(ini.lower())
         code = (r.get("subject_code") or "").strip()
         if code:
             sub[code.upper()] = (r.get("subject_name") or "").strip()
@@ -338,6 +359,13 @@ def build_rows(data: dict, known_fac: dict, known_sub: dict):
         code = (s.get("subject_code") or "").strip().upper()
         room = (s.get("room") or "").strip()
         ini = (s.get("faculty_initials") or "").strip()
+        parts = []
+        for part in re.split(r"\s*[/,&]\s*", ini):
+            if part and part.lower() not in [x.lower() for x in parts]:
+                parts.append(part)
+        if len(parts) > 1:
+            warnings.append(f"{tag}: several teachers {'/'.join(parts)} (wd{wd} {st}); stored under {parts[0]}")
+        ini = parts[0] if parts else ini
 
         if wd not in range(1, 8):
             errors.append(f"{tag}: bad weekday {wd!r}"); continue
@@ -357,6 +385,9 @@ def build_rows(data: dict, known_fac: dict, known_sub: dict):
             errors.append(f"{tag}: faculty initials {ini!r} not in legend or database"); continue
 
         f_ini, f_id, f_name = fac[ini.lower()]
+        if ini.lower() not in legend_ini and ini.lower() not in warned_db:
+            warned_db.add(ini.lower())
+            warnings.append(f"faculty {ini} is not in this PDF's legend; used the stored record {f_id} {f_name}")
         row = {"weekday": wd, "start_time": st, "end_time": en, "subject_code": code,
                "subject_name": sub[code], "session_type": typ, "batch": batch, "room": room,
                "faculty_initials": f_ini, "faculty_name": f_name, "faculty_id": f_id}
@@ -393,8 +424,9 @@ def build_rows(data: dict, known_fac: dict, known_sub: dict):
     for u in data.get("uncertain") or []:
         warnings.append(f"model unsure: {u}")
 
-    header = {"division_label": (h.get("division_label") or "").strip(),
-              "year_label": (h.get("year_label") or "First Year").strip(),
+    label, ylabel = split_division_label(h.get("division_label") or "", h.get("year_label") or "")
+    header = {"division_label": label,
+              "year_label": ylabel or "First Year",
               "program": (h.get("program") or "").strip() or None,
               "academic_year": (h.get("academic_year") or "").strip(),
               "semester": h.get("semester"), "version": (h.get("version") or "V1").strip(),
@@ -428,6 +460,21 @@ DAYS = {1: "Mon", 2: "Tue", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat", 7: "Sun"}
 def fmt(r):
     return (f"{DAYS[r['weekday']]} {r['start_time'][:5]} {r['subject_code']} {r['session_type']}"
             f"{' ' + r['batch'] if r.get('batch') else ''} {r['room']} {r['faculty_initials']}")
+
+
+def _key(x: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", (x or "").lower())
+
+
+def find_division(divs: list[dict], label: str):
+    """Match the printed division (CSAI-A, AIML-A, FY CSAIML-A ...) to a tt_divisions row."""
+    k = _key(label)
+    for d in divs:
+        letter = (d["division"] or "").split("-")[-1]
+        cands = {_key(d["pdf_label"]), _key(split_division_label(d["division"])[0]), _key(f"{d['branch']}-{letter}")}
+        if k in cands:
+            return [d]
+    return []
 
 
 def resolve_division(header: dict, existing: list[dict], allow_new: bool):
@@ -480,7 +527,7 @@ def extract_pdf(extractor, path: Path, known_fac, known_sub):
 
 
 def process_pdf(path: Path, sb: Supa, extractor, known, args, done_slugs: set) -> bool:
-    log(f"\n== {path.name}")
+    log(f"\n== {path}")
     model_name = extractor[0] if extractor else "none"
     sha = hashlib.sha256(path.read_bytes()).hexdigest()
     prior = sb.get_all("tt_import_log", {"pdf_sha256": f"eq.{sha}", "select": "id,status,extracted,division_slug",
@@ -514,8 +561,8 @@ def process_pdf(path: Path, sb: Supa, extractor, known, args, done_slugs: set) -
         log("   NOT imported - Supabase left as is")
         return False
 
-    existing_div = sb.get_all("tt_divisions", {"pdf_label": f"eq.{header['division_label']}",
-                                               "academic_year": f"eq.{header['academic_year']}", "select": "*"})
+    year_divs = sb.get_all("tt_divisions", {"academic_year": f"eq.{header['academic_year']}", "select": "*"})
+    existing_div = find_division(year_divs, header["division_label"])
     div, is_new = resolve_division(header, existing_div, args.allow_new)
     if div is None:
         msg = f"division {header['division_label']} ({header['academic_year']}) is not in tt_divisions; rerun with --allow-new"
@@ -586,7 +633,7 @@ def main() -> int:
     args = ap.parse_args()
 
     pdf_dir = Path(args.pdf_dir)
-    pdfs = sorted(p for p in pdf_dir.iterdir() if p.suffix.lower() == ".pdf") if pdf_dir.is_dir() else []
+    pdfs = sorted(p for p in pdf_dir.rglob("*") if p.is_file() and p.suffix.lower() == ".pdf") if pdf_dir.is_dir() else []  # any name, any subfolder
     if args.only:
         pdfs = [p for p in pdfs if p.name == args.only]
     if not pdfs:

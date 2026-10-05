@@ -126,6 +126,97 @@ if pdf.exists():
     up = it.rotate_cw(pages[0], 90)
     check("rotating page 1 90 deg clockwise makes it landscape", up.width > up.height and pages[0].height > pages[0].width)
 
+# ---------------------------------------------------------------- layout B (CSAI-A: days as rows, dates like 15-Sep-2026)
+B = [  # weekday, hour, code, type, batch, room, initials
+    (1, 8, "ES26104", "Lab", "B1", "1226", "ASG"), (1, 8, "ES26104", "Lab", "B3", "1225", "PMB"), (1, 8, "ES26205", "Lab", "B2", "1201", "SHB"),
+    (1, 9, "ES26104", "Lab", "B1", "1226", "ASG"), (1, 9, "ES26104", "Lab", "B3", "1225", "PMB"), (1, 9, "ES26205", "Lab", "B2", "1201", "SHB"),
+    (1, 10, "ES26205", "Theory", None, "1116", "SHB"), (1, 12, "ES26103", "Theory", None, "1125", "vss"),
+    (1, 13, "ES26103", "Theory", None, "1125", "vss"), (1, 14, "ES26206", "Theory", None, "1116", "RJD"),
+    (2, 8, "ES26104", "Lab", "B2", "1225", "ASG"), (2, 8, "ES26104", "Lab", "B3", "1226", "SRD"), (2, 8, "ES26205", "Lab", "B1", "1201", "SHB"),
+    (2, 9, "ES26104", "Lab", "B2", "1225", "ASG"), (2, 9, "ES26104", "Lab", "B3", "1226", "SRD"), (2, 9, "ES26205", "Lab", "B1", "1201", "SHB"),
+    (2, 10, "ES26207", "Theory", None, "1116", "SMP"), (2, 11, "ES26108A", "Theory", None, "1116", "VW"),
+    (3, 8, "ES26104", "Lab", "B1", "1225", "ASG"), (3, 8, "ES26205", "Lab", "B3", "1201", "SHB"),
+    (3, 9, "ES26104", "Lab", "B1", "1225", "ASG/ASG"), (3, 9, "ES26201", "Tutorial", "B2", "1115", "SCB"), (3, 9, "ES26205", "Lab", "B3", "1201", "SHB"),
+    (3, 10, "ES26201", "Theory", None, "1116", "SCB"), (3, 11, "ES26108A", "Theory", None, "1116", "VW"),
+    (3, 12, "ES26104", "Theory", None, "1116", "ASG"), (3, 14, "ES26206", "Theory", None, "1122", "RJD"),
+    (4, 8, "ES26104", "Lab", "B2", "1225", "ASG"), (4, 8, "ES26201", "Tutorial", "B1", "1115", "SCB"),
+    (4, 9, "ES26104", "Lab", "B2", "1225", "ASG"), (4, 9, "ES26201", "Tutorial", "B3", "1409", "SCB"),
+    (4, 10, "ES26201", "Theory", None, "1116", "SCB"), (4, 11, "ES26104", "Theory", None, "1116", "ASG"),
+    (4, 12, "ES26207", "Theory", None, "1116", "SMP"),
+    (5, 8, "ES26206", "Theory", None, "1116", "RJD"), (5, 9, "ES26205", "Theory", None, "1116", "SHB"),
+    (5, 10, "ES26201", "Theory", None, "1116", "SCB"),
+]
+LEG_B = [
+    ("20231", "SHB", "SMITA HANMANT BHAGWAT", "ES26205", "Engineering Robotics", "Theory"),
+    ("20231", "SHB", "SMITA HANMANT BHAGWAT", "ES26205", "Engineering Robotics", "Lab"),
+    ("10463", "RJD", "DR. RAJESH JAGDISH DHAKE", "ES26206", "Environment Studies", "Theory"),
+    ("12402", "SCB", "SACHIN CHANDRAKANT BIDWAI", "ES26201", "Calculus", "Theory"),
+    ("12402", "SCB", "SACHIN CHANDRAKANT BIDWAI", "ES26201", "Calculus", "Tutorial"),
+    ("12382", "ASG", "ANUJA SHAHAJI GARANDE", "ES26104", "Programming for Engineers", "Lab"),
+    ("12382", "ASG", "ANUJA SHAHAJI GARANDE", "ES26104", "Programming for Engineers", "Theory"),
+    ("2025_264", "vss", "V4_COMP S S", "ES26103", "Logic and Quantitative Aptitude 1", "Theory"),
+    ("Visiting_02", "VW", "VINAY WAGHMARE", "ES26108A", "Language-English", "Theory"),
+    ("12393", "SMP", "SWATI MOHAN PATIL", "ES26207", "Design Thinking & Ideation", "Theory"),
+    ("12394", "PMB", "PALLAVI MOHAN BHUJBAL", "ES26104", "Programming for Engineers", "Lab"),
+    ("12397", "SRD", "SWAMINI RAJENDRA DESHMANE", "ES26104", "Programming for Engineers", "Lab"),
+]
+
+
+def fixture_b():
+    return {
+        "header": {"division_label": "FY CSAI-A", "year_label": "", "program": "DESH-DESH", "academic_year": "2026-27",
+                   "semester": 1, "version": "V1", "wef": "15-Sep-2026", "to_date": "10-Jan-2027",
+                   "total_theory": 16, "total_lab": 18, "total_tutorial": 3, "total_all": 37},
+        "legend": [{"faculty_id": a, "initials": b, "faculty_name": c, "subject_code": d, "subject_name": e, "load_type": f}
+                   for a, b, c, d, e, f in LEG_B],
+        "sessions": [{"weekday": w, "start_time": f"{h:02d}:00", "end_time": f"{h + 1:02d}:00", "subject_code": c,
+                      "session_type": t, "batch": b, "room": r, "faculty_initials": i} for w, h, c, t, b, r, i in B],
+    }
+
+
+err, warn, rows_b, hdr_b = it.build_rows(fixture_b(), {}, {})
+check("layout B: validates (37 sessions, footer 16/18/3/37)", not err and len(rows_b) == 37)
+check("layout B: 15-Sep-2026 dates parsed", (hdr_b["effective_from"], hdr_b["effective_to"]) == ("2026-09-15", "2027-01-10"))
+check("layout B: 'FY CSAI-A' -> CSAI-A, year FY", (hdr_b["division_label"], hdr_b["year_label"]) == ("CSAI-A", "FY"))
+check("layout B: ASG/ASG (same teacher twice) is stored as plain ASG, no warning needed",
+      any(r["faculty_initials"] == "ASG" and r["weekday"] == 3 and r["start_time"] == "09:00" for r in rows_b)
+      and not any("several teachers" in w for w in warn))
+d = fixture_b()
+for s_ in d["sessions"]:
+    if s_["weekday"] == 3 and s_["start_time"] == "09:00" and s_["faculty_initials"] == "ASG/ASG":
+        s_["faculty_initials"] = "ASG/SCB"
+e2, w2, r2, _ = it.build_rows(d, {}, {})
+check("two different teachers: first one stored, warning raised",
+      not e2 and any("several teachers ASG/SCB" in w for w in w2))
+check("layout B: lowercase 'vss' keeps legend id", any(r["faculty_initials"] == "vss" and r["faculty_id"] == "2025_264" for r in rows_b))
+
+# date formats and label variants
+for raw, want in (("15-Sep-2026", "2026-09-15"), ("15 September 2026", "2026-09-15"), ("15/09/2026", "2026-09-15"),
+                  ("10-01-2027", "2027-01-10"), ("31-Feb-2026", None), ("garbage", None)):
+    check(f"date {raw!r}", it.norm_date(raw) == want)
+for raw, want in (("FY CSAI-A", "CSAI-A"), ("First Year - CSSE-C", "CSSE-C"), ("CSAI-A", "CSAI-A"), ("FY AIML-B", "AIML-B")):
+    check(f"label {raw!r}", it.split_division_label(raw)[0] == want)
+
+# division matching against tt_divisions rows (pdf_label differs from the printed name for AIML)
+DIVS = [{"slug": "fy-csai-a-2026-27", "branch": "CSAI", "division": "FY CSAI-A", "pdf_label": "CSAI-A"},
+        {"slug": "fy-csaiml-a-2026-27", "branch": "CSAIML", "division": "FY CSAIML-A", "pdf_label": "AIML-A"},
+        {"slug": "fy-csse-c-2026-27", "branch": "CSSE", "division": "FY CSSE-C", "pdf_label": "CSSE-C"}]
+check("match CSAI-A", it.find_division(DIVS, "CSAI-A")[0]["slug"] == "fy-csai-a-2026-27")
+check("match AIML-A via pdf_label", it.find_division(DIVS, "AIML-A")[0]["slug"] == "fy-csaiml-a-2026-27")
+check("match CSAIML-A via division name", it.find_division(DIVS, "CSAIML-A")[0]["slug"] == "fy-csaiml-a-2026-27")
+check("CSAI-A is not confused with CSAIML-A", it.find_division(DIVS, "CSAI-A")[0]["slug"] != "fy-csaiml-a-2026-27")
+check("unknown division -> no match", it.find_division(DIVS, "MECH-A") == [])
+
+# discovery: any file name, any subfolder, any case
+import tempfile
+with tempfile.TemporaryDirectory() as td:
+    for n in ("CSAI-A_rotated.pdf", "Final (1).PDF", "sub/x y z.pdf", "notes.txt"):
+        f = Path(td) / n
+        f.parent.mkdir(parents=True, exist_ok=True)
+        f.write_bytes(b"%PDF-1.4")
+    found = sorted(p.name for p in Path(td).rglob("*") if p.is_file() and p.suffix.lower() == ".pdf")
+    check("pdf discovery ignores names/case/subfolders", found == ["CSAI-A_rotated.pdf", "Final (1).PDF", "x y z.pdf"])
+
 # 8. Gemini wiring with a mocked HTTP layer (no key, no network)
 import json as _json
 import os
