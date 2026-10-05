@@ -18,6 +18,10 @@ on:
         description: Allow divisions that are not in tt_divisions yet
         type: boolean
         default: false
+      limit:
+        description: Read at most this many PDFs this run (blank = all). Useful on the free Gemini tier
+        type: string
+        default: ''
       accept_large_diff:
         description: Accept a division changing by more than 50%
         type: boolean
@@ -33,7 +37,7 @@ permissions:
 jobs:
   import:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -46,6 +50,8 @@ jobs:
         env:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODELS: ${{ vars.GEMINI_MODELS }}
+          LIMIT: ${{ inputs.limit }}
           DRY_RUN: ${{ inputs.dry_run }}
           FORCE: ${{ inputs.force }}
           ALLOW_NEW: ${{ inputs.allow_new }}
@@ -56,4 +62,5 @@ jobs:
           if [ "$FORCE" = "true" ]; then args+=(--force); fi
           if [ "$ALLOW_NEW" = "true" ]; then args+=(--allow-new); fi
           if [ "$LARGE" = "true" ]; then args+=(--accept-large-diff); fi
+          if [ -n "$LIMIT" ]; then args+=(--limit "$LIMIT"); fi
           python scripts/import_timetables.py "${args[@]}"
