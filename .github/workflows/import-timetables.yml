@@ -26,6 +26,14 @@ on:
         description: Accept a division changing by more than 50%
         type: boolean
         default: false
+      only:
+        description: Only PDFs whose file name contains this text, e.g. "AIDS E" (blank = all)
+        type: string
+        default: ''
+      skip_verify:
+        description: Skip the second confirming read of changed divisions (faster, less safe)
+        type: boolean
+        default: false
 
 concurrency:
   group: import-timetables
@@ -56,11 +64,15 @@ jobs:
           FORCE: ${{ inputs.force }}
           ALLOW_NEW: ${{ inputs.allow_new }}
           LARGE: ${{ inputs.accept_large_diff }}
+          ONLY: ${{ inputs.only }}
+          SKIP_VERIFY: ${{ inputs.skip_verify }}
         run: |
           args=()
           if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
           if [ "$FORCE" = "true" ]; then args+=(--force); fi
           if [ "$ALLOW_NEW" = "true" ]; then args+=(--allow-new); fi
           if [ "$LARGE" = "true" ]; then args+=(--accept-large-diff); fi
+          if [ "$SKIP_VERIFY" = "true" ]; then args+=(--no-verify); fi
+          if [ -n "$ONLY" ]; then args+=(--only "$ONLY"); fi
           if [ -n "$LIMIT" ]; then args+=(--limit "$LIMIT"); fi
           python scripts/import_timetables.py "${args[@]}"

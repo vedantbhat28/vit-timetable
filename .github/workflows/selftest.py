@@ -292,11 +292,12 @@ def run_gemini(script):
         requests.post = real_post2
 
 
-out, seen = run_gemini({"gemini-flash-latest": [503], "gemini-flash-lite-latest": [200]})
+M = it.gemini_models()
+out, seen = run_gemini({M[0]: [503], M[1]: [200]})
 check("503 on first model -> next model answers at once, no long waiting", out["header"]["division_label"] == "CSSE-C"
-      and seen == ["gemini-flash-latest", "gemini-flash-lite-latest"] and not _sleeps)
-out, seen = run_gemini({"gemini-flash-latest": [404], "gemini-flash-lite-latest": [404], "gemini-2.5-flash": [200]})
-check("unknown model names (404) are skipped", out is not None and seen[-1] == "gemini-2.5-flash")
+      and seen == [M[0], M[1]] and not _sleeps)
+out, seen = run_gemini({M[0]: [404], M[1]: [404], M[2]: [200]})
+check("unknown model names (404) are skipped", out is not None and seen[-1] == M[2])
 try:
     run_gemini({m: [503] for m in it.gemini_models()})
     check("all models busy -> GeminiUnavailable", False)
@@ -341,5 +342,40 @@ try:
 except RuntimeError as e:
     check("supabase down -> clear error after retries", "kept failing" in str(e))
 _time.sleep = _real_sleep
+
+# ---------------------------------------------------------------- repair pass, verification, shift detection
+import types
+_gone = [dict(weekday=2, start_time="12:00", subject_code="ES26101", session_type="Tutorial", batch="B2", room="D211", faculty_initials="PAK", faculty_id="12095")]
+_new = [dict(_gone[0], start_time="13:00")]
+sp = it.shifted_pairs(_new, _gone)
+check("1h shift of the same session is flagged", len(sp) == 1)
+check("unrelated add/remove is not flagged", it.shifted_pairs([dict(_new[0], subject_code="X")], _gone) == [])
+a = dict(_gone[0], faculty_id="Visiting_06"); b = dict(_gone[0], faculty_id="Visiting 06")
+check("faculty id formatting noise is not a change", it.diff_rows([a], [b])[2] == [])
+c = dict(_gone[0], room="E999")
+check("a real room change is shown readably", "room D211 -> E999" in it.fmt_change(_gone[0], c))
+
+# repair pass: first reads miss sessions, the repair read returns the full fixture
+bad = fixture(); bad["sessions"] = bad["sessions"][:-3]
+calls2 = []
+def fake_extractor(images, hint=None, variant=0, max_side=2600):
+    calls2.append((hint is not None, variant))
+    return fixture() if hint else bad
+it.render_pages = lambda path, dpi=220: [_Image.new("RGB", (30, 30), "white")]
+it._ROT_ORDER[:] = [0, 90, 270]
+errs, warns, rws, hdr, dat, deg = it.extract_pdf(fake_extractor, Path("x.pdf"), {}, {})
+check("repair pass fixes a short read after the rotations fail", not errs and len(calls2) == 4 and calls2[3][0] is True)
+check("a successful rotation is remembered for the next PDF", it._ROT_ORDER[0] == deg)
+
+calls2.clear()
+errs, *_ = it.extract_pdf(lambda im, h=None, v=0, m=2600: fixture(), Path("x.pdf"), {}, {})
+check("a clean first read costs exactly one call", not errs)
+
+# verification: agreeing second read -> no differences; disagreeing -> listed
+_, _, good_rows, _ = it.build_rows(fixture(), {}, {})
+check("verify: identical second read confirms", it.verify_read(lambda im, h=None, v=0, m=2600: fixture(), Path("x.pdf"), {}, {}, good_rows) == [])
+other = fixture(); other["sessions"][0] = dict(other["sessions"][0], room="Z999")
+d = it.verify_read(lambda im, h=None, v=0, m=2600: other, Path("x.pdf"), {}, {}, good_rows)
+check("verify: a different second read is reported", len(d) >= 1)
 
 sys.exit(1 if check.failed else 0)
