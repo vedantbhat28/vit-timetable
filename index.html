@@ -331,6 +331,19 @@ h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,4.4vw,26px);l
 .pk-consent button:hover{color:var(--ink)}
 .pk-consent button:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:3px}
 
+/* foreign-language roll number + privacy note */
+.pk-roll{width:100%;max-width:220px;min-height:48px;padding:8px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--wash);color:var(--ink);font:700 16px var(--body);letter-spacing:.06em}
+.pk-roll:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.pk-priv{display:flex;align-items:flex-start;gap:8px;margin:8px 0 0;color:var(--muted);font-size:11.5px;line-height:1.45}
+.ibtn{flex:none;width:24px;height:24px;margin-top:-2px;display:grid;place-items:center;border:1.5px solid var(--muted);border-radius:50%;background:transparent;color:var(--muted);font:italic 700 13px/1 Georgia,serif;cursor:pointer}
+.ibtn:hover{color:var(--ink);border-color:var(--ink)}
+.ibtn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.priv-list{margin:0;padding:0 0 0 20px;color:var(--muted);font-size:13.5px;line-height:1.55}
+.priv-list li{margin:0 0 6px}
+.blk.dim,.blk.dim[data-state="past"]{opacity:.35}
+.blk.dim:hover,.blk.dim:focus-within{opacity:.6}
+.lang-box{margin:0;padding:10px 12px;border:1px solid var(--line);border-left:4px solid #C2410C;border-radius:10px;background:var(--wash);font-size:13px;line-height:1.5}
+
 /* six-day weeks (Saturday classes) on phones */
 @media (max-width:600px){
   .wk.six .wk-h{font-size:10.5px}
@@ -397,9 +410,9 @@ dialog#sheet::backdrop{background:rgba(12,16,32,.55)}
 @media (prefers-reduced-motion:reduce){dialog#sheet[open]{animation:none}}
 
 /* ---- terms dialog ---- */
-dialog#terms{padding:0;border:0;margin:auto;background:var(--surface);color:var(--ink);width:min(440px,calc(100vw - 24px));max-width:none;max-height:none;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(8,12,30,.4)}
-dialog#terms[open]{animation:sheetIn .2s ease-out}
-dialog#terms::backdrop{background:rgba(12,16,32,.55)}
+dialog#terms,dialog#privacy{padding:0;border:0;margin:auto;background:var(--surface);color:var(--ink);width:min(440px,calc(100vw - 24px));max-width:none;max-height:none;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(8,12,30,.4)}
+dialog#terms[open],dialog#privacy[open]{animation:sheetIn .2s ease-out}
+dialog#terms::backdrop,dialog#privacy::backdrop{background:rgba(12,16,32,.55)}
 .terms{display:flex;flex-direction:column;max-height:82vh;max-height:82dvh}
 .terms-head{flex:none;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:16px 10px 12px 18px}
 .terms-head h3{font-family:var(--display);font-weight:800;font-size:clamp(20px,5vw,24px);line-height:1;margin:0}
@@ -410,12 +423,12 @@ dialog#terms::backdrop{background:rgba(12,16,32,.55)}
 .terms-body p{margin:0 0 10px;color:var(--muted);font-size:13.5px;line-height:1.55}
 .terms-body p:last-child{margin-bottom:0}
 @media (max-width:600px){
-  dialog#terms{width:100%;margin:auto 0 0;border-radius:18px 18px 0 0}
-  dialog#terms[open]{animation-name:sheetUp}
+  dialog#terms,dialog#privacy{width:100%;margin:auto 0 0;border-radius:18px 18px 0 0}
+  dialog#terms[open],dialog#privacy[open]{animation-name:sheetUp}
   .terms{max-height:86vh;max-height:86dvh}
   .terms-body{padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}
 }
-@media (prefers-reduced-motion:reduce){dialog#terms[open]{animation:none}}
+@media (prefers-reduced-motion:reduce){dialog#terms[open],dialog#privacy[open]{animation:none}}
 
 /* ---- about-me button (header / picker) ---- */
 .hdr-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
@@ -615,6 +628,11 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
         <div class="pk-g" role="group" aria-labelledby="pkLB"><p class="pk-l" id="pkLB">Branch</p><div class="pk-opts" id="pkBranch"></div></div>
         <div class="pk-g" role="group" aria-labelledby="pkLD"><p class="pk-l" id="pkLD">Division</p><div class="pk-opts" id="pkDiv"></div></div>
         <div class="pk-g" role="group" aria-labelledby="pkLT"><p class="pk-l" id="pkLT">Lab batch</p><div class="pk-opts" id="pkBatch"></div></div>
+        <div class="pk-g" role="group" aria-labelledby="pkLR">
+          <p class="pk-l" id="pkLR">Roll number <span style="font-weight:400">(optional)</span></p>
+          <input id="pkRoll" class="pk-roll" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="e.g. 312" aria-describedby="pkPriv">
+          <p class="pk-priv" id="pkPriv"><span>Used only for foreign language courses (like German). We don&rsquo;t collect this data &mdash; it stays on your device.</span><button type="button" class="ibtn" data-act="priv-open" aria-label="How your data is kept safe">i</button></p>
+        </div>
         <div class="pk-actions">
           <button type="button" class="btn" id="pkGo" data-act="pk-go" disabled>Show my timetable</button>
           <button type="button" class="btn2" id="pkCancel" data-act="pk-cancel" hidden>Cancel</button>
@@ -633,6 +651,28 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       <div class="terms-body">
         <p>This timetable data is extracted with the help of AI from the official department schedules. While every effort has been made to keep it accurate, errors — wrong rooms, times, or faculty — can happen.</p>
         <p>I won't be responsible for any issues, missed classes, or clashes caused by inaccuracies in this timetable. Please treat it as a convenient reference and cross-check with the official college timetable for anything important.</p>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="privacy" aria-labelledby="privTitle">
+    <div class="terms">
+      <div class="terms-head">
+        <h3 id="privTitle">Your roll number is safe</h3>
+        <button type="button" class="terms-x" data-act="priv-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+      </div>
+      <div class="terms-body">
+        <ol class="priv-list">
+          <li>Your roll number is saved only in this browser&rsquo;s local storage, on your device.</li>
+          <li>It is never sent to Supabase or to any other server, and no database holds it.</li>
+          <li>The foreign language check runs entirely on your device.</li>
+          <li>The list it checks against is built into this page and has only branch, division and roll numbers &mdash; no student names.</li>
+          <li>Whether you were found in that list is worked out on your device and recorded nowhere.</li>
+          <li>The usual visit statistics (class, device type) never include your roll number or language.</li>
+          <li>Nothing in this feature shares it with anyone.</li>
+          <li>To delete it, clear the box and continue, or clear this site&rsquo;s data in your browser.</li>
+          <li>It does not follow you to another phone or browser; you would enter it again there.</li>
+          <li>It is optional &mdash; skip it and the timetable works exactly as before.</li>
+        </ol>
       </div>
     </div>
   </dialog>
@@ -789,11 +829,23 @@ var SUBJ_META={
   ES26107:{short:'Indian Know.',   color:'#3F7D1E'},
   ES26108A:{short:'English',       color:'#B8357C'},
   ES26109:{short:'Activity',       color:'#5B6478'},
+  'LANG-DE':{short:'German',       color:'#C2410C'},
   ES26201:{short:'Calculus',       color:'#2F5BD6'},
   ES26205:{short:'Robotics',       color:'#B84E0F'},
   ES26206:{short:'Env. Studies',   color:'#3F7D1E'},
   ES26207:{short:'Design Thinking',color:'#8F6B00'}
 };
+/* Foreign language (German) list from the official PDF: branch -> division -> language division -> roll numbers.
+   Only roll numbers are kept (no names). Checked on-device only; nothing here is ever sent anywhere. */
+var GER_SUBJ='LANG-DE';
+var GER_ROLLS={"AIDS":{"B":{"D8":[201,203,207,213,215,224,227,233,234,235,251,253,254,261]},"E":{"D9":[504,506,511,517,520,523,537,559]},"C":{"D10":[315,321,327,333,341,343,347,358,359,361,364,366]},"A":{"D11":[106,111,112,122,135,142,145,146,148,164,168]},"F":{"D11":[604,605,628,629,630,631,636,638,664,666]},"D":{"D14":[409,410,421,440,441,443,447,459,464]}},"CSCBI":{"B":{"D8":[208,212,226,227,230,232,235,242,256,265]},"C":{"D8":[301,302,321,329,341,348,354]},"A":{"D11":[104,105,106,116,119,124,126,127,128,130,134,135,145,152,155,160]}},"ET":{"A":{"D8":[104,105,108,120,123,126,127,135,136,142,150,151,152,155,160,162,163,165]},"B":{"D9":[203,204,206,209,212,216,221,224,226,232,235,236,240,244,246,248,249,253,267]},"C":{"D9":[301,303,304,305,308,314,332,335,336,339,345,346,347,352,362,366]},"D":{"D9":[416,419,423,432,434,445,447,448,451,455,457,464,468]},"E":{"D10":[505,518,521,530,537,546,551,558,562,565,568]},"F":{"D10":[601,603,608,609,611,621,627,630,633,634,635,637,642,649,650,651,652,657,665,666,667]}},"CSSE":{"C":{"D8":[312,321,322,324,333,335,340,342,351,352,354,363]},"A":{"D12":[104,105,115,120,121,133,136,137,138,144,152,155,157]},"B":{"D12":[202,208,209,212,215,224,230,231,240,251,253,259,264,265,266]}},"CV":{"A":{"D9":[122,126,129,131,154,161,162,163,166]},"B":{"D9":[211,219,236,237,241,265]}},"IC":{"C":{"D10":[308,310,313,321,326,327,332,335,337,338,343,349,364]},"B":{"D12":[213,214,218,224,228,232,233,236,245,247]},"A":{"D14":[105,115,130,133,137,143,151,152,160,161,163]}},"ME":{"F":{"D10":[603,604,605,608,609,611,613,614,622,626,629,635,640,643,646,658,660,662]},"B":{"D12":[206,207,215,217,218,221,223,228,229,230,232,237,248,250,255,257,258,262,263,264,266,267,269,270]},"A":{"D13":[102,104,106,116,125,127,135,136,137,139,142,144,150,154,155,159,161,170]},"C":{"D13":[302,304,305,306,308,309,310,323,324,326,337,338,340,344,346,349,350,351,354,355,357,364,368,369,370]},"D":{"D14":[414,415,416,422,424,428,437,439,441,444,452,457,465,467,469]},"E":{"D14":[501,502,503,506,507,509,513,514,517,518,523,526,527,530,543,552,553,560,561]}},"CSDS":{"A":{"D11":[26,63,103,104,115,119,122,129,130,136,146,161,168]},"B":{"D11":[201,207,209,217,222,225,238,240,242,248,250,252]},"C":{"D13":[303,306,309,314,324,333,340,344,350,352,353,354,359]}}};
+var GER_SLOTS={"D8":[2,480,600,"E312"],"D9":[3,480,600,"E215"],"D10":[4,480,600,"E303"],"D11":[2,960,1080,"E305"],"D12":[3,960,1080,"E304"],"D13":[4,960,1080,"E305"],"D14":[5,960,1080,"E312"]};   // language division -> [weekday, start min, end min, room]
+function germanFor(branch,div,roll){
+  var b=GER_ROLLS[branch],d=b&&b[div],n=parseInt(roll,10);
+  if(!d||!n) return null;
+  for(var k in d) if(d[k].indexOf(n)>-1) return k;
+  return null;
+}
 var PALETTE=['#2F5BD6','#7C4DCB','#0E7C69','#B84E0F','#8F6B00','#3F7D1E','#B8357C','#5B6478','#1E88A8','#C2410C','#6D28D9','#0D9488'];
 function paletteColor(code){ var h=0; for(var i=0;i<code.length;i++) h=(h*31+code.charCodeAt(i))>>>0; return PALETTE[h%PALETTE.length]; }
 function shortName(name){
@@ -880,7 +932,7 @@ var store={
   get:function(k,d){try{return localStorage.getItem(k)||d}catch(e){return d}},
   set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 };
-var st={batch:store.get('tt-batch','B2'),fmt:store.get('tt-fmt','12'),dayMs:null,branch:'',div:''};
+var st={batch:store.get('tt-batch','B2'),fmt:store.get('tt-fmt','12'),dayMs:null,branch:'',div:'',roll:store.get('tt-roll',''),lang:null};
 var SESS=[],FAC={},WEEK=[1,2,3,4,5],CUR=null;   // set by setClass()
 if(['B1','B2','B3'].indexOf(st.batch)<0) st.batch='B2';
 if(['12','24'].indexOf(st.fmt)<0) st.fmt='12';
@@ -953,7 +1005,7 @@ function dur(ms){
   return h?(r?h+' h '+r+' min':h+' h'):m+' min';
 }
 function forDay(dow,b){
-  return SESS.filter(function(x){return x.d===dow&&(!x.b||x.b===b)}).sort(function(a,c){return a.s-c.s});
+  return SESS.filter(function(x){return x.d===dow&&(!x.b||x.b===b)}).sort(function(a,c){return a.s-c.s||(c.ger?1:0)-(a.ger?1:0)});
 }
 function typeLine(x){return x.b?x.type+', batch '+x.b:x.type}
 
@@ -964,10 +1016,37 @@ function setClass(b,d){
   return loadDivisionData(c).then(function(){
     st.branch=b;st.div=d;CUR=c;SESS=c.sess;FAC=c.fac;WEEK=c.days;
     START=parseISODate(c.effFrom);END=parseISODate(c.effTo);
+    applyGerman();
     st.dayMs=null;centerTab=true;
     logVisit('open_class',{branch:b,div:d,batch:st.batch});
     return true;
   }).catch(function(e){ console.error(e); return false; });
+}
+
+// adds the German slot (and dims English) for a student found in the foreign-language list.
+// Works on a copy so the cached timetable for the division is never changed.
+function applyGerman(){
+  st.lang=germanFor(st.branch,st.div,st.roll);
+  if(!st.lang) return;
+  var g=GER_SLOTS[st.lang];
+  getSubj(GER_SUBJ,'German');
+  SESS=SESS.concat([{id:SESS.length,d:g[0],s:g[1],e:g[2],sub:GER_SUBJ,type:'Foreign Language',b:undefined,fac:'',room:g[3],ger:true,langDiv:st.lang}]);
+  if(WEEK.indexOf(g[0])<0) WEEK=WEEK.concat([g[0]]).sort(function(a,b){return a-b});
+}
+function isEng(x){ return !!st.lang&&!x.ger&&(x.sub==='ES26108A'||/english/i.test((SUBJ[x.sub]||{}).name||'')); }
+var ENG_NOTE='Due to your foreign language selection, you might not have English in this slot.';
+// side-by-side columns for sessions that overlap in time (list sorted by start)
+function layoutCols(list){
+  var res=list.map(function(){return {ci:0,cn:1}}),i=0;
+  while(i<list.length){
+    var end=list[i].e,j=i+1,k;
+    while(j<list.length&&list[j].s<end){end=Math.max(end,list[j].e);j++;}
+    var ends=[];
+    for(k=i;k<j;k++){var c=0;while(ends[c]!==undefined&&ends[c]>list[k].s)c++;ends[c]=list[k].e;res[k].ci=c;}
+    for(k=i;k<j;k++) res[k].cn=ends.length;
+    i=j;
+  }
+  return res;
 }
 
 // every class in the next `days` days, in order
@@ -1039,7 +1118,7 @@ function heroModel(now,occ,cur,nxt){
   var meta='<span>'+typeLine(focus)+'</span>'+
     (focus.offset>0?'<span>'+shortDate(focus.date)+'</span>':'')+
     '<span>'+fmtRange(focus.s,focus.e)+'</span>'+
-    '<span>Faculty '+esc(facLabel(focus.fac))+'</span>'+
+    (focus.ger?'<span>Language division '+focus.langDiv+'</span>':'<span>Faculty '+esc(facLabel(focus.fac))+'</span>')+
     '<span class="code">'+sub.code+'</span>';
   var html='<p class="status">'+status+'</p>'+
     '<p class="big">'+big+'</p>'+
@@ -1051,6 +1130,7 @@ function heroModel(now,occ,cur,nxt){
     var p=Math.round((now-cur.start)/(cur.end-cur.start)*100);
     html+='<div class="prog" role="progressbar" aria-label="Class progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+p+'"><i style="--p:'+p+'%"></i></div>';
   }
+  if(isEng(focus)) html+='<p class="then">'+ENG_NOTE+'</p>';
   if(after){
     var as=SUBJ[after.sub];
     var kind=after.type==='Theory'?'':' '+after.type.toLowerCase();
@@ -1066,13 +1146,15 @@ function blockHTML(x,o){
   var key='blk-'+(o.sm?'wk':'day')+'-'+x.id;
   var chip=o.state==='live'?'<span class="chip live"><i class="ldot"></i>Now</span>':
            o.state==='next'?'<span class="chip nxt">Next</span>':'';
-  return '<li class="blk'+(o.sm?' sm':'')+(chip?' has-chip':'')+'" data-state="'+(o.state||'')+'"'+
-    (o.state==='live'?' aria-current="true"':'')+
-    ' style="--c:'+sub.color+';top:'+o.top+';height:'+o.h+'">'+
+  var dim=isEng(x),side='';
+  if(o.cn>1){var bs=o.sm?2:8;side=';left:calc('+bs+'px + (100% - '+bs+'px)*'+o.ci+'/'+o.cn+');right:calc((100% - '+bs+'px)*'+(o.cn-o.ci-1)+'/'+o.cn+')';}
+  return '<li class="blk'+(o.sm?' sm':'')+(chip?' has-chip':'')+(dim?' dim':'')+'" data-state="'+(o.state||'')+'"'+
+    (o.state==='live'?' aria-current="true"':'')+(dim?' title="'+ENG_NOTE+'"':'')+
+    ' style="--c:'+sub.color+';top:'+o.top+';height:'+o.h+side+'">'+
     '<button type="button" class="blk-btn" aria-haspopup="dialog" data-act="open" data-sid="'+x.id+'" data-date="'+(o.date||0)+'" data-key="'+key+'-'+(o.date||0)+'">'+
     '<span class="sr">'+fmtRange(x.s,x.e)+', </span>'+
     (o.sm?'<span class="blk-name" title="'+sub.name+'"><span aria-hidden="true">'+sub.short+'</span><span class="sr">'+sub.name+'</span></span>':'<span class="blk-name">'+sub.name+'</span>')+
-    '<span class="blk-meta"><b>'+x.room+'</b><span>'+x.type+'</span><span>'+x.fac+'</span></span></button>'+chip+'</li>';
+    '<span class="blk-meta"><b>'+x.room+'</b><span>'+x.type+'</span>'+(x.ger?'':'<span>'+x.fac+'</span>')+'</span></button>'+chip+'</li>';
 }
 
 function timelineHTML(list,isToday,now,date){
@@ -1091,10 +1173,11 @@ function timelineHTML(list,isToday,now,date){
     }
     reach=Math.max(reach,x.e);
   });
+  var lay=layoutCols(list);
   var blks=list.map(function(x,i){
     var state='';
     if(isToday){ if(x.e<=nowM) state='past'; else if(x.s<=nowM) state='live'; else if(i===nextIdx) state='next'; }
-    return blockHTML(x,{state:state,date:date.getTime(),top:'calc('+y(x.s)+' + 2px)',h:'calc(var(--hr)*'+((x.e-x.s)/60).toFixed(4)+' - 4px)'});
+    return blockHTML(x,{ci:lay[i].ci,cn:lay[i].cn,state:state,date:date.getTime(),top:'calc('+y(x.s)+' + 2px)',h:'calc(var(--hr)*'+((x.e-x.s)/60).toFixed(4)+' - 4px)'});
   }).join('');
   var line='';
   if(isToday&&nowM>=h0*60&&nowM<=h1*60){
@@ -1184,10 +1267,11 @@ function weekHTML(now){
     var isT=sameDay(c.d,now);if(isT)hasToday=true;
     head+='<div class="wk-h"'+(isT?' aria-current="date"':'')+'><span>'+(isT?'<i class="tdot"></i>':'')+DAYS[c.d.getDay()].slice(0,3)+'</span><small>'+shortDate(c.d)+'</small></div>';
     var sp=specialFor(c.d);
-    var blks=c.list.map(function(x){
+    var lay=layoutCols(c.list);
+    var blks=c.list.map(function(x,i){
       var state='';
       if(isT){ if(x.e<=nowM) state='past'; else if(x.s<=nowM) state='live'; }
-      return blockHTML(x,{state:state,sm:true,date:c.d.getTime(),top:'calc('+y(x.s)+' + 2px)',h:'calc(var(--hrw)*'+((x.e-x.s)/60).toFixed(4)+' - 4px)'});
+      return blockHTML(x,{ci:lay[i].ci,cn:lay[i].cn,state:state,sm:true,date:c.d.getTime(),top:'calc('+y(x.s)+' + 2px)',h:'calc(var(--hrw)*'+((x.e-x.s)/60).toFixed(4)+' - 4px)'});
     }).join('');
     var colCls='wk-col'+(isT?' today':'')+(sp?sp.kind==='holiday'?' hol':' exam-day':'');
     var label=sp?'<div class="wk-hol-label">'+(sp.kind==='holiday'?'Holiday':'Exams')+'</div>':'';
@@ -1198,7 +1282,7 @@ function weekHTML(now){
     line='<div class="wk-now"><div class="now" style="top:'+y(nowM)+'"><span class="now-t">'+fmtT(nowM).replace(/ [ap]m$/,'')+'</span></div></div>';
   }
   var tot={Theory:0,Lab:0,Tutorial:0};
-  for(var w=0;w<wd.length;w++) forDay(wd[w],st.batch).forEach(function(x){tot[x.type]+=(x.e-x.s)/60});
+  for(var w=0;w<wd.length;w++) forDay(wd[w],st.batch).forEach(function(x){if(tot[x.type]!==undefined) tot[x.type]+=(x.e-x.s)/60});
   var title=(dow===0||dow>last||rolled)?'Next week':'This week';
   var offDays=forDay(6,st.batch).length?'Sunday has':'Saturday and Sunday have';
   return '<div class="weekp-head"><h2>'+title+'</h2><p>'+shortDate(cols[0].d)+' to '+shortDate(cols[cols.length-1].d)+', batch '+st.batch+'</p></div>'+
@@ -1231,7 +1315,7 @@ function render(){
   document.title=headTitle+' timetable';
   $('#campusLine').innerHTML='<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 14.5S13 10.2 13 6.5a5 5 0 10-10 0C3 10.2 8 14.5 8 14.5z"/><circle cx="8" cy="6.5" r="1.8"/></svg><span>'+campusFor(st.branch)+'</span>';
   var lb=$('#latestBadge');if(lb){$('#latestTxt').textContent='Latest schedule \u00b7 '+CUR.version+' \u00b7 from '+fmtDateLong(CUR.effFrom);lb.hidden=false;}
-  $('#subLine').textContent='First year, semester 1. Timetable version '+CUR.version+', valid '+fmtDateLong(CUR.effFrom)+' to '+fmtDateLong(CUR.effTo)+'.';
+  $('#subLine').textContent='First year, semester 1. Timetable version '+CUR.version+', valid '+fmtDateLong(CUR.effFrom)+' to '+fmtDateLong(CUR.effTo)+'.'+(st.lang?' German ('+st.lang+') is added from the foreign language list.':'');
   $('#footTxt').textContent="Built from timetable Form FF957 for First Year "+CUR.pdf+", version "+CUR.version+", effective "+fmtDateLong(CUR.effFrom)+" to "+fmtDateLong(CUR.effTo)+". Class blocks show faculty initials; tap a class for full names from the faculty list on page 2 of the PDF, pulled live from the TimeTable_VIT database. Holidays and exam windows follow the FY Academic Calendar 2026-27, Sem I.";
   $('#clockTime').textContent=fmtT(mins(now));
   $('#clockDate').textContent=DAYS[now.getDay()]+', '+now.getDate()+' '+MONS[now.getMonth()]+' '+now.getFullYear();
@@ -1285,6 +1369,15 @@ function detailHTML(x,dateMs,now){
     (status?'<span class="sh-status">'+status+'</span>':'')+'</div>'+
     '<button type="button" class="sh-x" data-act="close" aria-label="Close details"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 4l12 12M16 4L4 16"/></svg></button></header>';
 
+  if(x.ger){
+    return head+'<div class="sh-body"><section class="sec"><dl class="kv">'+
+      '<dt>When</dt><dd>'+DAYS[x.d]+(date?', '+shortDate(date):'')+'</dd>'+
+      '<dt>Time</dt><dd>'+fmtRange(x.s,x.e)+' ('+dur((x.e-x.s)*60000)+')</dd>'+
+      '<dt>Room</dt><dd>'+x.room+'</dd>'+
+      '<dt>Type</dt><dd>Foreign language, language division '+x.langDiv+'</dd></dl></section>'+
+      '<section class="sec"><p class="sh-note">From the Kondhwa campus German list. It repeats every week.</p></section></div>';
+  }
+  var engBox=isEng(x)?'<section class="sec"><p class="lang-box">'+ENG_NOTE+'</p></section>':'';
   // 1. this class
   var when=DAYS[x.d]+(date?', '+shortDate(date):'');
   var sec1='<section class="sec"><dl class="kv">'+
@@ -1347,7 +1440,7 @@ function detailHTML(x,dateMs,now){
     group('Whole division',whole,x,false)+group('Batch '+st.batch,mine,x,true)+
     (others?'<details class="more"><summary>Other batches</summary>'+others+'</details>':'')+'</section>';
 
-  return head+'<div class="sh-body">'+sec1+sec2+sec3+sec4+'</div>';
+  return head+'<div class="sh-body">'+engBox+sec1+sec2+sec3+sec4+'</div>';
 }
 
 function fillSheet(){
@@ -1414,7 +1507,12 @@ function showPickerStatus(msg){
   f.style.display=msg?'none':'';
 }
 function openPicker(cancelable){
-  pk.branch=CUR?st.branch:'';pk.div=CUR?st.div:'';pk.batch=CUR?st.batch:rawBatch;
+  var sb=store.get('tt-branch',''),sd=store.get('tt-div','');
+  if(!sb&&!sd&&rawBatch){sb='CSSE';sd='C';}
+  pk.branch=CUR?st.branch:(CLASSES[sb]?sb:'');
+  pk.div=CUR?st.div:(pk.branch&&CLASSES[pk.branch].divs[sd]?sd:'');
+  pk.batch=CUR?st.batch:rawBatch;
+  $('#pkRoll').value=st.roll||'';
   fixDiv();
   showPickerStatus('');
   $('#pkCancel').hidden=!cancelable;
@@ -1440,12 +1538,15 @@ function pickerAct(a,b){
   if(a==='pk-go'){
     if(!(pk.branch&&pk.div&&pk.batch)) return;
     var goBranch=pk.branch,goDiv=pk.div,goBatch=pk.batch;
+    var goRoll=$('#pkRoll').value.replace(/\D/g,'').slice(0,4),prevRoll=st.roll;
+    st.roll=goRoll;   // used on this device only, never sent anywhere
     $('#pkGo').disabled=true;$('#pkGo').textContent='Loading\u2026';
     setClass(goBranch,goDiv).then(function(ok){
       $('#pkGo').textContent='Show my timetable';
-      if(!ok){ $('#pkGo').disabled=false; showPickerStatus('Could not load that timetable. Check your connection and try again.'); return; }
+      if(!ok){ st.roll=prevRoll; $('#pkGo').disabled=false; showPickerStatus('Could not load that timetable. Check your connection and try again.'); return; }
       st.batch=goBatch;
       store.set('tt-branch',goBranch);store.set('tt-div',goDiv);store.set('tt-batch',goBatch);
+      store.set('tt-roll',goRoll);store.set('tt-rollq','1');   // roll number: localStorage only
       closePicker();
       maybeShowHolidayIntro();
       maybeShowLabNotice();
@@ -1459,6 +1560,7 @@ function pickerAct(a,b){
   var again=document.querySelector('#picker [data-act="'+a+'"][data-v="'+v+'"]');   // keep keyboard focus after the redraw
   if(again) again.focus({preventScroll:true});
 }
+$('#pkRoll').addEventListener('input',function(){this.value=this.value.replace(/\D/g,'').slice(0,4)});
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'&&!$('#picker').hidden&&CUR&&!$('#pkCancel').hidden) closePicker();
 });
@@ -1476,6 +1578,21 @@ function closeTerms(){
 $('#terms').addEventListener('close',function(){
   if(termsOpener) termsOpener.focus({preventScroll:true});
   termsOpener=null;
+});
+
+var privOpener=null;
+function openPriv(opener){
+  privOpener=opener||null;
+  var dlg=$('#privacy');
+  if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open','');
+}
+function closePriv(){
+  var dlg=$('#privacy');
+  if(typeof dlg.close==='function') dlg.close(); else dlg.removeAttribute('open');
+}
+$('#privacy').addEventListener('close',function(){
+  if(privOpener) privOpener.focus({preventScroll:true});
+  privOpener=null;
 });
 
 var aboutOpener=null;
@@ -1498,6 +1615,7 @@ document.addEventListener('click',function(e){
   if(e.target&&e.target.id==='sheet'){closeSheet();return;}   // tap on the dimmed backdrop
   if(e.target&&e.target.id==='terms'){closeTerms();return;}
   if(e.target&&e.target.id==='about'){closeAbout();return;}
+  if(e.target&&e.target.id==='privacy'){closePriv();return;}
   if(e.target&&e.target.id==='admin'){ if(Date.now()-adminOpenedAt>500) closeAdmin(); return; }
   var b=e.target.closest('[data-act]');if(!b)return;
   var a=b.getAttribute('data-act');
@@ -1505,6 +1623,8 @@ document.addEventListener('click',function(e){
   if(a==='terms-close'){closeTerms();return;}
   if(a==='about-open'){openAbout(b);return;}
   if(a==='about-close'){closeAbout();return;}
+  if(a==='priv-open'){openPriv(b);return;}
+  if(a==='priv-close'){closePriv();return;}
   if(a==='ext-link'){logVisit('click_link',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch,link:b.getAttribute('data-label')});return;}
   if(a==='admin-close'){closeAdmin();return;}
   if(a==='admin-lock'){lockAdmin();return;}
@@ -1844,7 +1964,8 @@ function boot(){
   // saved choice: branch + division + batch. If we already know it, show the animated
   // loading screen instead of flashing the bare picker form while data is fetched.
   var sBr0=store.get('tt-branch',''),sDv0=store.get('tt-div',''),sBt0=store.get('tt-batch','');
-  var knownClass=!!(sBt0&&(sBr0&&sDv0||!sBr0&&!sDv0));
+  var rollAsked=store.get('tt-rollq','')==='1';   // saved class alone is not enough: send people to the picker once for the roll number
+  var knownClass=rollAsked&&!!(sBt0&&(sBr0&&sDv0||!sBr0&&!sDv0));
   if(knownClass) startLoadScreen(); else { $('#picker').hidden=false; showPickerStatus('Loading classes\u2026'); }
   loadDivisions().then(function(){
     // saved choice: branch + division + batch. The earlier CSSE-C-only page saved just a batch, so treat that as CSSE-C.
@@ -1852,7 +1973,7 @@ function boot(){
     rawBatch=store.get('tt-batch','');
     if(!sBr&&!sDv&&rawBatch){sBr='CSSE';sDv='C';}
     if(BATCHES.indexOf(rawBatch)<0) rawBatch='';
-    if(rawBatch){
+    if(rawBatch&&rollAsked){
       return setClass(sBr,sDv).then(function(ok){
         if(ok){ st.batch=rawBatch; closePicker(true); }
         else { stopLoadScreen(); $('#picker').hidden=false; openPicker(false); }
