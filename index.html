@@ -263,6 +263,11 @@ h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,4.4vw,26px);l
 .tn-link:hover{text-decoration:underline}
 .tn-btn{margin-top:16px;min-height:44px;padding:9px 22px;border:0;border-radius:11px;background:var(--ink);color:var(--surface);font-weight:700;font-size:14px;cursor:pointer}
 .tn-btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.tn-btn{position:relative;overflow:hidden;isolation:isolate}
+.tn-btn[disabled]{cursor:not-allowed;background:var(--wash);color:var(--muted);border:1px solid var(--line)}
+.tn-btn .tn-bar{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ink);opacity:.18;z-index:-1}
+.tn-btn.wait .tn-bar{animation:tnFill 2s linear forwards}
+@keyframes tnFill{from{width:0}to{width:100%}}
 @media (prefers-reduced-motion:reduce){#ttNotice,#labNotice,.tn-emoji{animation:none}}
 #rollWarn{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55)}
 #rollWarn[hidden]{display:none}
@@ -601,11 +606,9 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
   </div>
   <div id="ttNotice" hidden role="dialog" aria-modal="true" aria-labelledby="ttnTitle">
     <div class="tn-card">
-      <div class="tn-emoji" aria-hidden="true">&#127881;</div>
-      <p class="tn-kicker tn-good">What's new</p>
-      <p class="tn-title" id="ttnTitle">The latest schedule is live!</p>
-      <p class="tn-body">The timetable has been updated according to <b>module1.pdf</b> and <b>module2.pdf</b> posted on the official groups.<br><br><b>Heads up:</b> some students are reporting that these PDFs are also incorrect, so please <b>double-check with your official groups before relying on it</b>.</p>
-      <button type="button" class="tn-btn" id="ttNoticeOk">Check it out</button>
+      <p class="tn-title" id="ttnTitle">Notice</p>
+      <p class="tn-body">The timetable has been updated. <b>Most branches have the same schedule as earlier</b>, so not much has changed for them.<br><br><b>Please double-check on VIERP</b> to make sure the latest schedule is correct for your division.<br><br>With <b>62 divisions and 186 batches</b> (62 &times; 3), updating every week is difficult for me as I&rsquo;m a student too, but I&rsquo;ll try my best to keep this updated.</p>
+      <button type="button" class="tn-btn" id="ttNoticeOk" disabled><span class="tn-bar" aria-hidden="true"></span><span class="tn-lbl">Check it out</span></button>
     </div>
   </div>
   <div id="labNotice" hidden role="alertdialog" aria-modal="true" aria-labelledby="labTitle">
@@ -650,7 +653,7 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
         <div class="pk-g" role="group" aria-labelledby="pkLT"><p class="pk-l" id="pkLT">Lab batch</p><div class="pk-opts" id="pkBatch"></div></div>
         <div class="pk-g" role="group" aria-labelledby="pkLR">
           <p class="pk-l" id="pkLR">Roll number <span style="font-weight:400">(optional)</span></p>
-          <input id="pkRoll" class="pk-roll" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="e.g. 312" aria-describedby="pkPriv">
+          <input id="pkRoll" class="pk-roll" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="e.g. 346" aria-describedby="pkPriv">
           <p class="pk-priv" id="pkPriv"><span>Used only for foreign language courses (like German). We don&rsquo;t collect this data &mdash; it stays on your device.</span><button type="button" class="ibtn" data-act="priv-open" aria-label="How your data is kept safe">i</button></p>
         </div>
         <div class="pk-actions">
@@ -1991,7 +1994,12 @@ function maybeShowTTNotice(){
     el.classList.remove('out');
     el.hidden=false;
     var btn=$('#ttNoticeOk');
-    if(btn) btn.addEventListener('click',function(){hideTTNotice();},{once:true});
+    if(btn){
+      // 2-second cooldown so the notice gets read; the bar fills while it counts down
+      btn.disabled=true; btn.classList.remove('wait'); void btn.offsetWidth; btn.classList.add('wait');
+      setTimeout(function(){ btn.disabled=false; btn.classList.remove('wait'); },2000);
+      btn.addEventListener('click',function(){ if(btn.disabled) return; hideTTNotice(); },{once:false});
+    }
   }catch(e){}
 }
 
