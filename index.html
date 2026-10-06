@@ -264,6 +264,15 @@ h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,4.4vw,26px);l
 .tn-btn{margin-top:16px;min-height:44px;padding:9px 22px;border:0;border-radius:11px;background:var(--ink);color:var(--surface);font-weight:700;font-size:14px;cursor:pointer}
 .tn-btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){#ttNotice,#labNotice,.tn-emoji{animation:none}}
+#rollWarn{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55)}
+#rollWarn[hidden]{display:none}
+.rw-card{width:100%;max-width:400px;display:flex;flex-direction:column;gap:10px;padding:22px 20px 18px;border-radius:16px;background:var(--surface);color:var(--ink);box-shadow:0 12px 40px rgba(0,0,0,.35);text-align:center}
+.rw-emoji{font-size:34px;line-height:1}
+.rw-title{font:800 19px var(--body);margin:0}
+.rw-body{font-size:14.5px;line-height:1.5;margin:0;color:var(--muted)}
+.rw-body b{color:var(--ink)}
+.rw-actions{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.rw-actions .btn,.rw-actions .btn2{margin:0;width:100%}
 
 /* phones: compact chrome, week grid fits the screen (no sideways scroll) */
 @media (max-width:600px){
@@ -614,6 +623,17 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
     <p class="hi-title" id="hiTitle">Enjoy!</p>
     <p class="hi-sub">No classes &mdash; have a great day off.</p>
   </div>
+  <div id="rollWarn" hidden role="alertdialog" aria-modal="true" aria-labelledby="rwTitle" aria-describedby="rwBody">
+    <div class="rw-card">
+      <div class="rw-emoji" aria-hidden="true">&#9888;&#65039;</div>
+      <p class="rw-title" id="rwTitle">You haven&rsquo;t entered your roll number</p>
+      <p class="rw-body" id="rwBody">If you have a <b>foreign language course</b> (like German), it <b>won&rsquo;t be shown</b> and <b>English</b> will be considered as your language.</p>
+      <div class="rw-actions">
+        <button type="button" class="btn" id="rwSelect">Select roll no</button>
+        <button type="button" class="btn2" id="rwContinue">Continue anyway</button>
+      </div>
+    </div>
+  </div>
   <section id="picker" class="picker" hidden aria-labelledby="pkTitle">
     <div class="pk-card">
       <div class="pk-top">
@@ -666,8 +686,8 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
           <li>It is never sent to Supabase or to any other server, and no database holds it.</li>
           <li>The foreign language check runs entirely on your device.</li>
           <li>The list it checks against is built into this page and has only branch, division and roll numbers &mdash; no student names.</li>
-          <li>Whether you were found in that list is worked out on your device and recorded nowhere.</li>
-          <li>The usual visit statistics (class, device type) never include your roll number or language.</li>
+          <li>Whether you were found in that list is worked out on your device. The only thing recorded is an anonymous count of how many visitors have a foreign language course &mdash; never your roll number, name or which language.</li>
+          <li>The usual visit statistics (class, device type) never include your roll number or which language you have.</li>
           <li>Nothing in this feature shares it with anyone.</li>
           <li>To delete it, clear the box and continue, or clear this site&rsquo;s data in your browser.</li>
           <li>It does not follow you to another phone or browser; you would enter it again there.</li>
@@ -1028,6 +1048,8 @@ function setClass(b,d){
 function applyGerman(){
   st.lang=germanFor(st.branch,st.div,st.roll);
   if(!st.lang) return;
+  // anonymous count only: no roll number, class or language is sent; once per browser session
+  try{ if(!sessionStorage.getItem('tt-fl')){ sessionStorage.setItem('tt-fl','1'); logVisit('foreign_lang',{}); } }catch(e){ logVisit('foreign_lang',{}); }
   var g=GER_SLOTS[st.lang];
   getSubj(GER_SUBJ,'German');
   SESS=SESS.concat([{id:SESS.length,d:g[0],s:g[1],e:g[2],sub:GER_SUBJ,type:'Foreign Language',b:undefined,fac:'',room:g[3],ger:true,langDiv:st.lang}]);
@@ -1532,25 +1554,49 @@ function closePicker(fromBoot){
   var c=document.querySelector('.chg');
   if(c) c.focus({preventScroll:true});
 }
+function submitPicker(){
+  if(!(pk.branch&&pk.div&&pk.batch)) return;
+  var goBranch=pk.branch,goDiv=pk.div,goBatch=pk.batch;
+  var goRoll=$('#pkRoll').value.replace(/\D/g,'').slice(0,4),prevRoll=st.roll;
+  st.roll=goRoll;   // used on this device only, never sent anywhere
+  $('#pkGo').disabled=true;$('#pkGo').textContent='Loading\u2026';
+  setClass(goBranch,goDiv).then(function(ok){
+    $('#pkGo').textContent='Show my timetable';
+    if(!ok){ st.roll=prevRoll; $('#pkGo').disabled=false; showPickerStatus('Could not load that timetable. Check your connection and try again.'); return; }
+    st.batch=goBatch;
+    store.set('tt-branch',goBranch);store.set('tt-div',goDiv);store.set('tt-batch',goBatch);
+    store.set('tt-roll',goRoll);store.set('tt-rollq','1');   // roll number: localStorage only
+    closePicker();
+    maybeShowHolidayIntro();
+    maybeShowLabNotice();
+  });
+}
+function openRollWarn(){
+  var w=$('#rollWarn'); w.hidden=false; document.documentElement.classList.add('lock');
+  $('#rwSelect').focus({preventScroll:true});
+}
+function closeRollWarn(){
+  $('#rollWarn').hidden=true; document.documentElement.classList.remove('lock');
+}
+$('#rwSelect').addEventListener('click',function(){
+  closeRollWarn();
+  var r=$('#pkRoll'); r.scrollIntoView({block:'center'}); r.focus();   // back to the home form, on the roll number box
+});
+$('#rwContinue').addEventListener('click',function(){
+  closeRollWarn();
+  submitPicker();
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&!$('#rollWarn').hidden) closeRollWarn();
+});
 function pickerAct(a,b){
   var v=b.getAttribute('data-v');
   if(a==='pk-cancel'){ if(CUR) closePicker(); return; }
   if(a==='pk-go'){
     if(!(pk.branch&&pk.div&&pk.batch)) return;
-    var goBranch=pk.branch,goDiv=pk.div,goBatch=pk.batch;
-    var goRoll=$('#pkRoll').value.replace(/\D/g,'').slice(0,4),prevRoll=st.roll;
-    st.roll=goRoll;   // used on this device only, never sent anywhere
-    $('#pkGo').disabled=true;$('#pkGo').textContent='Loading\u2026';
-    setClass(goBranch,goDiv).then(function(ok){
-      $('#pkGo').textContent='Show my timetable';
-      if(!ok){ st.roll=prevRoll; $('#pkGo').disabled=false; showPickerStatus('Could not load that timetable. Check your connection and try again.'); return; }
-      st.batch=goBatch;
-      store.set('tt-branch',goBranch);store.set('tt-div',goDiv);store.set('tt-batch',goBatch);
-      store.set('tt-roll',goRoll);store.set('tt-rollq','1');   // roll number: localStorage only
-      closePicker();
-      maybeShowHolidayIntro();
-      maybeShowLabNotice();
-    });
+    var typed=$('#pkRoll').value.replace(/\D/g,'').slice(0,4);
+    if(!typed){ openRollWarn(); return; }   // no roll number: warn first
+    submitPicker();
     return;
   }
   if(a==='pk-branch'){ if(pk.branch!==v){pk.branch=v;pk.div='';} fixDiv(); }
@@ -1810,6 +1856,18 @@ function renderAdmin(){
     {l:'7 days',n:ao.v_7d||0,u:(ao.u_7d||0)+' uniq'},
     {l:'30 days',n:ao.v_30d||0,u:(ao.u_30d||0)+' uniq'},
     {l:'All time',n:ao.v_all||0,u:(ao.u_all||0)+' uniq'}
+  ].map(function(k){
+    return '<div class="adm-kpi"><span class="n">'+k.n+'</span><span class="u">'+k.u+'</span><span class="l">'+k.l+'</span></div>';
+  }).join('')+'</div>';
+  var fl=d.foreign_lang||{};
+  html+='<p class="adm-h">Foreign language viewers <span style="font-weight:400;color:var(--muted)">(anonymous)</span></p>';
+  html+='<div class="adm-kpis">'+[
+    {l:'Live now',n:fl.live_5m||0,u:'unique'},
+    {l:'1 hour',n:fl.v_1h||0,u:(fl.u_1h||0)+' uniq'},
+    {l:'24 hours',n:fl.v_24h||0,u:(fl.u_24h||0)+' uniq'},
+    {l:'7 days',n:fl.v_7d||0,u:(fl.u_7d||0)+' uniq'},
+    {l:'30 days',n:fl.v_30d||0,u:(fl.u_30d||0)+' uniq'},
+    {l:'All time',n:fl.v_all||0,u:(fl.u_all||0)+' uniq'}
   ].map(function(k){
     return '<div class="adm-kpi"><span class="n">'+k.n+'</span><span class="u">'+k.u+'</span><span class="l">'+k.l+'</span></div>';
   }).join('')+'</div>';
