@@ -2313,9 +2313,23 @@ document.addEventListener('click',function(e){
   var html=teacherScheduleHTML(teacherRows.filter(function(r){return String(r.faculty_name).trim()===name;}));
   msg.textContent='FY timetable status as of '+fmtT(mins(nowFloor()))+'.';out.innerHTML=html;
 });
+/* A light-touch onboarding prompt: random on each landing, never more than 2–3 views,
+   and permanently gone once either beta feature is opened. */
+var featureNudgeAllowed=(function(){
+  try{
+    if(store.get('tt-beta-used',''))return false;
+    var max=+store.get('tt-beta-nudge-max','');
+    if(max!==2&&max!==3){max=Math.random()<0.5?2:3;store.set('tt-beta-nudge-max',String(max));}
+    var count=+store.get('tt-beta-nudge-count','0');
+    /* Always introduce it once; later landings follow the requested 50% chance. */
+    if(count>=max||(count>0&&Math.random()>=0.5))return false;
+    store.set('tt-beta-nudge-count',String(count+1));
+    return true;
+  }catch(e){return Math.random()<0.5;}
+})();
 function updateFeatureNudge(){
   var n=$('#featureNudge');if(!n)return;
-  n.hidden=!!store.get('tt-beta-used','')||window.scrollY>120;
+  n.hidden=!featureNudgeAllowed||!!store.get('tt-beta-used','')||window.scrollY>120;
 }
 window.addEventListener('scroll',updateFeatureNudge,{passive:true});
 setTimeout(updateFeatureNudge,0);
