@@ -193,6 +193,79 @@ h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,4.4vw,26px);l
 .has-chip.sm .blk-name{padding-right:0}
 .week-note{margin:8px 2px 0;color:var(--muted);font-size:12.5px}
 
+
+/* ---- Bro connect (beta) ---- */
+.bro{margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 12px}
+.bro-tag{display:inline-block;padding:2px 10px;border-radius:99px;background:linear-gradient(135deg,#7C4DCB,#2F5BD6);color:#fff;font-size:11px;font-weight:700;letter-spacing:.04em}
+.bro-title{font-family:var(--display);font-weight:800;font-size:clamp(22px,5vw,28px);line-height:1;margin:8px 0 0}
+.bro-sub{margin:6px 0 12px;color:var(--muted);font-size:12.5px;max-width:52ch}
+.bro .btn{margin-top:0}
+.bro-you{margin:0 0 10px;font-size:13px;color:var(--muted)}
+.bro-you b{color:var(--ink)}
+.bro-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+@media (max-width:420px){.bro-grid{grid-template-columns:1fr 1fr}.bro-grid .bro-f:first-child{grid-column:1/-1}}
+.bro-f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--muted);min-width:0}
+.bro-f select,.bro-f input{min-height:44px;padding:6px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--wash);color:var(--ink);font:600 14px var(--body);width:100%}
+.bro-f select:focus-visible,.bro-f input:focus-visible,.bro-chk input:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.bro-chk{display:flex;align-items:center;gap:8px;margin:12px 0 8px;font-size:13px;min-height:32px}
+.bro-chk input{width:18px;height:18px}
+#broRollW{max-width:200px;margin-bottom:10px}
+.bro-msg{margin:10px 0 0;min-height:18px;font-size:12.5px;color:var(--danger);font-weight:600}
+.bro-msg.ok{color:var(--muted);font-weight:400}
+.bro-note{margin:10px 0 0;color:var(--muted);font-size:11.5px;line-height:1.45}
+.bro-best{margin:16px 0 0;padding:14px;border-radius:14px;color:#fff;background:linear-gradient(135deg,#16a34a,#0d9488)}
+.bro-k{margin:0;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.9}
+.bro-big{margin:4px 0 0;font-family:var(--display);font-weight:800;font-size:clamp(24px,6vw,32px);line-height:1.05}
+.bro-bs{margin:4px 0 0;font-size:13px;opacity:.95}
+.bro-alt{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:4px;font-size:13px}
+.bro-alt li{padding:6px 10px;border-radius:9px;background:var(--wash);border:1px solid var(--line)}
+.bro-none{margin:16px 0 0;padding:12px 14px;border-radius:12px;background:var(--wash);border:1px solid var(--line);font-size:13px}
+.bro-res{margin-top:16px}
+.bro-legend{display:flex;flex-wrap:wrap;gap:4px 14px;margin:0 0 8px;font-size:11.5px;color:var(--muted)}
+.bro-legend span{display:inline-flex;align-items:center;gap:5px}
+.bro-legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.bro-s.y,.bro-legend i.y{background:var(--ink);opacity:.8}
+.bro-s.f,.bro-legend i.f{background:#C2410C}
+.bro-s.g,.bro-legend i.g{background:#16a34a}
+.bro-day{padding:8px 0;border-top:1px solid var(--line)}
+.bro-dh{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 5px;font-size:13px}
+.bro-dh span{color:var(--muted);font-size:12px}
+.bro-dh.today b::after{content:"Today";margin-left:6px;padding:0 7px;border-radius:99px;background:var(--now);color:#fff;font-size:10px;vertical-align:1px}
+.bro-lane{display:grid;grid-template-columns:52px minmax(0,1fr);align-items:center;gap:6px;margin:2px 0}
+.bro-l{font-size:11px;color:var(--muted);font-weight:600}
+.bro-t{position:relative;height:16px;border-radius:5px;background-color:var(--wash);
+  background-image:repeating-linear-gradient(to right,var(--line) 0,var(--line) 1px,transparent 1px,transparent calc(100%/var(--n,10)))}
+.bro-s{position:absolute;top:2px;bottom:2px;border-radius:4px}
+.bro-axt{height:14px;background:none}
+.bro-axt span{position:absolute;top:0;transform:translateX(-50%);font-size:10px;color:var(--muted);white-space:nowrap}
+.bro-axt span:first-child{transform:none}
+.bro-axt span.last{transform:translateX(-100%)}
+.bro-warn{margin:10px 0 0;padding:8px 12px;border-left:4px solid #C2410C;border-radius:8px;background:var(--wash);font-size:12.5px;line-height:1.45}
+dialog#broInfo,dialog#broApp,dialog#teacherInfo,dialog#teacherApp{padding:0;border:0;margin:auto;background:var(--surface);color:var(--ink);width:min(520px,calc(100vw - 24px));max-width:none;max-height:none;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(8,12,30,.4)}
+dialog#broInfo[open],dialog#broApp[open],dialog#teacherInfo[open],dialog#teacherApp[open]{animation:sheetIn .2s ease-out}
+dialog#broInfo::backdrop,dialog#broApp::backdrop,dialog#teacherInfo::backdrop,dialog#teacherApp::backdrop{background:rgba(12,16,32,.55)}
+@media (max-width:600px){dialog#broInfo,dialog#broApp,dialog#teacherInfo,dialog#teacherApp{width:100%;margin:auto 0 0;border-radius:18px 18px 0 0}dialog#broInfo[open],dialog#broApp[open],dialog#teacherInfo[open],dialog#teacherApp[open]{animation-name:sheetUp}}
+@media (prefers-reduced-motion:reduce){dialog#broInfo[open],dialog#broApp[open],dialog#teacherInfo[open],dialog#teacherApp[open]{animation:none}}
+.bro-acts{display:flex;gap:8px;margin-top:14px}
+.bro-acts .btn,.bro-acts .btn2{flex:1;margin:0}
+
+/* Additional features (Beta) */
+.beta{margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 12px}
+.beta-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+.beta-title{font-family:var(--display);font-weight:800;font-size:clamp(22px,5vw,28px);line-height:1;margin:0}
+.beta-sub{margin:5px 0 0;color:var(--muted);font-size:12.5px}
+.beta-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+@media (max-width:520px){.beta-grid{grid-template-columns:1fr}}
+.feature-card{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--wash)}
+.feature-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%}
+.feature-name{margin:0;font-weight:700;font-size:15px}.feature-desc{margin:0;color:var(--muted);font-size:12.5px;line-height:1.4}
+.feature-card .btn{margin-top:auto}.ibtn{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--ink);font-family:Georgia,serif;font-weight:700;cursor:pointer}
+.teacher-search{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.teacher-search input{min-height:42px;padding:7px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--wash);color:var(--ink);font:600 14px var(--body)}
+.teacher-search .btn{margin:0}.teacher-msg{margin:10px 0 0;min-height:18px;color:var(--muted);font-size:12.5px}.teacher-results{display:grid;gap:8px;margin-top:12px}.teacher-result{padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:var(--wash)}
+.teacher-result h4{margin:0;font-size:14px}.teacher-result p{margin:4px 0 0;color:var(--muted);font-size:12.5px}.teacher-live{color:#0d7b50!important;font-weight:700}.teacher-next{font-weight:600;color:var(--ink)!important}.teacher-note{margin:12px 0 0;color:var(--muted);font-size:11.5px;line-height:1.45}
+.teacher-pick{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:var(--wash);color:var(--ink);text-align:left;font:600 14px var(--body);cursor:pointer}.teacher-pick:hover{border-color:var(--focus)}.teacher-campus{font-weight:700;color:var(--ink)!important}
+.feature-nudge{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin:10px 0 2px;padding:7px 10px;border:0;background:transparent;color:var(--focus);font:600 12.5px var(--body);cursor:pointer}.feature-nudge .arrow{font-size:17px;line-height:1;animation:featureBob 1.4s ease-in-out infinite}@keyframes featureBob{50%{transform:translateY(3px)}}
+
 .foot{margin-top:18px;color:var(--muted);font-size:12px;max-width:70ch}
 .foot p{margin:0}
 
@@ -589,7 +662,23 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       <section id="hero" class="hero" aria-label="Current or next class"></section>
       <section id="panel" class="panel" aria-label="Day schedule"></section>
     </div>
+    <button type="button" class="feature-nudge" id="featureNudge" data-act="features-scroll" hidden><span>New features have been added</span><span class="arrow" aria-hidden="true">↓</span></button>
     <section id="week" class="weekp" aria-label="Weekly timetable"></section>
+    <section id="features" class="beta" aria-labelledby="featuresH">
+      <div class="beta-head"><div><h2 class="beta-title" id="featuresH">Additional features <span class="bro-tag">Beta</span></h2><p class="beta-sub">Experimental tools powered by the current timetable.</p></div></div>
+      <div class="beta-grid">
+        <article class="feature-card">
+          <div class="feature-card-top"><p class="feature-name">Bro connect</p><button type="button" class="ibtn" data-act="bro-info" aria-label="About Bro connect">i</button></div>
+          <p class="feature-desc">Compare your timetable with a friend&rsquo;s and find a time when you are both free.</p>
+          <button type="button" class="btn" data-act="bro-open" aria-haspopup="dialog">Open Bro connect</button>
+        </article>
+        <article class="feature-card">
+          <div class="feature-card-top"><p class="feature-name">Find a teacher</p><button type="button" class="ibtn" data-act="teacher-info" aria-label="About Find a teacher">i</button></div>
+          <p class="feature-desc">Search a faculty member to see their timetable-based current class, room, or next free period.</p>
+          <button type="button" class="btn" data-act="teacher-open" aria-haspopup="dialog">Find a teacher</button>
+        </article>
+      </div>
+    </section>
   </main>
 
   <footer class="foot">
@@ -730,6 +819,36 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
         </div>
       </div>
     </div>
+  </dialog>
+  <dialog id="broInfo" aria-labelledby="broInfoT">
+    <div class="terms">
+      <div class="terms-head">
+        <h3 id="broInfoT">Meet Bro connect</h3>
+        <button type="button" class="terms-x" data-act="bro-no" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+      </div>
+      <div class="terms-body">
+        <p><span class="bro-tag">Experimental &middot; Beta</span></p>
+        <p>Bro connect is built to answer one question: <b>when are you and a friend both free?</b> Enter your friend&rsquo;s branch, division, lab batch (and whether they take German), and it lines up both weekly timetables and highlights the best time slots to hang out.</p>
+        <p>It&rsquo;s a new, experimental feature, so results can be wrong or incomplete. It only compares the regular weekly timetable, so holidays, exams and one-off changes are not considered. Please double-check with your friend.</p>
+        <p>Your friend&rsquo;s class details stay on this device. Only anonymous usage counts (like how often the feature is opened or used) are recorded, never roll numbers or names.</p>
+        <div class="bro-acts"><button type="button" class="btn2" data-act="bro-no">Not now</button><button type="button" class="btn" data-act="bro-ack">Got it, let&rsquo;s try</button></div>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="broApp" aria-labelledby="broAppT">
+    <div class="terms">
+      <div class="terms-head">
+        <h3 id="broAppT">Bro connect <span class="bro-tag">Beta</span></h3>
+        <button type="button" class="terms-x" data-act="bro-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+      </div>
+      <div class="terms-body" id="broBody"></div>
+    </div>
+  </dialog>
+  <dialog id="teacherInfo" aria-labelledby="teacherInfoT">
+    <div class="terms"><div class="terms-head"><h3 id="teacherInfoT">Find a teacher <span class="bro-tag">Experimental</span></h3><button type="button" class="terms-x" data-act="teacher-info-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div><div class="terms-body"><p>Search the faculty names in the <b>FY timetable</b>. Choose a matching faculty member to see where they are scheduled to teach now, or their next scheduled class when they are free.</p><p>Campus labels are inferred from the branch: CS, CS-AIML, CS-AI and IT are at <b>Bibwewadi Campus</b>; all other branches are shown as <b>Kondhwa Campus</b>.</p><p>This is an experimental timetable helper, not live location tracking. It cannot account for attendance, substitutions, holidays, or last-minute changes—please verify before visiting.</p><div class="bro-acts"><button type="button" class="btn" data-act="teacher-info-ack">Got it, find a teacher</button></div></div></div>
+  </dialog>
+  <dialog id="teacherApp" aria-labelledby="teacherAppT">
+    <div class="terms"><div class="terms-head"><h3 id="teacherAppT">Find a teacher <span class="bro-tag">Beta</span></h3><button type="button" class="terms-x" data-act="teacher-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div><div class="terms-body"><form id="teacherForm"><label class="sr" for="teacherQuery">Teacher name</label><div class="teacher-search"><input id="teacherQuery" type="search" autocomplete="off" minlength="2"><button class="btn" type="submit">Search</button></div></form><p class="teacher-msg" id="teacherMsg" role="status" aria-live="polite">Search by at least two letters of a faculty name.</p><div class="teacher-results" id="teacherResults"></div><p class="teacher-note">Results use the published timetable and are not live location data.</p></div></div>
   </dialog>
   <dialog id="admin" aria-labelledby="admTitle">
     <div class="terms" id="admWrap">
@@ -1354,6 +1473,7 @@ function render(){
   hero.innerHTML=hm.html;
   $('#panel').innerHTML=panelHTML(now,occ,sel);
   $('#week').innerHTML=weekHTML(now);
+  broRefresh();
 
   Object.keys(sc).forEach(function(c){var el=$('.'+c);if(el)el.scrollLeft=sc[c]});
   if(centerTab){
@@ -1665,9 +1785,16 @@ document.addEventListener('click',function(e){
   if(e.target&&e.target.id==='terms'){closeTerms();return;}
   if(e.target&&e.target.id==='about'){closeAbout();return;}
   if(e.target&&e.target.id==='privacy'){closePriv();return;}
+  if(e.target&&e.target.id==='broInfo'){broAct('bro-no');return;}
+  if(e.target&&e.target.id==='broApp'){broAct('bro-close');return;}
+  if(e.target&&e.target.id==='teacherInfo'){teacherAct('teacher-info-close');return;}
+  if(e.target&&e.target.id==='teacherApp'){teacherAct('teacher-close');return;}
   if(e.target&&e.target.id==='admin'){ if(Date.now()-adminOpenedAt>500) closeAdmin(); return; }
   var b=e.target.closest('[data-act]');if(!b)return;
   var a=b.getAttribute('data-act');
+  if(a.indexOf('bro-')===0){broAct(a);return;}
+  if(a.indexOf('teacher-')===0){teacherAct(a);return;}
+  if(a==='features-scroll'){var f=$('#features');if(f)f.scrollIntoView({behavior:'smooth',block:'start'});return;}
   if(a==='terms-open'){openTerms(b);return;}
   if(a==='terms-close'){closeTerms();return;}
   if(a==='about-open'){openAbout(b);return;}
@@ -1874,6 +2001,32 @@ function renderAdmin(){
   ].map(function(k){
     return '<div class="adm-kpi"><span class="n">'+k.n+'</span><span class="u">'+k.u+'</span><span class="l">'+k.l+'</span></div>';
   }).join('')+'</div>';
+  var bro=d.bro;
+  if(bro){
+    html+='<p class="adm-h">Bro connect <span style="font-weight:400;color:var(--muted)">(compares)</span></p>';
+    html+='<div class="adm-kpis">'+[
+      {l:'Live now',n:bro.live_5m||0,u:'unique'},
+      {l:'1 hour',n:bro.v_1h||0,u:(bro.u_1h||0)+' uniq'},
+      {l:'24 hours',n:bro.v_24h||0,u:(bro.u_24h||0)+' uniq'},
+      {l:'7 days',n:bro.v_7d||0,u:(bro.u_7d||0)+' uniq'},
+      {l:'30 days',n:bro.v_30d||0,u:(bro.u_30d||0)+' uniq'},
+      {l:'All time',n:bro.v_all||0,u:(bro.u_all||0)+' uniq'}
+    ].map(function(k){
+      return '<div class="adm-kpi"><span class="n">'+k.n+'</span><span class="u">'+k.u+'</span><span class="l">'+k.l+'</span></div>';
+    }).join('')+'</div>';
+  }
+  var teacher=d.find_teacher||d.teacher_search||d.teacher;
+  if(teacher){
+    html+='<p class="adm-h">Find a teacher <span style="font-weight:400;color:var(--muted)">(searches)</span></p>';
+    html+='<div class="adm-kpis">'+[
+      {l:'Live now',n:teacher.live_5m||0,u:'unique'},
+      {l:'1 hour',n:teacher.v_1h||0,u:(teacher.u_1h||0)+' uniq'},
+      {l:'24 hours',n:teacher.v_24h||0,u:(teacher.u_24h||0)+' uniq'},
+      {l:'7 days',n:teacher.v_7d||0,u:(teacher.u_7d||0)+' uniq'},
+      {l:'30 days',n:teacher.v_30d||0,u:(teacher.u_30d||0)+' uniq'},
+      {l:'All time',n:teacher.v_all||0,u:(teacher.u_all||0)+' uniq'}
+    ].map(function(k){return '<div class="adm-kpi"><span class="n">'+k.n+'</span><span class="u">'+k.u+'</span><span class="l">'+k.l+'</span></div>';}).join('')+'</div>';
+  }
   html+='<p class="adm-h">'+(ADM.range==='30d'?'Last 30 days':'Last 24 hours')+'</p>';
   html+='<div class="adm-chart">'+barChart(ADM.range==='30d'?d.daily_30d:d.hourly_24h)+'</div>';
   html+='<div class="adm-legend"><span><i class="v"></i>Visits</span><span><i class="u"></i>Unique visitors</span></div>';
@@ -1911,6 +2064,261 @@ document.addEventListener('submit',function(e){
     loadAdmin();
   }
 });
+
+/* ---------- Bro connect (beta): compare two weekly timetables ---------- */
+var BRO={f:{b:'',d:'',t:'',de:false,roll:''},cf:null,meta:null,lang:null,note:'',res:null,key:'',shown:false};
+try{var bsv=JSON.parse(store.get('tt-bro','{}'));if(bsv&&typeof bsv==='object'){BRO.f.b=String(bsv.b||'');BRO.f.d=String(bsv.d||'');BRO.f.t=String(bsv.t||'');BRO.f.de=!!bsv.de;}}catch(e){}
+// analytics: own class goes in branch/division/batch; the friend's class only in `link`. Roll numbers are never logged.
+function broLog(ev,link){logVisit(ev,{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch,link:link||null});}
+function broSave(){store.set('tt-bro',JSON.stringify({b:BRO.f.b,d:BRO.f.d,t:BRO.f.t,de:BRO.f.de}));}
+function broOpts(list,cur,ph){return '<option value="">'+ph+'</option>'+list.map(function(o){return '<option value="'+esc(o.v)+'"'+(o.v===cur?' selected':'')+'>'+esc(o.t)+'</option>';}).join('');}
+function broDivs(b){return b&&CLASSES[b]?Object.keys(CLASSES[b].divs).map(function(k){return {v:k,t:k};}):[];}
+function broYou(){return branchLabel(st.branch)+'-'+st.div+' · batch '+st.batch+(st.lang?' · German':'');}
+function broFormHTML(){
+  var f=BRO.f;
+  if(f.b&&!CLASSES[f.b]){f.b='';f.d='';}
+  if(f.d&&!(CLASSES[f.b]&&CLASSES[f.b].divs[f.d])) f.d='';
+  var brs=Object.keys(CLASSES).map(function(k){return {v:k,t:CLASSES[k].label};});
+  var bts=['B1','B2','B3'].map(function(k){return {v:k,t:k};});
+  return '<p class="bro-you">You: <b id="broYou">'+esc(broYou())+'</b></p>'+
+    '<div class="bro-grid">'+
+      '<label class="bro-f"><span>Friend&rsquo;s branch</span><select id="broB" data-bro="b">'+broOpts(brs,f.b,'Select')+'</select></label>'+
+      '<label class="bro-f"><span>Division</span><select id="broD" data-bro="d">'+broOpts(broDivs(f.b),f.d,'Select')+'</select></label>'+
+      '<label class="bro-f"><span>Lab batch</span><select id="broT" data-bro="t">'+broOpts(bts,f.t,'Select')+'</select></label>'+
+    '</div>'+
+    '<label class="bro-chk"><input type="checkbox" id="broDe" data-bro="de"'+(f.de?' checked':'')+'> Friend has a foreign language (German)</label>'+
+    '<label class="bro-f" id="broRollW"'+(f.de?'':' hidden')+'><span>Friend&rsquo;s roll number</span><input id="broRoll" data-bro="roll" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="e.g. 346" value="'+esc(f.roll)+'"></label>'+
+    '<button type="button" class="btn" id="broGo" data-act="bro-go">Compare schedules</button>'+
+    '<p class="bro-msg" id="broMsg" role="status" aria-live="polite"></p>'+
+    '<div id="broOut"></div>'+
+    '<p class="bro-note">Compares the regular weekly timetable only. Holidays and exam weeks are not considered. The roll number is only used on this device to find the German slot.</p>';
+}
+function showBro(){
+  if(!CUR) return;
+  BRO.shown=true;
+  $('#broBody').innerHTML=broFormHTML();
+  var app=$('#broApp');
+  if(typeof app.showModal==='function') app.showModal(); else app.setAttribute('open','');
+  broLog('bro_start');
+  var el=$('#broB'); if(el) el.focus({preventScroll:true});
+}
+function markFeatureUsed(){try{store.set('tt-beta-used','1');}catch(e){}var n=$('#featureNudge');if(n)n.hidden=true;}
+function broAct(a){
+  var dlg=$('#broInfo');
+  if(a==='bro-open'){
+    markFeatureUsed();
+    broLog('bro_open');
+    if(store.get('tt-bro-seen','')){showBro();return;}
+    if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open','');
+  }else if(a==='bro-info'){
+    if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open','');
+  }else if(a==='bro-ack'){
+    store.set('tt-bro-seen','1');
+    if(typeof dlg.close==='function') dlg.close(); else dlg.removeAttribute('open');
+    showBro();
+  }else if(a==='bro-no'){
+    if(typeof dlg.close==='function') dlg.close(); else dlg.removeAttribute('open');
+  }else if(a==='bro-close'){
+    var app=$('#broApp');if(typeof app.close==='function') app.close(); else app.removeAttribute('open');
+  }else if(a==='bro-go') broGo();
+}
+document.addEventListener('change',function(e){
+  var t=e.target,k=t&&t.getAttribute&&t.getAttribute('data-bro');
+  if(!k) return;
+  var f=BRO.f;
+  if(k==='b'){f.b=t.value;f.d='';$('#broD').innerHTML=broOpts(broDivs(f.b),'','Select');}
+  else if(k==='d') f.d=t.value;
+  else if(k==='t') f.t=t.value;
+  else if(k==='de'){f.de=t.checked;$('#broRollW').hidden=!f.de;}
+  broSave();
+});
+document.addEventListener('input',function(e){
+  var t=e.target;
+  if(t&&t.getAttribute&&t.getAttribute('data-bro')==='roll'){t.value=t.value.replace(/\D/g,'').slice(0,4);BRO.f.roll=t.value;}
+});
+function broMsg(m,ok){var el=$('#broMsg');if(el){el.textContent=m||'';el.className='bro-msg'+(ok?' ok':'');}}
+function broGo(){
+  var f=BRO.f;
+  if(!(f.b&&f.d&&f.t)){broMsg('Pick your friend’s branch, division and lab batch first.');return;}
+  var meta=CLASSES[f.b]&&CLASSES[f.b].divs[f.d];
+  if(!meta){broMsg('That class was not found.');return;}
+  var btn=$('#broGo');btn.disabled=true;btn.textContent='Loading…';broMsg('');
+  loadDivisionData(meta).then(function(){
+    var lang=null,note='';
+    if(f.de){
+      if(!f.roll) note='German was ticked but no roll number was entered, so the German slot is not included.';
+      else{lang=germanFor(f.b,f.d,f.roll);if(!lang) note='That roll number was not found in the German list for this division, so no German slot is included.';}
+    }
+    BRO.cf={b:f.b,d:f.d,t:f.t};BRO.meta=meta;BRO.lang=lang;BRO.note=note;
+    BRO.res=broCompute();BRO.key=broKey();
+    broPaint();
+    broLog('bro_compare','bro:'+f.b+'-'+f.d+'-'+f.t+(lang?'+DE':''));
+    btn.disabled=false;btn.textContent='Compare schedules';
+  }).catch(function(){
+    btn.disabled=false;btn.textContent='Compare schedules';
+    broMsg('Could not load that timetable. Check your connection and try again.');
+  });
+}
+function broKey(){return [st.fmt,st.branch,st.div,st.batch,st.lang||''].join('|');}
+function broMerge(iv){
+  iv=iv.slice().sort(function(a,b){return a[0]-b[0];});
+  var out=[];
+  iv.forEach(function(x){var l=out[out.length-1];if(l&&x[0]<=l[1]) l[1]=Math.max(l[1],x[1]);else out.push([x[0],x[1]]);});
+  return out;
+}
+function broFree(busy,lo,hi){
+  var out=[],c=lo;
+  busy.forEach(function(x){if(x[0]>c) out.push([c,Math.min(x[0],hi)]);c=Math.max(c,x[1]);});
+  if(c<hi) out.push([c,hi]);
+  return out.filter(function(x){return x[1]-x[0]>=30;});
+}
+function broCompute(){
+  var cf=BRO.cf,mine=SESS.filter(function(x){return !x.b||x.b===st.batch;});
+  var theirs=BRO.meta.sess.filter(function(x){return !x.b||x.b===cf.t;});
+  if(BRO.lang){var g=GER_SLOTS[BRO.lang];theirs=theirs.concat([{d:g[0],s:g[1],e:g[2]}]);}
+  var lo=480,hi=1080;
+  mine.concat(theirs).forEach(function(x){lo=Math.min(lo,Math.floor(x.s/60)*60);hi=Math.max(hi,Math.ceil(x.e/60)*60);});
+  var rows=[];
+  for(var d=1;d<=6;d++){
+    var a=broMerge(mine.filter(function(x){return x.d===d;}).map(function(x){return [x.s,x.e];}));
+    var b=broMerge(theirs.filter(function(x){return x.d===d;}).map(function(x){return [x.s,x.e];}));
+    rows.push({d:d,a:a,b:b,active:!!(a.length||b.length),free:broFree(broMerge(a.concat(b)),lo,hi)});
+  }
+  return {lo:lo,hi:hi,rows:rows};
+}
+function broPct(m,r){return ((m-r.lo)/(r.hi-r.lo)*100).toFixed(2);}
+function broLane(label,cls,list,r){
+  return '<div class="bro-lane"><span class="bro-l">'+label+'</span><div class="bro-t">'+list.map(function(x){
+    return '<i class="bro-s '+cls+'" style="left:'+broPct(x[0],r)+'%;width:'+((x[1]-x[0])/(r.hi-r.lo)*100).toFixed(2)+'%" title="'+fmtRange(x[0],x[1])+'"></i>';
+  }).join('')+'</div></div>';
+}
+function broResultHTML(r){
+  var dn=nowFloor().getDay(),picks=[],idle=[];
+  r.rows.forEach(function(w){
+    if(!w.active){idle.push(DAYS[w.d]);return;}
+    w.free.forEach(function(x){if(x[1]-x[0]>=60) picks.push({d:w.d,s:x[0],e:x[1],l:x[1]-x[0]});});
+  });
+  picks.sort(function(a,b){return b.l-a.l||a.d-b.d||a.s-b.s;});
+  var cf=BRO.cf,html='';
+  if(picks.length){
+    var p=picks[0];
+    html+='<div class="bro-best"><p class="bro-k">Best time to meet</p><p class="bro-big">'+DAYS[p.d]+', '+fmtRange(p.s,p.e)+'</p><p class="bro-bs">'+dur(p.l*60000)+' free for both of you</p></div>';
+    if(picks.length>1) html+='<ul class="bro-alt" aria-label="Other options">'+picks.slice(1,4).map(function(q){
+      return '<li><b>'+DAYS[q.d]+'</b> '+fmtRange(q.s,q.e)+' · '+dur(q.l*60000)+'</li>';}).join('')+'</ul>';
+  }else{
+    html+='<p class="bro-none">No common gap of an hour or more on class days. '+(idle.length?'Try '+idle.join(' or ')+', when neither of you has class.':'Try Sunday, which is free for both.')+'</p>';
+  }
+  var ticks='';
+  for(var h=r.lo/60;h<=r.hi/60;h+=2) ticks+='<span'+(h===r.hi/60?' class="last"':'')+' style="left:'+broPct(h*60,r)+'%">'+fmtH(h)+'</span>';
+  html+='<div class="bro-res" style="--n:'+((r.hi-r.lo)/60)+'">'+
+    '<p class="bro-you">Friend: <b>'+esc(branchLabel(cf.b))+'-'+esc(cf.d)+' · batch '+esc(cf.t)+(BRO.lang?' · German '+BRO.lang:'')+'</b></p>'+
+    '<div class="bro-legend"><span><i class="y"></i>You in class</span><span><i class="f"></i>Friend in class</span><span><i class="g"></i>Free together</span></div>'+
+    '<div class="bro-lane"><span class="bro-l"></span><div class="bro-t bro-axt">'+ticks+'</div></div>';
+  r.rows.forEach(function(w){
+    if(!w.active) return;
+    var best=w.free.slice().sort(function(a,b){return (b[1]-b[0])-(a[1]-a[0]);})[0];
+    html+='<div class="bro-day"><div class="bro-dh'+(w.d===dn?' today':'')+'"><b>'+DAYS[w.d]+'</b><span>'+(best&&best[1]-best[0]>=60?'Longest gap: '+fmtRange(best[0],best[1]):'No long common gap')+'</span></div>'+
+      broLane('You','y',w.a,r)+broLane('Friend','f',w.b,r)+broLane('Both free','g',w.free,r)+'</div>';
+  });
+  html+='</div>';
+  if(idle.length) html+='<p class="bro-note">'+idle.join(' and ')+' and Sunday have no classes for either of you.</p>';
+  if(campusFor(st.branch)!==campusFor(cf.b)) html+='<p class="bro-warn">You’re on the '+campusFor(st.branch)+' and your friend is on the '+campusFor(cf.b)+', so leave some travel time.</p>';
+  if(BRO.note) html+='<p class="bro-warn">'+esc(BRO.note)+'</p>';
+  return html;
+}
+function broPaint(){var o=$('#broOut');if(o) o.innerHTML=broResultHTML(BRO.res);}
+// called from render(): keeps the result in sync with the 12/24h toggle or a changed own class
+function broRefresh(){
+  if(!BRO.shown) return;
+  var y=$('#broYou');if(y) y.textContent=broYou();
+  if(!BRO.res) return;
+  var k=broKey();
+  if(k!==BRO.key){BRO.key=k;BRO.res=broCompute();broPaint();}
+}
+// one anonymous 'bro_view' per session when the pane is scrolled into view
+(function(){
+  if(!('IntersectionObserver' in window)) return;
+  var el=document.getElementById('features');if(!el) return;
+  var io=new IntersectionObserver(function(en){
+    if(!en[0].isIntersecting||$('#view').hidden) return;
+    io.disconnect();
+    try{if(sessionStorage.getItem('tt-bro-v')) return;sessionStorage.setItem('tt-bro-v','1');}catch(e){}
+    broLog('bro_view');
+  },{threshold:0.4});
+  io.observe(el);
+})();
+
+/* ---------- Find a teacher (Beta): timetable-based faculty availability ---------- */
+function teacherDialog(id,open){var d=$(id);if(!d)return;if(open){if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','');}else{if(typeof d.close==='function')d.close();else d.removeAttribute('open');}}
+var teacherRows=[],teacherTimer=null,teacherQueryId=0;
+function teacherAct(a){
+  if(a==='teacher-open'){
+    markFeatureUsed();logVisit('teacher_open',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});
+    if(!store.get('tt-teacher-seen','')){teacherDialog('#teacherInfo',true);return;}
+    teacherDialog('#teacherApp',true);setTimeout(function(){var q=$('#teacherQuery');if(q)q.focus();},0);
+  }
+  else if(a==='teacher-close') teacherDialog('#teacherApp',false);
+  else if(a==='teacher-info'){teacherDialog('#teacherInfo',true);}
+  else if(a==='teacher-info-close') teacherDialog('#teacherInfo',false);
+  else if(a==='teacher-info-ack'){store.set('tt-teacher-seen','1');teacherDialog('#teacherInfo',false);teacherDialog('#teacherApp',true);setTimeout(function(){var q=$('#teacherQuery');if(q)q.focus();},0);}
+}
+function teacherWhen(s,now){
+  var today=now.getDay(),m=mins(now),delta=(s.weekday-today+7)%7;
+  if(delta===0&&toMin(s.end_time)<=m)delta=7;
+  return delta*1440+toMin(s.start_time)-m;
+}
+function teacherCampus(division){
+  var branch=(String(division||'').toLowerCase().match(/^fy-([a-z0-9]+)/)||[])[1]||'';
+  return ['cs','csaiml','csai','it'].indexOf(branch)>-1?'Bibwewadi Campus':'Kondhwa Campus';
+}
+function teacherNamesHTML(rows){
+  var seen={};return rows.filter(function(r){var n=String(r.faculty_name||'').trim();if(!n||seen[n])return false;seen[n]=1;return true;}).map(function(r){var h=humanName(r.faculty_name);return '<button type="button" class="teacher-pick" data-act="teacher-pick" data-name="'+esc(String(r.faculty_name).trim())+'">'+esc((h.title?h.title+' ':'')+h.name)+'</button>';}).join('');
+}
+function teacherScheduleHTML(rows){
+  var now=nowFloor(),day=now.getDay(),m=mins(now),by={};
+  rows.forEach(function(r){if(r.faculty_name){var k=String(r.faculty_name).trim();(by[k]||(by[k]=[])).push(r);}});
+  return Object.keys(by).sort().slice(0,8).map(function(name){
+    var ss=by[name],today=ss.filter(function(s){return +s.weekday===day;}).sort(function(a,b){return toMin(a.start_time)-toMin(b.start_time);});
+    var h=humanName(name),html='<article class="teacher-result"><h4>'+esc((h.title?h.title+' ':'')+h.name)+'</h4>';
+    if(today.length){
+      html+='<p class="teacher-next">Today&rsquo;s FY timetable</p>'+today.map(function(s){
+        var live=toMin(s.start_time)<=m&&toMin(s.end_time)>m;
+        return '<p'+(live?' class="teacher-live"':'')+'>'+esc(fmtRange(toMin(s.start_time),toMin(s.end_time)))+' &middot; '+esc(s.subject_name||s.subject_code||'Class')+(s.room?' &middot; Room '+esc(s.room):'')+(live?' <b>· Teaching now</b>':'')+'</p><p class="teacher-campus">'+teacherCampus(s.division)+'</p>';
+      }).join('');
+    }else{
+      html+='<p class="teacher-next">No FY classes scheduled for today.</p>';
+    }
+    return html+'</article>';
+  }).join('');
+}
+function teacherLookup(){
+  var q=($('#teacherQuery').value||'').trim(),msg=$('#teacherMsg'),out=$('#teacherResults'),token=++teacherQueryId;
+  if(q.length<2){msg.textContent='Enter at least two letters of the teacher’s name.';out.innerHTML='';return;}
+  msg.textContent='Finding faculty names…';out.innerHTML='';
+  /* The query only sends the name needed to search; analytics below records the feature use, never the search text. */
+  fetchSupa('tt_sessions?select=weekday,start_time,end_time,subject_code,subject_name,division,room,faculty_name&faculty_name=ilike.*'+encodeURIComponent(q)+'*&order=faculty_name.asc,weekday.asc,start_time.asc')
+    .then(function(rows){if(token!==teacherQueryId)return;teacherRows=rows||[];var html=teacherNamesHTML(teacherRows);msg.textContent=html?'Choose a faculty member.':'No faculty member matched that name.';out.innerHTML=html;logVisit('teacher_search',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});})
+    .catch(function(){msg.textContent='Could not search the faculty timetable. Check your connection and try again.';});
+}
+document.addEventListener('input',function(e){
+  if(!e.target||e.target.id!=='teacherQuery')return;
+  clearTimeout(teacherTimer);teacherTimer=setTimeout(teacherLookup,280);
+});
+document.addEventListener('submit',function(e){
+  if(!e.target||e.target.id!=='teacherForm')return;e.preventDefault();teacherLookup();
+});
+document.addEventListener('click',function(e){
+  var b=e.target.closest('[data-act="teacher-pick"]');if(!b)return;
+  var name=b.getAttribute('data-name'),out=$('#teacherResults'),msg=$('#teacherMsg');
+  var html=teacherScheduleHTML(teacherRows.filter(function(r){return String(r.faculty_name).trim()===name;}));
+  msg.textContent='FY timetable status as of '+fmtT(mins(nowFloor()))+'.';out.innerHTML=html;
+});
+function updateFeatureNudge(){
+  var n=$('#featureNudge');if(!n)return;
+  n.hidden=!!store.get('tt-beta-used','')||window.scrollY>120;
+}
+window.addEventListener('scroll',updateFeatureNudge,{passive:true});
+setTimeout(updateFeatureNudge,0);
 
 /* ---------- Boot loading screen ---------- */
 var LOAD_QUOTES=[
