@@ -106,10 +106,31 @@ dialog h2{font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4
 #toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:12px;font-weight:600;font-size:13px;max-width:calc(100vw - 32px);z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 #toast.err{background:var(--danger);color:#fff}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- Coming-soon notice (remove this block, #soon markup and the inert attr on .app to launch) ---------- */
+#soon{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;
+  padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px));background:var(--ground);color:var(--ink);font-family:var(--body)}
+#soon .ico{width:72px;height:72px;border-radius:20px;background:var(--badge-bg);color:var(--badge-fg);display:flex;align-items:center;justify-content:center;margin-bottom:24px}
+#soon .pill{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--wash);border:1px solid var(--line);border-radius:999px;padding:6px 12px;margin-bottom:16px}
+#soon .pill i{width:8px;height:8px;border-radius:50%;background:var(--now);animation:soonPulse 1.4s ease-in-out infinite}
+#soon h2{font-family:var(--display);font-weight:800;font-size:clamp(40px,9vw,72px);line-height:1;margin:0 0 12px;letter-spacing:.01em}
+#soon p{max-width:420px;margin:0 0 28px;font-size:16px;line-height:1.5;color:var(--muted)}
+#soon a{display:inline-block;background:var(--badge-bg);color:var(--badge-fg);font-weight:600;text-decoration:none;padding:12px 22px;border-radius:12px}
+#soon a:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+@keyframes soonPulse{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){#soon .pill i{animation:none}}
+html.soon-lock,html.soon-lock body{overflow:hidden}
 </style>
 </head>
 <body>
-<div class="app">
+<div id="soon" role="dialog" aria-modal="true" aria-labelledby="soonT">
+  <div class="ico" aria-hidden="true"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+  <span class="pill"><i></i>Work in progress</span>
+  <h2 id="soonT">Forum is coming soon</h2>
+  <p>I'm still building the Forums. Work is under way and they'll be live really soon.</p>
+  <a href="index.html" id="soonBack">Back to timetable</a>
+</div>
+<div class="app" inert>
   <header class="top">
     <div>
       <a class="back" href="index.html"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg>Back to timetable</a>
@@ -212,6 +233,10 @@ dialog h2{font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4
 
 <div id="toast" hidden></div>
 
+<script>
+document.documentElement.classList.add('soon-lock');
+document.getElementById('soonBack').focus();
+</script>
 <script>
 'use strict';
 /* ---------- Config (same public Supabase project as the timetable; anon key is meant to be public) ---------- */
