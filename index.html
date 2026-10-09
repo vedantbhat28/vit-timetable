@@ -259,7 +259,7 @@ dialog#broInfo::backdrop,dialog#broApp::backdrop,dialog#teacherInfo::backdrop,di
 .feature-card{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--wash)}
 .feature-card-top{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%}
 .feature-name{margin:0;font-weight:700;font-size:15px}.feature-desc{margin:0;color:var(--muted);font-size:12.5px;line-height:1.4}
-.feature-card .btn{margin-top:auto}.ibtn{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--ink);font-family:Georgia,serif;font-weight:700;cursor:pointer}
+.feature-card .btn{margin-top:auto}a.btn{display:inline-flex;align-items:center;text-decoration:none}.ibtn{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--ink);font-family:Georgia,serif;font-weight:700;cursor:pointer}
 .teacher-search{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.teacher-search input{min-height:42px;padding:7px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--wash);color:var(--ink);font:600 14px var(--body)}
 .teacher-search .btn{margin:0}.teacher-msg{margin:10px 0 0;min-height:18px;color:var(--muted);font-size:12.5px}.teacher-results{display:grid;gap:8px;margin-top:12px}.teacher-result{padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:var(--wash)}
 .teacher-result h4{margin:0;font-size:14px}.teacher-result p{margin:4px 0 0;color:var(--muted);font-size:12.5px}.teacher-live{color:#0d7b50!important;font-weight:700}.teacher-next{font-weight:600;color:var(--ink)!important}.teacher-note{margin:12px 0 0;color:var(--muted);font-size:11.5px;line-height:1.45}
@@ -525,6 +525,41 @@ a.chg{text-decoration:none;color:inherit}
 .pk-top .pk-org{flex:1 1 auto;min-width:0}
 .pk-top .chg{flex:none;margin-top:0}
 
+/* ---- forum promo tooltip + intro dialog ---- */
+.forum-wrap{position:relative;display:inline-flex}
+.forum-tip{position:absolute;top:calc(100% + 10px);left:0;z-index:6;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
+  padding:8px 13px;border:0;border-radius:11px;color:#fff;font-weight:700;font-size:12.5px;cursor:pointer;
+  background:linear-gradient(120deg,#6d28d9,#2563eb,#0ea5e9,#c026d3,#6d28d9);background-size:300% 300%;
+  box-shadow:0 0 0 1px rgba(255,255,255,.25) inset,0 0 14px rgba(99,102,241,.65),0 0 30px rgba(14,165,233,.35);
+  animation:ftGrad 5s linear infinite,ftGlow 2.4s ease-in-out infinite,ftIn .45s ease-out}
+.forum-tip[hidden]{display:none}
+.forum-tip::before{content:"";position:absolute;top:-5px;left:22px;width:10px;height:10px;transform:rotate(45deg);
+  background:#6d28d9;border-radius:2px 0 0 0}
+.forum-tip:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.forum-tip .ft-spark{font-size:13px;line-height:1}
+@keyframes ftGrad{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+@keyframes ftGlow{0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.25) inset,0 0 10px rgba(99,102,241,.5),0 0 22px rgba(14,165,233,.25)}
+  50%{box-shadow:0 0 0 1px rgba(255,255,255,.3) inset,0 0 18px rgba(139,92,246,.9),0 0 40px rgba(14,165,233,.55)}}
+@keyframes ftIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.forum-tip{animation:none}}
+dialog#forumIntro{padding:0;border:0;margin:auto;background:var(--surface);color:var(--ink);width:min(440px,calc(100vw - 24px));max-width:none;max-height:none;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(8,12,30,.4)}
+dialog#forumIntro[open]{animation:sheetIn .2s ease-out}
+dialog#forumIntro::backdrop{background:rgba(12,16,32,.55)}
+@media (max-width:600px){
+  dialog#forumIntro{width:100%;margin:auto 0 0;border-radius:18px 18px 0 0}
+  dialog#forumIntro[open]{animation-name:sheetUp}
+}
+@media (prefers-reduced-motion:reduce){dialog#forumIntro[open]{animation:none}}
+.fi-hero{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding:14px;border-radius:14px;color:#fff;
+  background:linear-gradient(120deg,#6d28d9,#2563eb,#0ea5e9);box-shadow:0 0 22px rgba(99,102,241,.4)}
+.fi-hero svg{flex:none}
+.fi-hero p{margin:0;font-family:var(--display);font-weight:800;font-size:22px;line-height:1.05}
+.fi-list{margin:10px 0 0;padding-left:18px;color:var(--muted);font-size:13.5px;line-height:1.5}
+.fi-list b{color:var(--ink)}
+.fi-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.fi-actions .tn-btn{margin-top:0;display:inline-flex;align-items:center;text-decoration:none}
+.fi-actions .fi-later{background:var(--wash);color:var(--ink);border:1px solid var(--line)}
+
 /* ---- about-me dialog ---- */
 dialog#about{padding:0;border:0;margin:auto;background:var(--surface);color:var(--ink);width:min(440px,calc(100vw - 24px));max-width:none;max-height:none;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(8,12,30,.4)}
 dialog#about[open]{animation:sheetIn .2s ease-out}
@@ -633,7 +668,7 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       <p class="sub" id="subLine">First year, semester 1.</p>
       <div class="hdr-actions">
         <button type="button" class="chg" data-act="change"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5.5h10.5M10 3l2.5 2.5L10 8M14 10.5H3.5M6 8l-2.5 2.5L6 13"/></svg>Change class</button>
-        <a class="chg" href="forum.html" data-act="forum-open"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z"/></svg>Forum</a>
+        <span class="forum-wrap"><a class="chg" href="forum.html" data-act="forum-open"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z"/></svg>Forum</a><button type="button" class="forum-tip" id="forumTip" data-act="forum-tip" hidden><span class="ft-spark" aria-hidden="true">&#10024;</span>Try out the new forums</button></span>
         <button type="button" class="chg" data-act="about-open"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="5.3" r="2.6"/><path d="M2.6 13.2c.9-3 3-4.4 5.4-4.4s4.5 1.4 5.4 4.4"/></svg>About Me</button>
       </div>
     </div>
@@ -678,6 +713,11 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
           <div class="feature-card-top"><p class="feature-name">Find a teacher</p><button type="button" class="ibtn" data-act="teacher-info" aria-label="About Find a teacher">i</button></div>
           <p class="feature-desc">Search a faculty member to see their timetable-based current class, room, or next free period.</p>
           <button type="button" class="btn" data-act="teacher-open" aria-haspopup="dialog">Find a teacher</button>
+        </article>
+        <article class="feature-card">
+          <div class="feature-card-top"><p class="feature-name">Forum <span class="bro-tag">New</span></p><button type="button" class="ibtn" data-act="forum-tip" aria-label="About the Forum">i</button></div>
+          <p class="feature-desc">Ask questions, share updates and see what other students are posting, all in one place.</p>
+          <a class="btn" href="forum.html" data-act="forum-open">Open Forum</a>
         </article>
       </div>
     </section>
@@ -787,6 +827,30 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
           <li>It does not follow you to another phone or browser; you would enter it again there.</li>
           <li>It is optional &mdash; skip it and the timetable works exactly as before.</li>
         </ol>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="forumIntro" aria-labelledby="fiTitle">
+    <div class="terms">
+      <div class="terms-head">
+        <h3 id="fiTitle">Meet the new Forum</h3>
+        <button type="button" class="terms-x" data-act="forum-intro-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+      </div>
+      <div class="terms-body">
+        <div class="fi-hero">
+          <svg width="30" height="30" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z"/></svg>
+          <p>A place for students, by students</p>
+        </div>
+        <p class="tn-body" style="margin:0;text-align:left">The Forum is a new space built into this timetable site where you can talk to other students instead of hunting through group chats.</p>
+        <ul class="fi-list">
+          <li><b>Ask questions</b> about classes, rooms, faculty or anything else around campus.</li>
+          <li><b>Share updates</b> so everyone in your year sees them in one place.</li>
+          <li><b>Read what others post</b> and reply when you can help.</li>
+        </ul>
+        <div class="fi-actions">
+          <a class="tn-btn" href="forum.html" data-act="forum-open-intro">Open the Forum</a>
+          <button type="button" class="tn-btn fi-later" data-act="forum-intro-close">Maybe later</button>
+        </div>
       </div>
     </div>
   </dialog>
@@ -1766,6 +1830,34 @@ $('#privacy').addEventListener('close',function(){
   privOpener=null;
 });
 
+/* ---------- Forum promo: tooltip until 11 Oct 2026, intro pop-up on first click ---------- */
+var FORUM_TIP_UNTIL=new Date('2026-10-12T00:00:00+05:30').getTime();   // tooltip shown through 11 Oct 2026 (IST)
+function forumLog(a){logVisit(a,{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});}
+function forumIntroSeen(){return store.get('tt-forum-intro','')==='1';}
+function initForumTip(){
+  try{
+    var tip=$('#forumTip');if(!tip) return;
+    tip.hidden=!(Date.now()<FORUM_TIP_UNTIL&&!forumIntroSeen());
+  }catch(e){}
+}
+var forumOpener=null;
+function openForumIntro(opener){
+  forumOpener=opener||null;
+  store.set('tt-forum-intro','1');
+  var tip=$('#forumTip');if(tip) tip.hidden=true;
+  var dlg=$('#forumIntro');
+  if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open','');
+  forumLog('open_forum_intro');
+}
+function closeForumIntro(){
+  var dlg=$('#forumIntro');
+  if(typeof dlg.close==='function') dlg.close(); else dlg.removeAttribute('open');
+}
+$('#forumIntro').addEventListener('close',function(){
+  if(forumOpener) forumOpener.focus({preventScroll:true});
+  forumOpener=null;
+});
+
 var aboutOpener=null;
 function openAbout(opener){
   aboutOpener=opener||null;
@@ -1786,6 +1878,7 @@ document.addEventListener('click',function(e){
   if(e.target&&e.target.id==='sheet'){closeSheet();return;}   // tap on the dimmed backdrop
   if(e.target&&e.target.id==='terms'){closeTerms();return;}
   if(e.target&&e.target.id==='about'){closeAbout();return;}
+  if(e.target&&e.target.id==='forumIntro'){closeForumIntro();return;}
   if(e.target&&e.target.id==='privacy'){closePriv();return;}
   if(e.target&&e.target.id==='broInfo'){broAct('bro-no');return;}
   if(e.target&&e.target.id==='broApp'){broAct('bro-close');return;}
@@ -1803,6 +1896,10 @@ document.addEventListener('click',function(e){
   if(a==='about-close'){closeAbout();return;}
   if(a==='priv-open'){openPriv(b);return;}
   if(a==='priv-close'){closePriv();return;}
+  if(a==='forum-tip'){openForumIntro(b);return;}
+  if(a==='forum-intro-close'){closeForumIntro();return;}
+  if(a==='forum-open-intro'){forumLog('open_forum');return;}
+  if(a==='forum-open'&&!forumIntroSeen()){e.preventDefault();openForumIntro(b);return;}
   if(a==='forum-open'){logVisit('open_forum',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});return;}
   if(a==='ext-link'){logVisit('click_link',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch,link:b.getAttribute('data-label')});return;}
   if(a==='admin-close'){closeAdmin();return;}
@@ -2450,6 +2547,7 @@ function maybeShowLabNotice(){
 }
 
 function boot(){
+  initForumTip();
   maybeShowTTNotice();
   $('#view').hidden=true;$('#picker').hidden=true;$('#pkCancel').hidden=true;
   // saved choice: branch + division + batch. If we already know it, show the animated
