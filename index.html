@@ -520,6 +520,7 @@ dialog#terms::backdrop,dialog#privacy::backdrop{background:rgba(12,16,32,.55)}
 /* ---- about-me button (header / picker) ---- */
 .hdr-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .hdr-actions .chg{margin-top:0}
+a.chg{text-decoration:none;color:inherit}
 .pk-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .pk-top .pk-org{flex:1 1 auto;min-width:0}
 .pk-top .chg{flex:none;margin-top:0}
@@ -632,6 +633,7 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       <p class="sub" id="subLine">First year, semester 1.</p>
       <div class="hdr-actions">
         <button type="button" class="chg" data-act="change"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5.5h10.5M10 3l2.5 2.5L10 8M14 10.5H3.5M6 8l-2.5 2.5L6 13"/></svg>Change class</button>
+        <a class="chg" href="forum.html" data-act="forum-open"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z"/></svg>Forum</a>
         <button type="button" class="chg" data-act="about-open"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="5.3" r="2.6"/><path d="M2.6 13.2c.9-3 3-4.4 5.4-4.4s4.5 1.4 5.4 4.4"/></svg>About Me</button>
       </div>
     </div>
@@ -1801,6 +1803,7 @@ document.addEventListener('click',function(e){
   if(a==='about-close'){closeAbout();return;}
   if(a==='priv-open'){openPriv(b);return;}
   if(a==='priv-close'){closePriv();return;}
+  if(a==='forum-open'){logVisit('open_forum',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});return;}
   if(a==='ext-link'){logVisit('click_link',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch,link:b.getAttribute('data-label')});return;}
   if(a==='admin-close'){closeAdmin();return;}
   if(a==='admin-lock'){lockAdmin();return;}

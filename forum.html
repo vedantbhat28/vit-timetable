@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Forum - VIT Pune Timetable</title>
+<meta name="theme-color" content="#1B2340">
+<link rel="icon" href="icons/icon-32.png" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --ground:#ECEEF3; --surface:#FFFFFF; --ink:#1B2340; --muted:#596080; --line:#D6DAE6; --wash:#F3F4F8;
+  --now:#E5383B; --focus:#2F5BD6; --danger:#C4302B; --badge-bg:#2F5BD6; --badge-fg:#fff; --ok:#1F8A4C;
+  --display:"Big Shoulders Display","Barlow Condensed","Arial Narrow",sans-serif;
+  --body:"Instrument Sans","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0F1320; --surface:#181E33; --ink:#EDEFF7; --muted:#A0A8C4; --line:#2B3352; --wash:#1F2640;
+    --focus:#8FA8FF; --danger:#FF6B6B; --badge-bg:#8FA8FF; --badge-fg:#0F1320; --ok:#5FD08A; color-scheme:dark;
+  }
+}
+[hidden]{display:none!important}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-tap-highlight-color:transparent}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.45;-webkit-text-size-adjust:100%;touch-action:manipulation}
+button,input,select,textarea{font:inherit;color:inherit}
+button{touch-action:manipulation;cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.app{max-width:760px;margin:0 auto;padding:12px 12px 40px}
+@media (min-width:720px){.app{padding:22px 22px 52px}}
+
+/* header */
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px 20px;flex-wrap:wrap}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:12.5px;font-weight:700;text-decoration:none;min-height:32px}
+.back:hover{color:var(--ink)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);line-height:.92;margin:4px 0 0}
+.sub{margin:6px 0 0;color:var(--muted);font-size:12.5px;max-width:46ch}
+.acct{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;padding-top:6px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:4px 14px;border:1px solid var(--line);border-radius:10px;background:var(--wash);font-weight:600;font-size:13px;text-decoration:none}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn.danger{color:var(--danger)}
+.btn.sm{min-height:32px;padding:2px 10px;font-size:12px;border-radius:8px}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.chip-me{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:4px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:700;font-size:13px}
+
+/* toolbar */
+.bar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:16px 0 12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;min-height:34px;font-size:12.5px;font-weight:600}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+
+/* cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:10px}
+a.card{display:block;color:inherit;text-decoration:none}
+a.card:hover{border-color:var(--muted)}
+.card h2,.card h3{margin:0;font-size:16px;line-height:1.25;overflow-wrap:anywhere}
+.card .pv{margin:6px 0 0;color:var(--muted);font-size:13.5px;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:10px;color:var(--muted);font-size:12px}
+.meta strong{color:var(--ink);font-weight:700}
+.tag{display:inline-block;padding:1px 8px;border-radius:999px;background:var(--wash);border:1px solid var(--line);font-size:11.5px;font-weight:600;color:var(--muted)}
+.badge{display:inline-block;padding:1px 7px;border-radius:6px;background:var(--badge-bg);color:var(--badge-fg);font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.pin{color:var(--now);font-size:11.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px}
+.empty{text-align:center;color:var(--muted);padding:34px 12px}
+.post-body{white-space:pre-wrap;overflow-wrap:anywhere;margin:12px 0 0;font-size:14.5px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.reply{border-top:1px solid var(--line);padding:12px 0 0;margin-top:12px}
+.reply p{white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0}
+.h-sec{font-family:var(--display);font-weight:800;font-size:22px;margin:18px 2px 10px}
+
+/* forms */
+label.f{display:block;font-size:12.5px;font-weight:700;margin:12px 0 4px}
+input[type=text],input[type=password],select,textarea{width:100%;border:1px solid var(--line);background:var(--wash);border-radius:10px;padding:9px 11px;min-height:42px}
+textarea{resize:vertical;min-height:110px}
+.hint{font-size:12px;color:var(--muted);margin:4px 0 0}
+.hint.ok{color:var(--ok)} .hint.bad{color:var(--danger)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chk{display:flex;gap:10px;align-items:flex-start;margin:10px 0 0;font-size:13px}
+.chk input{margin-top:3px;width:18px;height:18px;flex:none}
+.chk small{display:block;color:var(--muted);font-size:12px}
+.priv{margin-top:14px;padding:12px;border:1px dashed var(--line);border-radius:12px;background:var(--wash)}
+.priv b{font-size:13px}
+.seg{display:inline-flex;gap:2px;padding:3px;background:var(--wash);border:1px solid var(--line);border-radius:12px;margin-bottom:6px}
+.seg button{border:0;background:transparent;border-radius:9px;padding:4px 14px;min-height:34px;font-weight:600;font-size:13px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.err{color:var(--danger);font-size:13px;margin:10px 0 0;min-height:1em}
+.note{background:var(--wash);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12px;color:var(--muted);margin-top:12px}
+
+/* dialogs */
+dialog{border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--ink);padding:18px;width:min(460px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto}
+dialog::backdrop{background:rgba(10,14,28,.55)}
+dialog h2{font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4px;line-height:1}
+.dlg-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.x{border:0;background:var(--wash);border-radius:10px;width:36px;height:36px;font-size:18px;line-height:1}
+
+#toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:12px;font-weight:600;font-size:13px;max-width:calc(100vw - 32px);z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+#toast.err{background:var(--danger);color:#fff}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <a class="back" href="index.html"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg>Back to timetable</a>
+      <h1>Forum</h1>
+      <p class="sub">Talk with students across VIT Pune. Kind words only: profanity, links and contact details are blocked.</p>
+    </div>
+    <div class="acct" id="acct"></div>
+  </header>
+
+  <div class="bar">
+    <div class="chips" id="chips" role="group" aria-label="Filter by category"></div>
+    <button type="button" class="btn primary" id="newBtn">+ New post</button>
+  </div>
+
+  <main id="main" aria-live="polite"></main>
+</div>
+
+<!-- Sign in / create account -->
+<dialog id="authDlg" aria-labelledby="authTitle">
+  <div class="dlg-head"><div><h2 id="authTitle">Join the forum</h2><p class="hint" style="margin:0">Verified with your college email, so every account is a real student.</p></div><button type="button" class="x" data-close aria-label="Close">&times;</button></div>
+  <div class="seg" role="group" aria-label="Mode" style="margin-top:12px">
+    <button type="button" id="tabIn" aria-pressed="true">Sign in</button>
+    <button type="button" id="tabUp" aria-pressed="false">Create account</button>
+  </div>
+  <form id="authForm" autocomplete="on" novalidate>
+    <div id="uWrap" hidden>
+      <label class="f" for="aUser">Choose a username</label>
+      <input type="text" id="aUser" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="20">
+      <p class="hint" id="aUserHint">&nbsp;</p>
+      <div id="claimWrap" hidden>
+        <label class="f" for="aClaim">Admin code</label>
+        <input type="password" id="aClaim" autocomplete="off" spellcheck="false">
+      </div>
+    </div>
+    <label class="f" for="aEmail" id="aEmailLbl">Email</label>
+    <input type="email" id="aEmail" name="email" autocomplete="email" autocapitalize="none" spellcheck="false" required>
+    <p class="hint" id="aEmailHint">&nbsp;</p>
+    <label class="f" for="aPass">Password</label>
+    <input type="password" id="aPass" name="password" autocomplete="current-password" minlength="8" required>
+    <div id="upOnly" hidden>
+      <label class="f" for="aPass2">Confirm password</label>
+      <input type="password" id="aPass2" autocomplete="new-password" minlength="8">
+      <div class="note">Your email is only used to verify you and reset your password. It is never shown to anyone. Your username is your public name.</div>
+      <div class="priv" id="aPicker"></div>
+    </div>
+    <p class="err" id="authErr" role="alert"></p>
+    <div id="resendWrap" hidden><button type="button" class="btn sm" id="resendBtn">Resend confirmation email</button></div>
+    <button type="submit" class="btn primary" id="authGo" style="width:100%;margin-top:8px">Sign in</button>
+    <p style="text-align:center;margin:10px 0 0" id="forgotWrap"><button type="button" class="btn sm" id="forgotBtn" style="border:0;background:transparent;text-decoration:underline">Forgot password?</button></p>
+  </form>
+  <div id="authDone" hidden>
+    <h3 style="margin:18px 0 6px;font-size:18px">Check your inbox</h3>
+    <p id="authDoneTxt" style="margin:0 0 10px"></p>
+    <p class="hint">Click the link in that email to activate your account. Check spam or junk if you don't see it within a few minutes.</p>
+    <button type="button" class="btn" data-close style="width:100%;margin-top:10px">Got it</button>
+  </div>
+</dialog>
+
+<!-- Set new password (after reset link) -->
+<dialog id="pwDlg" aria-labelledby="pwTitle">
+  <div class="dlg-head"><h2 id="pwTitle">Set a new password</h2><button type="button" class="x" data-close aria-label="Close">&times;</button></div>
+  <form id="pwForm" novalidate>
+    <label class="f" for="npPass">New password</label>
+    <input type="password" id="npPass" autocomplete="new-password" minlength="8">
+    <label class="f" for="npPass2">Confirm new password</label>
+    <input type="password" id="npPass2" autocomplete="new-password" minlength="8">
+    <p class="err" id="pwErr" role="alert"></p>
+    <button type="submit" class="btn primary" id="pwGo" style="width:100%">Save password</button>
+  </form>
+</dialog>
+
+<!-- New post -->
+<dialog id="composeDlg" aria-labelledby="cTitleH">
+  <div class="dlg-head"><h2 id="cTitleH">New post</h2><button type="button" class="x" data-close aria-label="Close">&times;</button></div>
+  <form id="composeForm" novalidate>
+    <label class="f" for="cCat">Category</label>
+    <select id="cCat"></select>
+    <label class="f" for="cTitle">Title</label>
+    <input type="text" id="cTitle" maxlength="120" required>
+    <label class="f" for="cBody">Message</label>
+    <textarea id="cBody" maxlength="3000" required></textarea>
+    <p class="hint"><span id="cCount">0</span>/3000. No profanity, links, emails or phone numbers.</p>
+    <p class="err" id="composeErr" role="alert"></p>
+    <button type="submit" class="btn primary" id="composeGo" style="width:100%">Post</button>
+  </form>
+</dialog>
+
+<!-- Account settings -->
+<dialog id="setDlg" aria-labelledby="sTitleH">
+  <div class="dlg-head"><div><h2 id="sTitleH">Your profile</h2><p class="hint" style="margin:0" id="sWho"></p></div><button type="button" class="x" data-close aria-label="Close">&times;</button></div>
+  <div class="priv" id="sPicker"></div>
+  <p class="err" id="setErr" role="alert"></p>
+  <button type="button" class="btn primary" id="setSave" style="width:100%">Save</button>
+  <div id="adminBox" hidden>
+    <h3 style="margin:18px 0 4px;font-size:14px">Admin: manage a user</h3>
+    <div class="row2"><input type="text" id="banUser" placeholder="username" autocapitalize="none" spellcheck="false"><div class="row2"><button type="button" class="btn danger" id="banBtn">Ban</button><button type="button" class="btn" id="unbanBtn">Unban</button></div></div>
+  </div>
+  <button type="button" class="btn" id="logoutBtn" style="width:100%;margin-top:14px">Log out</button>
+</dialog>
+
+<div id="toast" hidden></div>
+
+<script>
+'use strict';
+/* ---------- Config (same public Supabase project as the timetable; anon key is meant to be public) ---------- */
+var SUPA='https://fqfzygubyjqkimsphmdn.supabase.co';
+var KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxZnp5Z3VieWpxa2ltc3BobWRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NzQwMDYsImV4cCI6MjEwNTQ1MDAwNn0.k0T2HEH8cJlrQvxHWU4lcImLgtcXKGTAaowKyNDg1gI';
+var ALLOWED_DOMAINS=['vit.edu'];         // UX hint only. The database is the real gatekeeper (table forum_private, key allowed_domains)
+var ADMIN_USERNAME='vedant_bhat';
+var CATS=['General','Academics','Timetable','Events','Help'];
+var BRANCH_DISPLAY={CSAIML:'CSE(AI-ML)',CSAI:'CSE (AI)',AIDS:'AI & DS',CSSE:'CSE(Software)',CSCBI:'CSE (IoT & CSBT)',CSDS:'CSE (Data Science)',CV:'Civil',IC:'Instrumentation',ME:'Mechanical',ET:'EnTC'};
+function branchLabel(c){return BRANCH_DISPLAY[c]||c}
+
+/* ---------- Tiny helpers (all user content goes through textContent, never innerHTML) ---------- */
+var $=function(s,r){return (r||document).querySelector(s)};
+function h(tag,attrs,kids){
+  var e=document.createElement(tag);
+  Object.keys(attrs||{}).forEach(function(k){
+    var v=attrs[k]; if(v==null||v===false) return;
+    if(k==='class') e.className=v; else if(k==='text') e.textContent=v;
+    else if(k.slice(0,2)==='on') e.addEventListener(k.slice(2),v); else e.setAttribute(k,v===true?'':v);
+  });
+  (kids||[]).forEach(function(c){ if(c==null||c===false) return; e.appendChild(typeof c==='string'?document.createTextNode(c):c); });
+  return e;
+}
+function clear(n){while(n.firstChild)n.removeChild(n.firstChild)}
+var toastT; function toast(msg,isErr){var t=$('#toast');t.textContent=msg;t.className=isErr?'err':'';t.hidden=false;clearTimeout(toastT);toastT=setTimeout(function(){t.hidden=true},3800)}
+function ago(iso){
+  var s=Math.max(0,(Date.now()-new Date(iso).getTime())/1000);
+  if(s<60) return 'just now'; if(s<3600) return Math.floor(s/60)+'m ago'; if(s<86400) return Math.floor(s/3600)+'h ago';
+  if(s<604800) return Math.floor(s/86400)+'d ago';
+  return new Date(iso).toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'});
+}
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function lsDel(k){try{localStorage.removeItem(k)}catch(e){}}
+
+/* ---------- Session + API ---------- */
+var sess=null; try{sess=JSON.parse(lsGet('vit-forum-session')||'null')}catch(e){}
+var me=null, refreshing=null;
+function setSess(j){ sess={at:j.access_token,rt:j.refresh_token,exp:j.expires_at||Math.floor(Date.now()/1000)+(j.expires_in||3600)}; lsSet('vit-forum-session',JSON.stringify(sess)); }
+function clearSess(){ sess=null; me=null; lsDel('vit-forum-session'); }
+
+async function raw(path,opts,bearer){
+  opts=opts||{};
+  var r=await fetch(SUPA+path,{method:opts.method||'GET',headers:{apikey:KEY,Authorization:'Bearer '+bearer,'Content-Type':'application/json'},body:opts.body?JSON.stringify(opts.body):undefined});
+  var j=null; try{j=await r.json()}catch(e){}
+  if(!r.ok){
+    var e=new Error((j&&(j.message||j.msg||j.error_description||j.error))||('HTTP '+r.status));
+    e.status=r.status; e.code=(j&&(j.error_code||j.code))||''; throw e;
+  }
+  return j;
+}
+async function token(){
+  if(!sess) return null;
+  if(sess.exp-Date.now()/1000>60) return sess.at;
+  if(!refreshing){
+    refreshing=raw('/auth/v1/token?grant_type=refresh_token',{method:'POST',body:{refresh_token:sess.rt}},KEY)
+      .then(function(j){setSess(j);return sess.at})
+      .catch(function(e){ if(e.status>=400&&e.status<500){clearSess();renderAcct();} return null; })
+      .finally(function(){refreshing=null});
+  }
+  return refreshing;
+}
+async function rpc(name,args,authed){
+  var bearer=KEY;
+  if(authed){ bearer=await token(); if(!bearer){var e=new Error('forum:auth');throw e;} }
+  return raw('/rest/v1/rpc/'+name,{method:'POST',body:args||{}},bearer);
+}
+function friendly(e){
+  var m=(e&&e.message)||'';
+  var map={
+    'forum:blocked':'That contains words that are not allowed here. Please rephrase it.',
+    'forum:contact':'Links, email addresses and phone numbers are not allowed.',
+    'forum:rate':'You are posting too fast. Please wait a few minutes.',
+    'forum:banned':'Your account has been suspended.',
+    'forum:auth':'Please sign in first.',
+    'forum:missing':'That post no longer exists.',
+    'forum:no_profile':'This account has no forum profile.',
+    'forum:invalid':'Something in that request is not valid.',
+    'forum:domain':'Please use your college email address.',
+    'forum:alias':'Email aliases with a + are not allowed.',
+    'forum:taken':'An account already exists for that email.'
+  };
+  for(var k in map){ if(m.indexOf(k)>-1) return map[k]; }
+  if(e&&e.status===401) return 'Your session expired. Please sign in again.';
+  if(/Failed to fetch|NetworkError|Load failed/i.test(m)) return 'Network problem. Check your connection and try again.';
+  return 'Something went wrong. Please try again.';
+}
+
+/* ---------- Divisions (public timetable data) ---------- */
+var DIVS=[];
+var divsReady=raw('/rest/v1/tt_divisions?select=slug,branch,division&order=branch.asc,division.asc',{},KEY).then(function(rows){
+  DIVS=rows.map(function(r){return {slug:r.slug,branch:r.branch,key:r.division.split('-').pop().trim()}});
+}).catch(function(){});
+
+/* Branch / division picker with two independent public-visibility switches */
+function makePicker(host,opts){
+  clear(host);
+  var branches=[]; DIVS.forEach(function(d){if(branches.indexOf(d.branch)<0)branches.push(d.branch)});
+  var selB=h('select',{id:host.id+'B','aria-label':'Branch'},[h('option',{value:'',text:'Not set'})].concat(branches.map(function(b){return h('option',{value:b,text:branchLabel(b)})})));
+  var selD=h('select',{id:host.id+'D','aria-label':'Division',disabled:true},[h('option',{value:'',text:'Division'})]);
+  var cB=h('input',{type:'checkbox',id:host.id+'cb'}), cD=h('input',{type:'checkbox',id:host.id+'cd'});
+  var prev=h('p',{class:'hint'});
+  function fillD(){
+    clear(selD); selD.appendChild(h('option',{value:'',text:'Division'}));
+    DIVS.filter(function(d){return d.branch===selB.value}).forEach(function(d){selD.appendChild(h('option',{value:d.slug,text:'Div '+d.key}))});
+    selD.disabled=!selB.value;
+  }
+  function sync(){
+    var has=!!selD.value; cB.disabled=!has; cD.disabled=!has;
+    if(!has){cB.checked=false;cD.checked=false}
+    var parts=[]; if(cB.checked){var d=DIVS.find(function(x){return x.slug===selD.value});if(d)parts.push(branchLabel(d.branch))}
+    if(cD.checked){var d2=DIVS.find(function(x){return x.slug===selD.value});if(d2)parts.push('Div '+d2.key)}
+    prev.textContent=parts.length?('Others will see: '+(opts.username?'@'+opts.username+' \u00b7 ':'')+parts.join(' \u00b7 ')):'Others will see only your username.';
+  }
+  selB.addEventListener('change',function(){fillD();sync()}); selD.addEventListener('change',sync); cB.addEventListener('change',sync); cD.addEventListener('change',sync);
+  host.appendChild(h('b',{text:'Your class (optional)'}));
+  host.appendChild(h('p',{class:'hint',text:'Private by default. Choose exactly what other people can see on your posts.'}));
+  host.appendChild(h('div',{class:'row2',style:'margin-top:8px'},[selB,selD]));
+  host.appendChild(h('label',{class:'chk',for:cB.id},[cB,h('span',{},['Show my branch',h('small',{text:'Displays your branch next to your username.'})])]));
+  host.appendChild(h('label',{class:'chk',for:cD.id},[cD,h('span',{},['Show my division',h('small',{text:'Displays your division, separately from the branch.'})])]));
+  host.appendChild(prev);
+  var init=opts.slug; 
+  if(!init){ var tb=lsGet('tt-branch'),td=lsGet('tt-div'); var m=DIVS.find(function(d){return d.branch===tb&&d.key===td}); if(m&&opts.prefill) init=m.slug; }
+  var dd=DIVS.find(function(d){return d.slug===init});
+  if(dd){selB.value=dd.branch;fillD();selD.value=dd.slug;}
+  cB.checked=!!opts.showBranch&&!!dd; cD.checked=!!opts.showDiv&&!!dd; sync();
+  return {slug:function(){return selD.value||''},showBranch:function(){return cB.checked},showDiv:function(){return cD.checked},refresh:function(u){opts.username=u;sync()}};
+}
+
+/* ---------- Account UI ---------- */
+function whoLine(u,isAdmin,branch,div){
+  var n=h('span',{class:'who'},[h('strong',{text:'@'+u})]);
+  var wrap=h('span',{style:'display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px'},[n]);
+  if(isAdmin) wrap.appendChild(h('span',{class:'badge',text:'Admin'}));
+  if(branch) wrap.appendChild(h('span',{class:'tag',text:branchLabel(branch)}));
+  if(div) wrap.appendChild(h('span',{class:'tag',text:'Div '+div}));
+  return wrap;
+}
+function renderAcct(){
+  var a=$('#acct'); clear(a);
+  if(me){
+    a.appendChild(h('span',{class:'chip-me'},[whoLine(me.username,me.is_admin,null,null)]));
+    a.appendChild(h('button',{type:'button',class:'btn',onclick:openSettings,text:'Profile'}));
+  } else {
+    a.appendChild(h('button',{type:'button',class:'btn',onclick:function(){openAuth('in')},text:'Sign in'}));
+  }
+}
+async function loadMe(){
+  if(!sess){me=null;renderAcct();return}
+  try{ var r=await rpc('forum_me',{},true); me=(r&&r[0])||null; if(!me) clearSess(); }catch(e){ if(e.status===401||/forum:auth/.test(e.message)){clearSess();} }
+  renderAcct();
+}
+
+/* Auth dialog */
+var authMode='in', authPicker=null, chkT=0, checkTimer, lastSignupEmail='';
+function openAuth(mode){
+  $('#authForm').hidden=false; $('#authDone').hidden=true; $('#aPass').value=''; $('#aPass2').value='';
+  setAuthMode(mode); var d=$('#authDlg'); if(!d.open) d.showModal(); setTimeout(function(){(mode==='up'?$('#aUser'):$('#aEmail')).focus()},0);
+}
+function setAuthMode(m){
+  authMode=m; var up=m==='up';
+  $('#tabIn').setAttribute('aria-pressed',String(!up)); $('#tabUp').setAttribute('aria-pressed',String(up));
+  $('#uWrap').hidden=!up; $('#upOnly').hidden=!up; $('#forgotWrap').hidden=up;
+  $('#authGo').textContent=up?'Create account':'Sign in';
+  $('#authTitle').textContent=up?'Create your account':'Welcome back';
+  $('#aEmailLbl').textContent=up?'College email':'Email';
+  $('#aPass').setAttribute('autocomplete',up?'new-password':'current-password');
+  $('#authErr').textContent=''; $('#resendWrap').hidden=true;
+  $('#aUserHint').innerHTML='&nbsp;'; $('#aUserHint').className='hint';
+  $('#aEmailHint').innerHTML='&nbsp;'; $('#aEmailHint').className='hint';
+  if(up){ divsReady.then(function(){ if(!$('#aPicker').firstChild) authPicker=makePicker($('#aPicker'),{prefill:true,username:$('#aUser').value.trim().toLowerCase()}); }); }
+  updateClaim(); if(up&&$('#aUser').value) checkUser();
+}
+function updateClaim(){ $('#claimWrap').hidden=!(authMode==='up'&&$('#aUser').value.trim().toLowerCase()===ADMIN_USERNAME); }
+var USER_MSG={invalid:'3 to 20 characters: letters, numbers and underscore only.',taken:'That username is already taken.',reserved:'That username is reserved.',blocked:'That username is not allowed.'};
+var EMAIL_MSG={invalid:'That does not look like a valid email.',domain:'Use your college email ('+ALLOWED_DOMAINS.map(function(d){return '@'+d}).join(' or ')+').',alias:'Email aliases with a + are not allowed.'};
+async function checkUser(){
+  var u=$('#aUser').value.trim().toLowerCase(), hint=$('#aUserHint'), my=++chkT;
+  updateClaim(); if(authPicker) authPicker.refresh(u);
+  if(authMode!=='up'||!u){hint.innerHTML='&nbsp;';hint.className='hint';return}
+  try{
+    var s=await rpc('forum_username_status',{u:u,claim:$('#aClaim').value.trim()||null},false);
+    if(my!==chkT) return;
+    if(s==='ok'){hint.textContent='Username is available.';hint.className='hint ok'} else {hint.textContent=USER_MSG[s]||'Not available.';hint.className='hint bad'}
+  }catch(e){}
+}
+async function checkEmail(){
+  var e=$('#aEmail').value.trim().toLowerCase(), hint=$('#aEmailHint');
+  if(authMode!=='up'||!e){hint.innerHTML='&nbsp;';hint.className='hint';return}
+  try{
+    var s=await rpc('forum_email_status',{p_email:e,p_username:$('#aUser').value.trim().toLowerCase()||null,p_claim:$('#aClaim').value.trim()||null},false);
+    if(s==='ok'){hint.textContent='Looks good. We will email a confirmation link.';hint.className='hint ok'} else {hint.textContent=EMAIL_MSG[s]||'That email cannot be used.';hint.className='hint bad'}
+  }catch(x){}
+}
+function redirectUrl(){ return encodeURIComponent(location.origin+location.pathname); }
+async function submitAuth(ev){
+  ev.preventDefault();
+  var err=$('#authErr'), btn=$('#authGo'), email=$('#aEmail').value.trim().toLowerCase(), p=$('#aPass').value;
+  err.textContent=''; $('#resendWrap').hidden=true;
+  if(!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/.test(email)){err.textContent=EMAIL_MSG.invalid;return}
+  if(p.length<8){err.textContent='Password must be at least 8 characters.';return}
+  btn.disabled=true;
+  try{
+    if(authMode==='up'){
+      var u=$('#aUser').value.trim().toLowerCase(), claim=$('#aClaim').value.trim();
+      if(!/^[a-z0-9_]{3,20}$/.test(u)){err.textContent=USER_MSG.invalid;return}
+      if(p!==$('#aPass2').value){err.textContent='Passwords do not match.';return}
+      var st=await rpc('forum_username_status',{u:u,claim:claim||null},false);
+      if(st!=='ok'){err.textContent=USER_MSG[st]||'That username is not available.';return}
+      var es=await rpc('forum_email_status',{p_email:email,p_username:u,p_claim:claim||null},false);
+      if(es!=='ok'){err.textContent=EMAIL_MSG[es]||'That email cannot be used.';return}
+      var data={username:u,show_branch:String(authPicker?authPicker.showBranch():false),show_division:String(authPicker?authPicker.showDiv():false)};
+      if(authPicker&&authPicker.slug()) data.div_slug=authPicker.slug();
+      if(claim) data.claim=claim;
+      var j;
+      try{ j=await raw('/auth/v1/signup?redirect_to='+redirectUrl(),{method:'POST',body:{email:email,password:p,data:data}},KEY); }
+      catch(e){
+        if(e.code==='over_email_send_rate_limit'||/rate limit/i.test(e.message)) err.textContent='Too many sign-up emails right now. Please try again in a little while.';
+        else if(/Database error/i.test(e.message)) err.textContent='Could not create that account. The username or email may already be in use.';
+        else if(e.code==='email_address_invalid'||/invalid/i.test(e.message)&&/email/i.test(e.message)) err.textContent='That email address was rejected. Check it and try again.';
+        else err.textContent=friendly(e);
+        return;
+      }
+      if(j&&j.access_token){ setSess(j); await loadMe(); if(me){$('#authDlg').close();toast('Welcome, @'+me.username);route();return} }
+      lastSignupEmail=email;
+      $('#authForm').hidden=true; $('#authDone').hidden=false;
+      $('#authDoneTxt').textContent='We sent a confirmation link to '+email+'. If you already have an account with that email, sign in instead or use "Forgot password".';
+    } else {
+      var j2=await raw('/auth/v1/token?grant_type=password',{method:'POST',body:{email:email,password:p}},KEY);
+      setSess(j2); await loadMe();
+      if(me){ $('#authDlg').close(); toast('Signed in as @'+me.username); route(); }
+      else err.textContent='This email has no forum profile.';
+    }
+  }catch(e){
+    if(e.code==='email_not_confirmed'||/not confirmed/i.test(e.message)){ err.textContent='Please confirm your email first. Check your inbox and spam folder.'; $('#resendWrap').hidden=false; }
+    else if(e.status===400&&/invalid login/i.test(e.message)) err.textContent='Wrong email or password.';
+    else err.textContent=friendly(e);
+  }finally{ btn.disabled=false; }
+}
+async function resendConfirm(){
+  var email=$('#aEmail').value.trim().toLowerCase(); if(!email) return;
+  try{ await raw('/auth/v1/resend?redirect_to='+redirectUrl(),{method:'POST',body:{type:'signup',email:email}},KEY); toast('Confirmation email sent'); }
+  catch(e){ toast(/rate limit/i.test(e.message)?'Please wait a minute before asking again.':friendly(e),true); }
+}
+async function forgotPw(){
+  var email=$('#aEmail').value.trim().toLowerCase(), err=$('#authErr');
+  if(!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/.test(email)){err.textContent='Enter your email above first.';return}
+  try{ await raw('/auth/v1/recover?redirect_to='+redirectUrl(),{method:'POST',body:{email:email}},KEY); err.textContent=''; toast('If that email has an account, a reset link is on its way.'); }
+  catch(e){ err.textContent=/rate limit/i.test(e.message)?'Please wait a minute before asking again.':friendly(e); }
+}
+async function submitNewPw(ev){
+  ev.preventDefault(); var er=$('#pwErr'), a=$('#npPass').value, b=$('#npPass2').value; er.textContent='';
+  if(a.length<8){er.textContent='Password must be at least 8 characters.';return}
+  if(a!==b){er.textContent='Passwords do not match.';return}
+  var go=$('#pwGo'); go.disabled=true;
+  try{ var t=await token(); if(!t) throw new Error('forum:auth'); await raw('/auth/v1/user',{method:'PUT',body:{password:a}},t); $('#pwDlg').close(); $('#npPass').value='';$('#npPass2').value=''; toast('Password updated'); }
+  catch(e){ er.textContent=/same|different/i.test(e.message)?'Choose a password you have not used before.':friendly(e); } finally{ go.disabled=false; }
+}
+/* Links from Supabase emails come back as #access_token=... (confirm / reset) or #error=... */
+function handleAuthHash(){
+  var hs=location.hash; if(!/^#(access_token|error)=/.test(hs)&&!/[#&](access_token|error_code)=/.test(hs)) return null;
+  var q={}; hs.replace(/^#/,'').split('&').forEach(function(kv){var i=kv.indexOf('=');if(i>0)q[decodeURIComponent(kv.slice(0,i))]=decodeURIComponent(kv.slice(i+1).replace(/\+/g,' '))});
+  history.replaceState(null,'',location.pathname+location.search+'#/');
+  if(q.access_token){ setSess({access_token:q.access_token,refresh_token:q.refresh_token,expires_in:Number(q.expires_in)||3600}); return q.type||'signup'; }
+  if(q.error_code||q.error){ setTimeout(function(){toast(q.error_code==='otp_expired'?'That link has expired. Request a new one.':'That link is not valid.',true)},300); }
+  return null;
+}
+/* Settings dialog */
+var setPicker=null;
+async function openSettings(){
+  if(!me) return; await divsReady;
+  $('#sWho').textContent='@'+me.username; $('#setErr').textContent='';
+  setPicker=makePicker($('#sPicker'),{slug:me.div_slug,showBranch:me.show_branch,showDiv:me.show_division,username:me.username});
+  $('#adminBox').hidden=!me.is_admin; $('#banUser').value='';
+  $('#setDlg').showModal();
+}
+async function saveSettings(){
+  var b=$('#setSave'); b.disabled=true; $('#setErr').textContent='';
+  try{
+    await rpc('forum_update_settings',{p_div_slug:setPicker.slug()||null,p_show_branch:setPicker.showBranch(),p_show_division:setPicker.showDiv()},true);
+    await loadMe(); $('#setDlg').close(); toast('Profile updated'); route();
+  }catch(e){ $('#setErr').textContent=friendly(e); } finally{ b.disabled=false; }
+}
+async function logout(){
+  try{ if(sess) await raw('/auth/v1/logout',{method:'POST'},sess.at); }catch(e){}
+  clearSess(); renderAcct(); $('#setDlg').close(); toast('Logged out'); route();
+}
+async function banAct(ban){
+  var u=$('#banUser').value.trim().toLowerCase(); if(!u) return;
+  if(ban&&!confirm('Ban @'+u+'? They will no longer be able to post or reply.')) return;
+  try{ await rpc('forum_set_ban',{p_username:u,p_banned:ban},true); toast((ban?'Banned @':'Unbanned @')+u); }catch(e){ toast(friendly(e),true); }
+}
+
+/* ---------- Feed ---------- */
+var feed={cat:null,offset:0,done:false,loading:false};
+var PAGE=20;
+function renderChips(){
+  var c=$('#chips'); clear(c);
+  [null].concat(CATS).forEach(function(k){
+    c.appendChild(h('button',{type:'button','aria-pressed':String(feed.cat===k),text:k||'All',onclick:function(){feed.cat=k;location.hash='#/';renderChips();loadFeed(true)}}));
+  });
+}
+function postCard(p){
+  var kids=[];
+  if(p.pinned) kids.push(h('div',{class:'pin',text:'Pinned'}));
+  kids.push(h('h2',{text:p.title}));
+  kids.push(h('p',{class:'pv',text:p.body}));
+  kids.push(h('div',{class:'meta'},[whoLine(p.username,p.is_admin,p.branch,p.division),h('span',{text:'\u00b7'}),h('span',{text:ago(p.created_at)}),h('span',{text:'\u00b7'}),h('span',{class:'tag',text:p.category}),h('span',{text:'\u00b7'}),h('span',{text:p.reply_count+(Number(p.reply_count)===1?' reply':' replies')})]));
+  return h('a',{class:'card',href:'#/post/'+p.id},kids);
+}
+async function loadFeed(reset){
+  if(feed.loading) return; feed.loading=true;
+  var main=$('#main');
+  if(reset){feed.offset=0;feed.done=false;clear(main);main.appendChild(h('p',{class:'empty',text:'Loading...'}))}
+  try{
+    var rows=await rpc('forum_posts_list',{p_category:feed.cat,p_offset:feed.offset,p_limit:PAGE},false);
+    if(reset) clear(main);
+    var old=$('#more'); if(old) old.remove();
+    rows.forEach(function(p){main.appendChild(postCard(p))});
+    feed.offset+=rows.length; feed.done=rows.length<PAGE;
+    if(reset&&!rows.length) main.appendChild(h('p',{class:'empty',text:'No posts yet. Be the first to start a conversation.'}));
+    if(!feed.done) main.appendChild(h('button',{type:'button',class:'btn',id:'more',style:'width:100%',onclick:function(){loadFeed(false)},text:'Load more'}));
+  }catch(e){
+    if(reset) clear(main);
+    main.appendChild(h('p',{class:'empty',text:friendly(e)}));
+  }finally{ feed.loading=false; }
+}
+
+/* ---------- Post view ---------- */
+async function showPost(id){
+  var main=$('#main'); clear(main); main.appendChild(h('p',{class:'empty',text:'Loading...'}));
+  $('.bar').hidden=true;
+  try{
+    var res=await Promise.all([rpc('forum_post_get',{p_id:id},false),rpc('forum_replies_list',{p_post_id:id},false)]);
+    var p=res[0][0], replies=res[1];
+    clear(main);
+    main.appendChild(h('a',{class:'back',href:'#/'},['\u2190 All posts']));
+    if(!p){ main.appendChild(h('p',{class:'empty',text:'This post was not found. It may have been deleted.'})); return; }
+    var own=me&&me.username===p.username, adm=me&&me.is_admin;
+    var card=h('article',{class:'card',style:'margin-top:6px'});
+    if(p.pinned) card.appendChild(h('div',{class:'pin',text:'Pinned'}));
+    card.appendChild(h('h2',{text:p.title,style:'font-size:20px'}));
+    card.appendChild(h('div',{class:'meta'},[whoLine(p.username,p.is_admin,p.branch,p.division),h('span',{text:'\u00b7'}),h('span',{text:ago(p.created_at)}),h('span',{text:'\u00b7'}),h('span',{class:'tag',text:p.category})]));
+    card.appendChild(h('p',{class:'post-body',text:p.body}));
+    var act=h('div',{class:'actions'});
+    if(own||adm) act.appendChild(h('button',{type:'button',class:'btn sm danger',text:'Delete post',onclick:async function(){
+      if(!confirm('Delete this post and its replies?')) return;
+      try{await rpc('forum_delete_post',{p_id:p.id},true);toast('Post deleted');location.hash='#/'}catch(e){toast(friendly(e),true)}
+    }}));
+    if(adm){
+      act.appendChild(h('button',{type:'button',class:'btn sm',text:p.pinned?'Unpin':'Pin',onclick:async function(){
+        try{await rpc('forum_set_pin',{p_id:p.id,p_pinned:!p.pinned},true);showPost(id)}catch(e){toast(friendly(e),true)}
+      }}));
+      if(!p.is_admin) act.appendChild(h('button',{type:'button',class:'btn sm danger',text:'Ban user',onclick:async function(){
+        if(!confirm('Ban @'+p.username+'?')) return;
+        try{await rpc('forum_set_ban',{p_username:p.username,p_banned:true},true);toast('Banned @'+p.username)}catch(e){toast(friendly(e),true)}
+      }}));
+    }
+    if(act.firstChild) card.appendChild(act);
+    main.appendChild(card);
+
+    main.appendChild(h('h2',{class:'h-sec',text:replies.length?(replies.length+(replies.length===1?' reply':' replies')):'Replies'}));
+    var rc=h('div',{class:'card'});
+    if(!replies.length) rc.appendChild(h('p',{class:'hint',style:'margin:0',text:'No replies yet.'}));
+    replies.forEach(function(r,i){
+      var box=h('div',{class:i?'reply':''},[h('div',{class:'meta',style:'margin:0'},[whoLine(r.username,r.is_admin,r.branch,r.division),h('span',{text:'\u00b7'}),h('span',{text:ago(r.created_at)})]),h('p',{text:r.body})]);
+      if(me&&(me.is_admin||me.username===r.username)) box.appendChild(h('div',{class:'actions',style:'margin-top:6px'},[h('button',{type:'button',class:'btn sm danger',text:'Delete',onclick:async function(){
+        if(!confirm('Delete this reply?')) return;
+        try{await rpc('forum_delete_reply',{p_id:r.id},true);showPost(id)}catch(e){toast(friendly(e),true)}
+      }})]));
+      rc.appendChild(box);
+    });
+    main.appendChild(rc);
+
+    var form=h('form',{class:'card',novalidate:true});
+    if(me){
+      var ta=h('textarea',{id:'rBody',maxlength:'1500',placeholder:'Write a reply...',style:'min-height:80px','aria-label':'Your reply'});
+      var er=h('p',{class:'err',role:'alert'}); var go=h('button',{type:'submit',class:'btn primary',text:'Reply'});
+      form.appendChild(ta); form.appendChild(h('p',{class:'hint',text:'No profanity, links, emails or phone numbers.'})); form.appendChild(er); form.appendChild(go);
+      form.addEventListener('submit',async function(ev){
+        ev.preventDefault(); er.textContent=''; var body=ta.value.trim(); if(!body){er.textContent='Write something first.';return}
+        go.disabled=true;
+        try{await rpc('forum_create_reply',{p_post_id:id,p_body:body},true);showPost(id)}catch(e){er.textContent=friendly(e);go.disabled=false}
+      });
+    } else {
+      form.appendChild(h('p',{class:'hint',style:'margin:0 0 8px',text:'Sign in to reply.'}));
+      form.appendChild(h('button',{type:'button',class:'btn primary',text:'Sign in or create account',onclick:function(){openAuth('in')}}));
+    }
+    main.appendChild(form);
+  }catch(e){
+    clear(main); main.appendChild(h('a',{class:'back',href:'#/'},['\u2190 All posts'])); main.appendChild(h('p',{class:'empty',text:friendly(e)}));
+  }
+}
+
+/* ---------- Compose ---------- */
+function openCompose(){
+  if(!me){openAuth('in');return}
+  $('#composeErr').textContent=''; $('#composeDlg').showModal(); setTimeout(function(){$('#cTitle').focus()},0);
+}
+async function submitCompose(ev){
+  ev.preventDefault();
+  var er=$('#composeErr'), go=$('#composeGo'); er.textContent='';
+  var title=$('#cTitle').value.trim(), body=$('#cBody').value.trim();
+  if(title.length<3){er.textContent='Title needs at least 3 characters.';return}
+  if(!body){er.textContent='Write a message.';return}
+  go.disabled=true;
+  try{
+    var id=await rpc('forum_create_post',{p_title:title,p_body:body,p_category:$('#cCat').value},true);
+    $('#cTitle').value='';$('#cBody').value='';$('#cCount').textContent='0'; $('#composeDlg').close(); toast('Posted');
+    location.hash='#/post/'+id;
+  }catch(e){er.textContent=friendly(e)}finally{go.disabled=false}
+}
+
+/* ---------- Router + wiring ---------- */
+function route(){
+  var m=/^#\/post\/(\d+)$/.exec(location.hash);
+  if(m){showPost(Number(m[1]));window.scrollTo(0,0)} else { $('.bar').hidden=false; loadFeed(true); }
+}
+window.addEventListener('hashchange',route);
+
+document.querySelectorAll('dialog').forEach(function(d){
+  d.addEventListener('click',function(e){ if(e.target===d||(e.target.closest&&e.target.closest('[data-close]'))) d.close(); });
+});
+$('#newBtn').addEventListener('click',openCompose);
+$('#tabIn').addEventListener('click',function(){setAuthMode('in')});
+$('#tabUp').addEventListener('click',function(){setAuthMode('up')});
+$('#authForm').addEventListener('submit',submitAuth);
+$('#aUser').addEventListener('input',function(){clearTimeout(checkTimer);checkTimer=setTimeout(function(){checkUser();checkEmail()},350)});
+$('#aClaim').addEventListener('input',function(){clearTimeout(checkTimer);checkTimer=setTimeout(function(){checkUser();checkEmail()},350)});
+$('#aEmail').addEventListener('input',function(){clearTimeout(checkTimer);checkTimer=setTimeout(checkEmail,350)});
+$('#resendBtn').addEventListener('click',resendConfirm);
+$('#forgotBtn').addEventListener('click',forgotPw);
+$('#pwForm').addEventListener('submit',submitNewPw);
+$('#composeForm').addEventListener('submit',submitCompose);
+$('#cBody').addEventListener('input',function(){$('#cCount').textContent=this.value.length});
+$('#setSave').addEventListener('click',saveSettings);
+$('#logoutBtn').addEventListener('click',logout);
+$('#banBtn').addEventListener('click',function(){banAct(true)});
+$('#unbanBtn').addEventListener('click',function(){banAct(false)});
+CATS.forEach(function(c){$('#cCat').appendChild(h('option',{value:c,text:c}))});
+
+renderChips(); renderAcct();
+var hashKind=handleAuthHash();
+loadMe().then(function(){
+  route();
+  if(hashKind==='recovery'&&sess){ $('#pwDlg').showModal(); }
+  else if(hashKind&&me){ toast('Email confirmed. Welcome, @'+me.username+'!'); }
+});
+</script>
+</body>
+</html>
