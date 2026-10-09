@@ -80,8 +80,17 @@ a.card:hover{border-color:var(--muted)}
 
 /* forms */
 label.f{display:block;font-size:12.5px;font-weight:700;margin:12px 0 4px}
-input[type=text],input[type=password],select,textarea{width:100%;border:1px solid var(--line);background:var(--wash);border-radius:10px;padding:9px 11px;min-height:42px}
+input[type=text],input[type=password],input[type=email],input[type=search],input[type=number],input[type=url],select,textarea{
+  display:block;width:100%;margin:0;border:1px solid var(--line);background-color:var(--wash);color:var(--ink);border-radius:10px;
+  padding:9px 11px;min-height:42px;font:inherit;line-height:1.35;-webkit-appearance:none;appearance:none}
 textarea{resize:vertical;min-height:110px}
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:.75}
+input:focus,select:focus,textarea:focus{border-color:var(--focus)}
+input:disabled,select:disabled,textarea:disabled{opacity:.55;cursor:not-allowed}
+select{padding-right:32px;cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);
+  background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+input:-webkit-autofill,input:-webkit-autofill:focus{-webkit-text-fill-color:var(--ink);caret-color:var(--ink);box-shadow:0 0 0 100px var(--wash) inset;transition:background-color 9999s}
 .hint{font-size:12px;color:var(--muted);margin:4px 0 0}
 .hint.ok{color:var(--ok)} .hint.bad{color:var(--danger)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
