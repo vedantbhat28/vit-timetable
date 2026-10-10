@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peer Tutoring Sessions</title>
+<style>
+  :root {
+    --bg: #f6f7fb; --card: #fff; --text: #1d2433; --muted: #667085;
+    --primary: #4f46e5; --primary-d: #4338ca; --border: #e4e7ee;
+    --ok: #16a34a; --warn: #d97706; --err: #dc2626;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); }
+  header { background: var(--primary); color: #fff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  header h1 { margin: 0; font-size: 1.25rem; }
+  .user-box { display: flex; gap: 8px; align-items: center; font-size: .9rem; }
+  .user-box select { padding: 6px 8px; border-radius: 6px; border: none; }
+  nav { display: flex; gap: 4px; padding: 0 24px; background: #fff; border-bottom: 1px solid var(--border); overflow-x: auto; }
+  nav button { background: none; border: none; padding: 14px 16px; cursor: pointer; font-size: .95rem; color: var(--muted); border-bottom: 3px solid transparent; white-space: nowrap; }
+  nav button.active { color: var(--primary); border-color: var(--primary); font-weight: 600; }
+  main { max-width: 1000px; margin: 24px auto; padding: 0 16px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+  .card h2, .card h3 { margin-top: 0; }
+  label { display: block; font-size: .85rem; font-weight: 600; margin: 12px 0 4px; }
+  input, select, textarea { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; font: inherit; background: #fff; }
+  .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  button.btn { background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font: inherit; font-weight: 600; margin-top: 14px; }
+  button.btn:hover { background: var(--primary-d); }
+  button.btn.sec { background: #eef0f6; color: var(--text); }
+  button.btn.sm { padding: 6px 10px; font-size: .85rem; margin-top: 0; }
+  button.btn:disabled { opacity: .5; cursor: not-allowed; }
+  .tag { display: inline-block; font-size: .75rem; padding: 2px 8px; border-radius: 999px; background: #eef0f6; color: var(--muted); margin-right: 4px; }
+  .tag.ok { background: #dcfce7; color: var(--ok); }
+  .tag.warn { background: #fef3c7; color: var(--warn); }
+  .tag.err { background: #fee2e2; color: var(--err); }
+  .session { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+  .session .meta { color: var(--muted); font-size: .85rem; margin: 4px 0; }
+  .actions { display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; }
+  .hidden { display: none; }
+  .empty { color: var(--muted); text-align: center; padding: 24px; }
+  .q { border-left: 3px solid var(--primary); padding: 8px 12px; margin: 10px 0; background: #f9faff; border-radius: 0 8px 8px 0; }
+  .q small { color: var(--muted); }
+  .note { font-size: .8rem; color: var(--muted); margin-top: 6px; }
+  .bar { height: 8px; background: #e4e7ee; border-radius: 99px; overflow: hidden; }
+  .bar > span { display: block; height: 100%; background: var(--ok); }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📚 Peer Tutoring Sessions</h1>
+  <div class="user-box">
+    <span>Signed in as</span>
+    <select id="currentUser"></select>
+    <button class="btn sm sec" onclick="addStudentPrompt()">+ Register student</button>
+  </div>
+</header>
+
+<nav id="tabs">
+  <button class="active" data-tab="browse">Browse Sessions</button>
+  <button data-tab="create">Arrange Session</button>
+  <button data-tab="mine">My Sessions</button>
+  <button data-tab="evaluation">AI Evaluation</button>
+  <button data-tab="data">Collected Data</button>
+</nav>
+
+<main>
+  <!-- Browse -->
+  <section id="tab-browse">
+    <div class="card"><h2>Upcoming sessions</h2><div id="browseList"></div></div>
+  </section>
+
+  <!-- Create -->
+  <section id="tab-create" class="hidden">
+    <div class="card">
+      <h2>Arrange a tutoring session</h2>
+      <p class="note">Sessions last 10–60 minutes, with 1–2 teachers and up to 10 learners.</p>
+      <form id="createForm">
+        <label>Topic</label>
+        <input id="topic" required placeholder="e.g. Quadratic equations">
+        <label>Description / key points to cover</label>
+        <textarea id="desc" rows="3" placeholder="Short notes the AI can use when framing evaluation questions"></textarea>
+        <div class="row">
+          <div><label>Date &amp; time</label><input type="datetime-local" id="when" required></div>
+          <div><label>Duration (minutes)</label><input type="number" id="duration" min="10" max="60" value="30" required></div>
+        </div>
+        <label>Teachers (select 1–2)</label>
+        <select id="teachers" multiple size="4"></select>
+        <p class="note">Hold Ctrl / Cmd to select two. The creator is pre-selected if none chosen.</p>
+        <button class="btn" type="submit">Create session</button>
+        <span id="createMsg" class="note"></span>
+      </form>
+    </div>
+  </section>
+
+  <!-- Mine -->
+  <section id="tab-mine" class="hidden">
+    <div class="card"><h2>Teaching</h2><div id="teachingList"></div></div>
+    <div class="card"><h2>Attending</h2><div id="attendingList"></div></div>
+  </section>
+
+  <!-- Evaluation -->
+  <section id="tab-evaluation" class="hidden">
+    <div class="card">
+      <h2>AI session evaluation</h2>
+      <p class="note">Questions are generated from the session topic and the information vault, then used to evaluate session quality and student understanding.</p>
+      <label>Session</label>
+      <select id="evalSession"></select>
+      <div class="row">
+        <div><label>Number of questions</label><input type="number" id="qCount" min="1" max="15" value="5"></div>
+        <div><label>Difficulty</label>
+          <select id="qDiff"><option>Easy</option><option selected>Medium</option><option>Hard</option></select>
+        </div>
+      </div>
+      <button class="btn" id="genBtn">Generate questions</button>
+      <div id="genStatus" class="note"></div>
+    </div>
+    <div class="card hidden" id="quizCard">
+      <h3 id="quizTitle"></h3>
+      <div id="quizBody"></div>
+      <button class="btn" id="submitAnswers">Submit answers</button>
+    </div>
+    <div class="card hidden" id="resultCard"></div>
+  </section>
+
+  <!-- Data -->
+  <section id="tab-data" class="hidden">
+    <div class="card">
+      <h2>Collected data (information vault)</h2>
+      <p class="note">Session info, teachers, attendees, and evaluations are stored locally in this browser for the prototype.</p>
+      <div id="vaultView"></div>
+      <button class="btn sec" onclick="exportVault()">Export JSON</button>
+      <button class="btn sec" onclick="resetVault()">Reset demo data</button>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ---------- CONFIG ---------- */
+// Point this at your backend endpoint that wraps the AI API.
+// Expected: POST {topic, description, count, difficulty, vaultContext}
+//   -> { questions: [{ question, options:[...], answerIndex }] }
+// Never put API keys in front-end code. If the endpoint is empty or fails,
+// a local fallback generator is used so the UI still works.
+const AI_ENDPOINT = "";
+
+const MIN_DUR = 10, MAX_DUR = 60, MAX_STUDENTS = 10, MAX_TEACHERS = 2;
+const KEY = "peerTutorVault.v1";
+
+/* ---------- STORAGE ---------- */
+function seed() {
+  return {
+    students: [
+      { id: "s1", name: "Aarav Sharma" }, { id: "s2", name: "Diya Patel" },
+      { id: "s3", name: "Kabir Singh" }, { id: "s4", name: "Meera Iyer" },
+      { id: "s5", name: "Rohan Desai" }
+    ],
+    sessions: [],
+    evaluations: []
+  };
+}
+let vault;
+try { vault = JSON.parse(localStorage.getItem(KEY)) || seed(); } catch (e) { vault = seed(); }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(vault)); } catch (e) {} }
+const uid = p => p + Math.random().toString(36).slice(2, 8);
+const $ = id => document.getElementById(id);
+const nameOf = id => (vault.students.find(s => s.id === id) || {}).name || "Unknown";
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = iso => new Date(iso).toLocaleString([], { dateStyle: "medium", timeStyle: "short" });
+const me = () => $("currentUser").value;
+
+/* ---------- UI: tabs & users ---------- */
+document.querySelectorAll("#tabs button").forEach(b => b.onclick = () => showTab(b.dataset.tab));
+function showTab(t) {
+  document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("active", b.dataset.tab === t));
+  document.querySelectorAll("main > section").forEach(s => s.classList.add("hidden"));
+  $("tab-" + t).classList.remove("hidden");
+  render();
+}
+function renderUsers() {
+  const cur = $("currentUser").value;
+  $("currentUser").innerHTML = vault.students.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join("");
+  if (cur && vault.students.some(s => s.id === cur)) $("currentUser").value = cur;
+  $("teachers").innerHTML = vault.students.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join("");
+}
+function addStudentPrompt() {
+  const n = prompt("Student name to register:");
+  if (n && n.trim()) { vault.students.push({ id: uid("s"), name: n.trim() }); save(); renderUsers(); render(); }
+}
+$("currentUser").onchange = render;
+
+/* ---------- Sessions ---------- */
+$("createForm").onsubmit = e => {
+  e.preventDefault();
+  const dur = +$("duration").value;
+  const msg = $("createMsg");
+  if (dur < MIN_DUR || dur > MAX_DUR) { msg.textContent = `Duration must be ${MIN_DUR}–${MAX_DUR} minutes.`; return; }
+  let teachers = [...$("teachers").selectedOptions].map(o => o.value);
+  if (!teachers.length) teachers = [me()];
+  if (teachers.length > MAX_TEACHERS) { msg.textContent = "Choose at most 2 teachers."; return; }
+  vault.sessions.push({
+    id: uid("ses"), topic: $("topic").value.trim(), description: $("desc").value.trim(),
+    when: $("when").value, duration: dur, teachers, attendees: [], createdBy: me(), createdAt: new Date().toISOString()
+  });
+  save(); e.target.reset(); $("duration").value = 30; msg.textContent = "Session created ✔";
+  setTimeout(() => msg.textContent = "", 2500); render();
+};
+function join(id) {
+  const s = vault.sessions.find(x => x.id === id), u = me();
+  if (s.teachers.includes(u) || s.attendees.includes(u)) return;
+  if (s.attendees.length >= MAX_STUDENTS) { alert("This session is full (max 10 students)."); return; }
+  s.attendees.push(u); save(); render();
+}
+function leave(id) {
+  const s = vault.sessions.find(x => x.id === id);
+  s.attendees = s.attendees.filter(a => a !== me()); save(); render();
+}
+function sessionCard(s, mode) {
+  const u = me(), joined = s.attendees.includes(u), teaching = s.teachers.includes(u), full = s.attendees.length >= MAX_STUDENTS;
+  let btn = "";
+  if (teaching) btn = `<span class="tag ok">You're teaching</span>`;
+  else if (joined) btn = `<button class="btn sm sec" onclick="leave('${s.id}')">Leave</button>`;
+  else btn = `<button class="btn sm" ${full ? "disabled" : ""} onclick="join('${s.id}')">${full ? "Full" : "Join"}</button>`;
+  return `<div class="session">
+    <div>
+      <strong>${esc(s.topic)}</strong>
+      <div class="meta">${fmt(s.when)} · ${s.duration} min</div>
+      <div class="meta">Teacher(s): ${s.teachers.map(t => esc(nameOf(t))).join(", ")}</div>
+      <div class="meta">Students: ${s.attendees.length}/${MAX_STUDENTS}${s.attendees.length ? " — " + s.attendees.map(a => esc(nameOf(a))).join(", ") : ""}</div>
+      ${s.description ? `<div class="meta">${esc(s.description)}</div>` : ""}
+    </div>
+    <div class="actions">${btn}<button class="btn sm sec" onclick="goEval('${s.id}')">Evaluate</button></div>
+  </div>`;
+}
+function goEval(id) { showTab("evaluation"); $("evalSession").value = id; }
+
+/* ---------- AI question generation ---------- */
+function vaultContext(s) {
+  return {
+    topic: s.topic, description: s.description, duration: s.duration,
+    teachers: s.teachers.map(nameOf), attendees: s.attendees.map(nameOf),
+    previousSessionsOnTopic: vault.sessions.filter(x => x.id !== s.id && x.topic.toLowerCase() === s.topic.toLowerCase()).length
+  };
+}
+async function generateQuestions(s, count, difficulty) {
+  if (AI_ENDPOINT) {
+    try {
+      const r = await fetch(AI_ENDPOINT, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic: s.topic, description: s.description, count, difficulty, vaultContext: vaultContext(s) })
+      });
+      if (!r.ok) throw new Error(r.status);
+      const data = await r.json();
+      if (Array.isArray(data.questions) && data.questions.length) return { qs: data.questions, source: "AI API" };
+    } catch (e) { console.warn("AI API failed, using fallback", e); }
+  }
+  return { qs: fallbackQuestions(s, count), source: "local fallback (no AI endpoint configured)" };
+}
+// Placeholder so the UI is testable without a backend.
+function fallbackQuestions(s, count) {
+  const pts = (s.description || "").split(/[.\n;]+/).map(x => x.trim()).filter(Boolean);
+  const templates = [
+    `In your own words, what is the main idea of "${s.topic}"?`,
+    `Give one example that illustrates "${s.topic}".`,
+    `Which part of "${s.topic}" was hardest to understand, and why?`,
+    `How would you explain "${s.topic}" to a beginner?`,
+    `How was the pacing and clarity of the teaching in this session?`
+  ];
+  const out = [];
+  for (let i = 0; i < count; i++) {
+    const p = pts[i];
+    out.push({ question: p ? `Explain this point from the session: "${p}"` : templates[i % templates.length], options: null });
+  }
+  return out;
+}
+
+let currentQs = null, currentSession = null;
+$("genBtn").onclick = async () => {
+  const id = $("evalSession").value;
+  if (!id) { $("genStatus").textContent = "Create or pick a session first."; return; }
+  currentSession = vault.sessions.find(x => x.id === id);
+  $("genBtn").disabled = true; $("genStatus").textContent = "Generating questions…";
+  const { qs, source } = await generateQuestions(currentSession, +$("qCount").value, $("qDiff").value);
+  currentQs = qs;
+  $("genBtn").disabled = false; $("genStatus").textContent = `Generated ${qs.length} questions via ${source}.`;
+  $("quizTitle").textContent = `Evaluation: ${currentSession.topic}`;
+  $("quizBody").innerHTML = qs.map((q, i) => `<div class="q"><strong>Q${i + 1}.</strong> ${esc(q.question)}<br>` +
+    (q.options ? q.options.map((o, j) => `<label style="font-weight:400"><input type="radio" name="q${i}" value="${j}" style="width:auto"> ${esc(o)}</label>`).join("")
+               : `<textarea id="a${i}" rows="2" placeholder="Your answer"></textarea>`) + `</div>`).join("") +
+    `<label>Session quality rating (1–5)</label><select id="rating"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select>`;
+  $("quizCard").classList.remove("hidden"); $("resultCard").classList.add("hidden");
+};
+$("submitAnswers").onclick = () => {
+  const u = me();
+  const answers = currentQs.map((q, i) => {
+    if (q.options) { const c = document.querySelector(`input[name=q${i}]:checked`); return { q: q.question, a: c ? +c.value : null, correct: q.answerIndex }; }
+    return { q: q.question, a: ($("a" + i) || {}).value || "", correct: null };
+  });
+  const mcq = answers.filter(a => a.correct !== null);
+  const score = mcq.length ? Math.round(100 * mcq.filter(a => a.a === a.correct).length / mcq.length) : null;
+  vault.evaluations.push({ id: uid("ev"), sessionId: currentSession.id, studentId: u, answers, score, rating: +$("rating").value, at: new Date().toISOString() });
+  save();
+  $("resultCard").innerHTML = `<h3>Submitted ✔</h3>` +
+    (score !== null ? `<p>Score: <strong>${score}%</strong></p><div class="bar"><span style="width:${score}%"></span></div>`
+                    : `<p>Open-ended answers saved. Scoring will be done by the AI/teacher review step.</p>`);
+  $("resultCard").classList.remove("hidden"); render();
+};
+
+/* ---------- Data view ---------- */
+function exportVault() {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(vault, null, 2)], { type: "application/json" }));
+  a.download = "tutoring-vault.json"; a.click();
+}
+function resetVault() { if (confirm("Reset all demo data?")) { vault = seed(); save(); renderUsers(); render(); } }
+
+/* ---------- Render ---------- */
+function render() {
+  const u = me();
+  const upcoming = [...vault.sessions].sort((a, b) => a.when.localeCompare(b.when));
+  $("browseList").innerHTML = upcoming.length ? upcoming.map(s => sessionCard(s)).join("") : `<div class="empty">No sessions yet. Arrange one!</div>`;
+  const t = upcoming.filter(s => s.teachers.includes(u)), a = upcoming.filter(s => s.attendees.includes(u));
+  $("teachingList").innerHTML = t.length ? t.map(s => sessionCard(s)).join("") : `<div class="empty">You're not teaching any sessions.</div>`;
+  $("attendingList").innerHTML = a.length ? a.map(s => sessionCard(s)).join("") : `<div class="empty">You haven't joined any sessions.</div>`;
+  const cur = $("evalSession").value;
+  $("evalSession").innerHTML = upcoming.map(s => `<option value="${s.id}">${esc(s.topic)} — ${fmt(s.when)}</option>`).join("");
+  if (cur) $("evalSession").value = cur;
+
+  $("vaultView").innerHTML = `
+    <h3>Sessions (${vault.sessions.length})</h3>
+    <table><tr><th>Topic</th><th>When</th><th>Min</th><th>Teachers</th><th>Students</th></tr>
+    ${vault.sessions.map(s => `<tr><td>${esc(s.topic)}</td><td>${fmt(s.when)}</td><td>${s.duration}</td><td>${s.teachers.map(x => esc(nameOf(x))).join(", ")}</td><td>${s.attendees.map(x => esc(nameOf(x))).join(", ") || "—"}</td></tr>`).join("") || `<tr><td colspan="5" class="empty">None</td></tr>`}
+    </table>
+    <h3>Evaluations (${vault.evaluations.length})</h3>
+    <table><tr><th>Session</th><th>Student</th><th>Score</th><th>Rating</th></tr>
+    ${vault.evaluations.map(e => { const s = vault.sessions.find(x => x.id === e.sessionId); return `<tr><td>${esc(s ? s.topic : "?")}</td><td>${esc(nameOf(e.studentId))}</td><td>${e.score === null ? "pending" : e.score + "%"}</td><td>${e.rating}/5</td></tr>`; }).join("") || `<tr><td colspan="4" class="empty">None</td></tr>`}
+    </table>`;
+}
+renderUsers(); render();
+</script>
+</body>
+</html>
