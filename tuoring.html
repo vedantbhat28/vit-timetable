@@ -6,52 +6,104 @@
 <title>Peer Tutoring Sessions</title>
 <style>
   :root {
-    --bg: #f6f7fb; --card: #fff; --text: #1d2433; --muted: #667085;
-    --primary: #4f46e5; --primary-d: #4338ca; --border: #e4e7ee;
-    --ok: #16a34a; --warn: #d97706; --err: #dc2626;
+    color-scheme: dark;
+    --bg: #0b0d12; --surface: #12151c; --card: #161a23; --card-2: #1b2029;
+    --text: #e7e9ee; --muted: #8b93a3; --border: #242a36; --border-2: #2f3646;
+    --primary: #7c83ff; --primary-d: #6a71f0; --primary-soft: rgba(124,131,255,.14);
+    --ok: #4ade80; --warn: #fbbf24; --err: #f87171;
+    --radius: 14px; --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 8px 24px rgba(0,0,0,.35);
   }
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); }
-  header { background: var(--primary); color: #fff; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-  header h1 { margin: 0; font-size: 1.25rem; }
-  .user-box { display: flex; gap: 8px; align-items: center; font-size: .9rem; }
-  .user-box select { padding: 6px 8px; border-radius: 6px; border: none; }
-  nav { display: flex; gap: 4px; padding: 0 24px; background: #fff; border-bottom: 1px solid var(--border); overflow-x: auto; }
-  nav button { background: none; border: none; padding: 14px 16px; cursor: pointer; font-size: .95rem; color: var(--muted); border-bottom: 3px solid transparent; white-space: nowrap; }
-  nav button.active { color: var(--primary); border-color: var(--primary); font-weight: 600; }
-  main { max-width: 1000px; margin: 24px auto; padding: 0 16px; }
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
-  .card h2, .card h3 { margin-top: 0; }
-  label { display: block; font-size: .85rem; font-weight: 600; margin: 12px 0 4px; }
-  input, select, textarea { width: 100%; padding: 9px 10px; border: 1px solid var(--border); border-radius: 8px; font: inherit; background: #fff; }
-  .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
-  button.btn { background: var(--primary); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font: inherit; font-weight: 600; margin-top: 14px; }
-  button.btn:hover { background: var(--primary-d); }
-  button.btn.sec { background: #eef0f6; color: var(--text); }
-  button.btn.sm { padding: 6px 10px; font-size: .85rem; margin-top: 0; }
-  button.btn:disabled { opacity: .5; cursor: not-allowed; }
-  .tag { display: inline-block; font-size: .75rem; padding: 2px 8px; border-radius: 999px; background: #eef0f6; color: var(--muted); margin-right: 4px; }
-  .tag.ok { background: #dcfce7; color: var(--ok); }
-  .tag.warn { background: #fef3c7; color: var(--warn); }
-  .tag.err { background: #fee2e2; color: var(--err); }
-  .session { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
-  .session .meta { color: var(--muted); font-size: .85rem; margin: 4px 0; }
-  .actions { display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: radial-gradient(900px 400px at 85% -10%, rgba(124,131,255,.12), transparent 60%), var(--bg);
+    background-attachment: fixed; color: var(--text); line-height: 1.5; -webkit-font-smoothing: antialiased;
+  }
+  header {
+    position: sticky; top: 0; z-index: 10; padding: 14px 28px;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+    background: rgba(11,13,18,.75); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+  }
+  header h1 { margin: 0; font-size: 1.05rem; font-weight: 650; letter-spacing: -.01em; }
+  .user-box { display: flex; gap: 10px; align-items: center; font-size: .85rem; color: var(--muted); }
+  .user-box select { width: auto; padding: 7px 10px; }
+  nav {
+    display: flex; gap: 6px; padding: 14px 28px 0; max-width: 1040px; margin: 0 auto; overflow-x: auto;
+  }
+  nav button {
+    background: transparent; border: 1px solid transparent; padding: 8px 14px; cursor: pointer;
+    font: inherit; font-size: .88rem; color: var(--muted); border-radius: 999px; white-space: nowrap;
+    transition: color .15s, background .15s, border-color .15s;
+  }
+  nav button:hover { color: var(--text); background: var(--card); }
+  nav button.active { color: var(--text); background: var(--primary-soft); border-color: rgba(124,131,255,.35); font-weight: 600; }
+  main { max-width: 1040px; margin: 20px auto 60px; padding: 0 28px; }
+  .card {
+    background: linear-gradient(180deg, var(--card), var(--surface)); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px; margin-bottom: 18px; box-shadow: var(--shadow);
+  }
+  .card h2 { margin: 0 0 16px; font-size: 1.1rem; font-weight: 650; letter-spacing: -.01em; }
+  .card h3 { margin: 22px 0 10px; font-size: .95rem; font-weight: 600; }
+  label { display: block; font-size: .76rem; font-weight: 600; margin: 16px 0 6px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  input, select, textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border-2); border-radius: 10px;
+    font: inherit; font-size: .92rem; background: var(--bg); color: var(--text); outline: none;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  input::placeholder, textarea::placeholder { color: #566074; }
+  input:focus, select:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+  select[multiple] option { padding: 6px 8px; border-radius: 6px; }
+  select[multiple] option:checked { background: var(--primary); color: #fff; }
+  input[type=radio] { accent-color: var(--primary); }
+  .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  button.btn {
+    background: var(--primary); color: #0b0d12; border: none; padding: 10px 18px; border-radius: 10px;
+    cursor: pointer; font: inherit; font-size: .88rem; font-weight: 650; margin-top: 18px;
+    transition: transform .1s, background .15s, box-shadow .15s;
+  }
+  button.btn:hover { background: #9399ff; box-shadow: 0 4px 16px rgba(124,131,255,.3); }
+  button.btn:active { transform: translateY(1px); }
+  button.btn.sec { background: var(--card-2); color: var(--text); border: 1px solid var(--border-2); }
+  button.btn.sec:hover { background: #232938; box-shadow: none; }
+  button.btn.sm { padding: 7px 12px; font-size: .8rem; margin-top: 0; }
+  button.btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+  .tag { display: inline-flex; align-items: center; font-size: .72rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: var(--card-2); color: var(--muted); border: 1px solid var(--border-2); }
+  .tag.ok { background: rgba(74,222,128,.1); color: var(--ok); border-color: rgba(74,222,128,.3); }
+  .tag.warn { background: rgba(251,191,36,.1); color: var(--warn); border-color: rgba(251,191,36,.3); }
+  .tag.err { background: rgba(248,113,113,.1); color: var(--err); border-color: rgba(248,113,113,.3); }
+  .session {
+    display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+    background: var(--card-2); border: 1px solid var(--border); border-left: 3px solid var(--primary);
+    border-radius: 12px; padding: 16px 18px; margin-bottom: 12px; transition: border-color .15s, transform .15s;
+  }
+  .session:hover { border-color: var(--border-2); border-left-color: var(--primary); transform: translateY(-1px); }
+  .session strong { font-size: 1rem; letter-spacing: -.01em; }
+  .session .meta { color: var(--muted); font-size: .84rem; margin: 3px 0; }
+  .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .hidden { display: none; }
-  .empty { color: var(--muted); text-align: center; padding: 24px; }
-  .q { border-left: 3px solid var(--primary); padding: 8px 12px; margin: 10px 0; background: #f9faff; border-radius: 0 8px 8px 0; }
+  .empty { color: var(--muted); text-align: center; padding: 32px 16px; font-size: .9rem; border: 1px dashed var(--border-2); border-radius: 12px; }
+  .q { border-left: 3px solid var(--primary); padding: 12px 16px; margin: 12px 0; background: var(--card-2); border-radius: 0 12px 12px 0; }
   .q small { color: var(--muted); }
-  .note { font-size: .8rem; color: var(--muted); margin-top: 6px; }
-  .bar { height: 8px; background: #e4e7ee; border-radius: 99px; overflow: hidden; }
-  .bar > span { display: block; height: 100%; background: var(--ok); }
-  table { width: 100%; border-collapse: collapse; font-size: .9rem; }
-  th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
+  .q label { text-transform: none; letter-spacing: 0; font-size: .9rem; color: var(--text); margin: 8px 0 0; display: flex; gap: 8px; align-items: center; }
+  .q textarea { margin-top: 10px; }
+  .note { font-size: .8rem; color: var(--muted); margin: 6px 0 0; }
+  .bar { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .bar > span { display: block; height: 100%; background: linear-gradient(90deg, var(--primary), var(--ok)); border-radius: 99px; }
+  table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+  th { color: var(--muted); font-weight: 600; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  table tr:hover td { background: rgba(255,255,255,.02); }
+  ::-webkit-scrollbar { height: 8px; width: 8px; }
+  ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 8px; }
+  @media (max-width: 600px) { header, nav, main { padding-left: 16px; padding-right: 16px; } .card { padding: 18px; } }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>📚 Peer Tutoring Sessions</h1>
+  <h1>📚 Peer Tutoring</h1>
   <div class="user-box">
     <span>Signed in as</span>
     <select id="currentUser"></select>
@@ -288,7 +340,7 @@ $("genBtn").onclick = async () => {
   $("genBtn").disabled = false; $("genStatus").textContent = `Generated ${qs.length} questions via ${source}.`;
   $("quizTitle").textContent = `Evaluation: ${currentSession.topic}`;
   $("quizBody").innerHTML = qs.map((q, i) => `<div class="q"><strong>Q${i + 1}.</strong> ${esc(q.question)}<br>` +
-    (q.options ? q.options.map((o, j) => `<label style="font-weight:400"><input type="radio" name="q${i}" value="${j}" style="width:auto"> ${esc(o)}</label>`).join("")
+    (q.options ? q.options.map((o, j) => `<label ><input type="radio" name="q${i}" value="${j}" style="width:auto;margin:0"> ${esc(o)}</label>`).join("")
                : `<textarea id="a${i}" rows="2" placeholder="Your answer"></textarea>`) + `</div>`).join("") +
     `<label>Session quality rating (1–5)</label><select id="rating"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select>`;
   $("quizCard").classList.remove("hidden"); $("resultCard").classList.add("hidden");
