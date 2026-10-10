@@ -738,7 +738,7 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
   <div id="ttNotice" hidden role="dialog" aria-modal="true" aria-labelledby="ttnTitle">
     <div class="tn-card">
       <p class="tn-title" id="ttnTitle">Notice</p>
-      <p class="tn-body">The timetable has been updated. <b>Most branches have the same schedule as earlier</b>, so not much has changed for them.<br><br><b>Please double-check on VIERP</b> to make sure the latest schedule is correct for your division.<br><br>With <b>62 divisions and 186 batches</b> (62 &times; 3), updating every week is difficult for me as I&rsquo;m a student too, but I&rsquo;ll try my best to keep this updated.</p>
+      <p class="tn-body" id="ttnBody">The timetable has been updated. <b>Most branches have the same schedule as earlier</b>, so not much has changed for them.<br><br><b>Please double-check on VIERP</b> to make sure the latest schedule is correct for your division.<br><br>With <b>62 divisions and 186 batches</b> (62 &times; 3), updating every week is difficult for me as I&rsquo;m a student too, but I&rsquo;ll try my best to keep this updated.</p>
       <button type="button" class="tn-btn" id="ttNoticeOk" disabled><span class="tn-bar" aria-hidden="true"></span><span class="tn-lbl">Check it out</span></button>
     </div>
   </div>
@@ -2510,9 +2510,15 @@ function hideTTNotice(instant){
   el.classList.add('out');
   setTimeout(function(){el.hidden=true;},420);
 }
+var SCHED_NOTICE_UNTIL=new Date('2026-10-12T15:00:00+05:30').getTime();
 function maybeShowTTNotice(){
   try{
     var el=$('#ttNotice');if(!el) return;
+    // Until 12 Oct 2026, 3:00 PM IST show the "schedule updated" notice instead of the usual one
+    if(Date.now()<SCHED_NOTICE_UNTIL){
+      $('#ttnTitle').textContent='Schedule updated';
+      $('#ttnBody').innerHTML='The <b>latest schedule</b> that was dropped on the <b>community</b> yesterday has been <b>updated</b> here.<br><br><b>Please double-check on VIERP</b> to make sure it is correct for your division.';
+    }
     el.classList.remove('out');
     el.hidden=false;
     var btn=$('#ttNoticeOk');
