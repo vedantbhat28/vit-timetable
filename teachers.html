@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teacher Analytics (Prototype)</title>
+<style>
+:root{--bg:#0f1220;--card:#181c30;--line:#272c47;--tx:#e8eaf6;--mu:#9097b8;--ac:#7c8cff;--ok:#3ecf8e;--wa:#f5b942;--bad:#ff6b6b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 system-ui,Segoe UI,Roboto,sans-serif;padding:16px;max-width:1100px;margin:auto}
+h1{font-size:22px;margin:0}h2{font-size:16px;margin:0 0 10px}
+.sub{color:var(--mu);font-size:13px}
+header{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;margin-bottom:16px}
+.badge{background:#1f2540;border:1px solid var(--line);border-radius:99px;padding:3px 10px;font-size:12px;color:var(--mu)}
+select{background:var(--card);color:var(--tx);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px}
+.grid{display:grid;gap:12px}
+.kpis{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:12px}
+.two{grid-template-columns:repeat(auto-fit,minmax(320px,1fr));margin-bottom:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.kpi b{display:block;font-size:26px}.kpi span{color:var(--mu);font-size:12px}
+.row{display:grid;grid-template-columns:130px 1fr 44px;gap:8px;align-items:center;margin:7px 0;cursor:pointer;font-size:13px}
+.row:hover .lbl{color:var(--ac)}
+.lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.track{background:#232844;border-radius:6px;height:14px;overflow:hidden}
+.fill{height:100%;border-radius:6px;transition:width .5s}
+.sel{outline:2px solid var(--ac);outline-offset:4px;border-radius:6px}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.tabs button{background:var(--card);border:1px solid var(--line);color:var(--mu);padding:7px 12px;border-radius:8px;cursor:pointer;font-size:13px}
+.tabs button.on{background:var(--ac);color:#10132a;border-color:var(--ac);font-weight:600}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;margin-right:4px}
+.t-bad{background:#3a1f28;color:var(--bad)}.t-wa{background:#3a301c;color:var(--wa)}.t-ok{background:#16352a;color:var(--ok)}
+.item{border-top:1px solid var(--line);padding:10px 0;font-size:14px}.item:first-child{border-top:0}
+.rec{border-left:3px solid var(--ac);padding:6px 10px;margin:8px 0;background:#1b2038;border-radius:0 8px 8px 0;font-size:14px}
+.cm{border-top:1px solid var(--line);padding:8px 0;font-size:13px;color:#cfd3ee}
+svg{width:100%;height:auto;display:block}
+.note{font-size:12px;color:var(--mu);margin-top:10px}
+.hide{display:none}
+.mode{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--mu)}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Teacher Analytics <span class="badge">Prototype</span></h1>
+    <div class="sub">Anonymised, topic-wise student understanding</div>
+  </div>
+  <div class="mode">Course
+    <select id="course"></select>
+  </div>
+</header>
+
+<div class="grid kpis" id="kpis"></div>
+
+<div class="tabs" id="tabs">
+  <button class="on" data-t="overview">Understanding</button>
+  <button data-t="hard">Difficult topics</button>
+  <button data-t="improve">Teaching insights</button>
+</div>
+
+<section id="overview">
+  <div class="grid two">
+    <div class="card"><h2>Topic-wise understanding</h2><div id="bars"></div>
+      <div class="note">Tap a topic to see its trend. Avg. self-rated understanding (0–100%).</div></div>
+    <div class="card"><h2 id="trendTitle">Trend</h2><div id="trend"></div>
+      <div class="note" id="trendNote"></div></div>
+  </div>
+</section>
+
+<section id="hard" class="hide">
+  <div class="card"><h2>Concepts needing attention</h2><div id="hardList"></div></div>
+  <div class="card" style="margin-top:12px"><h2>Student comments (anonymous)</h2><div id="comments"></div>
+    <div class="note">Comments are shuffled, with names and timestamps removed.</div></div>
+</section>
+
+<section id="improve" class="hide">
+  <div class="grid two">
+    <div class="card"><h2>Suggested actions</h2><div id="recs"></div></div>
+    <div class="card"><h2>Engagement</h2><div id="eng"></div></div>
+  </div>
+</section>
+
+<div class="note">Privacy: no student names or IDs are ever shown. Topics with fewer than 5 responses are hidden to prevent identifying individuals. Data below is sample data.</div>
+
+<script>
+// ---------- SAMPLE DATA (replace with Supabase query later) ----------
+// Each topic: weekly avg understanding (%), response count, "confused" tags, comments
+const DATA = {
+  "Data Structures (Div A)": {
+    students: 62, responses: 214, engagement: [["Feedback response rate",78],["Attendance (lectures with feedback)",84],["Questions raised via feedback",41]],
+    topics: [
+      {n:"Arrays & Strings", w:[82,84,85,86], r:58, tags:["Fast pace"], c:["Clear and easy to follow."]},
+      {n:"Linked Lists", w:[70,72,75,78], r:55, tags:[], c:["Pointer diagrams helped a lot."]},
+      {n:"Stacks & Queues", w:[68,66,70,71], r:52, tags:["Need more examples"], c:["Would like real-world use cases."]},
+      {n:"Recursion", w:[55,50,48,46], r:57, tags:["Too abstract","Need more examples"], c:["I can't trace the call stack.","Please do a dry run step by step."]},
+      {n:"Trees & BST", w:[60,58,57,55], r:49, tags:["Too abstract","Fast pace"], c:["Deletion in BST is confusing.","Too many cases in one lecture."]},
+      {n:"Graphs (BFS/DFS)", w:[45,44,42,40], r:44, tags:["Fast pace","Prerequisite gap"], c:["Never understood adjacency list vs matrix.","Need a revision session."]},
+      {n:"Hashing", w:[72,74,73,75], r:40, tags:[], c:["Collision handling was neat."]},
+      {n:"Sorting", w:[80,81,83,84], r:60, tags:[], c:["Visualisations were great."]},
+      {n:"Dynamic Programming", w:[38,36,35,33], r:46, tags:["Too abstract","Prerequisite gap"], c:["Can't figure out the recurrence.","Please start from simple examples."]},
+      {n:"Heaps", w:[64,66,67,69], r:3, tags:[], c:[]}
+    ]
+  },
+  "Engineering Maths II (Div B)": {
+    students: 58, responses: 176, engagement: [["Feedback response rate",66],["Attendance (lectures with feedback)",79],["Questions raised via feedback",27]],
+    topics: [
+      {n:"Matrices", w:[78,79,80,82], r:50, tags:[], c:["Good pace."]},
+      {n:"Eigenvalues", w:[52,54,53,55], r:47, tags:["Need more examples"], c:["Why do we need eigenvectors?"]},
+      {n:"Partial Derivatives", w:[66,68,70,72], r:45, tags:[], c:[]},
+      {n:"Double Integrals", w:[48,45,43,41], r:42, tags:["Fast pace"], c:["Changing limits is confusing.","Need practice problems."]},
+      {n:"Laplace Transform", w:[40,42,39,37], r:38, tags:["Too abstract","Prerequisite gap"], c:["Formulas feel random."]},
+      {n:"Fourier Series", w:[58,57,60,61], r:35, tags:[], c:[]}
+    ]
+  }
+};
+const MIN_RESP = 5;
+const WEEKS = ["W1","W2","W3","W4"];
+const $ = id => document.getElementById(id);
+const avg = a => a[a.length-1];
+const col = v => v>=70 ? "var(--ok)" : v>=50 ? "var(--wa)" : "var(--bad)";
+const tagCls = v => v>=70 ? "t-ok" : v>=50 ? "t-wa" : "t-bad";
+let cur, selTopic;
+
+function topics(){ return DATA[cur].topics.filter(t=>t.r>=MIN_RESP); }
+
+function renderKpis(){
+  const d=DATA[cur], ts=topics();
+  const overall=Math.round(ts.reduce((s,t)=>s+avg(t.w),0)/ts.length);
+  const hard=ts.filter(t=>avg(t.w)<50).length;
+  const dropping=ts.filter(t=>t.w[3]-t.w[0]<=-5).length;
+  $("kpis").innerHTML=[
+    [overall+"%","Overall understanding"],
+    [hard,"Topics below 50%"],
+    [dropping,"Topics trending down"],
+    [d.responses,"Anonymous responses"]
+  ].map(k=>`<div class="card kpi"><b>${k[0]}</b><span>${k[1]}</span></div>`).join("");
+}
+
+function renderBars(){
+  const ts=[...topics()].sort((a,b)=>avg(a.w)-avg(b.w));
+  $("bars").innerHTML=ts.map(t=>{
+    const v=avg(t.w);
+    return `<div class="row ${t.n===selTopic?'sel':''}" data-n="${t.n}"><span class="lbl" title="${t.n}">${t.n}</span>
+    <div class="track"><div class="fill" style="width:${v}%;background:${col(v)}"></div></div><b>${v}%</b></div>`;
+  }).join("");
+  document.querySelectorAll("#bars .row").forEach(r=>r.onclick=()=>{selTopic=r.dataset.n;renderBars();renderTrend();});
+}
+
+function renderTrend(){
+  const t=DATA[cur].topics.find(x=>x.n===selTopic)||topics()[0];
+  selTopic=t.n;
+  $("trendTitle").textContent="Trend: "+t.n;
+  const W=320,H=170,p=28, x=i=>p+i*(W-2*p)/3, y=v=>H-p-(v/100)*(H-2*p);
+  const pts=t.w.map((v,i)=>x(i)+","+y(v)).join(" ");
+  const c=col(avg(t.w));
+  $("trend").innerHTML=`<svg viewBox="0 0 ${W} ${H}">
+    ${[0,50,100].map(g=>`<line x1="${p}" x2="${W-p}" y1="${y(g)}" y2="${y(g)}" stroke="#272c47"/><text x="2" y="${y(g)+4}" fill="#9097b8" font-size="10">${g}</text>`).join("")}
+    <polyline points="${pts}" fill="none" stroke="${c}" stroke-width="3"/>
+    ${t.w.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="4.5" fill="${c}"/><text x="${x(i)}" y="${y(v)-9}" fill="#e8eaf6" font-size="11" text-anchor="middle">${v}</text><text x="${x(i)}" y="${H-8}" fill="#9097b8" font-size="10" text-anchor="middle">${WEEKS[i]}</text>`).join("")}
+  </svg>`;
+  const diff=t.w[3]-t.w[0];
+  $("trendNote").textContent=(diff>=0?"Up ":"Down ")+Math.abs(diff)+" points since week 1 · "+t.r+" responses";
+}
+
+function renderHard(){
+  const ts=[...topics()].sort((a,b)=>avg(a.w)-avg(b.w)).filter(t=>avg(t.w)<70);
+  $("hardList").innerHTML=ts.map((t,i)=>{
+    const v=avg(t.w), diff=t.w[3]-t.w[0];
+    return `<div class="item"><b>${i+1}. ${t.n}</b> <span class="tag ${tagCls(v)}">${v}%</span>
+    <span class="sub">${diff>=0?"▲":"▼"} ${Math.abs(diff)} pts</span><br>
+    ${t.tags.map(g=>`<span class="tag t-wa">${g}</span>`).join("")||'<span class="sub">No specific issues tagged</span>'}</div>`;
+  }).join("")||'<div class="sub">No difficult topics — nice!</div>';
+  const cm=topics().filter(t=>avg(t.w)<60).flatMap(t=>t.c.map(c=>({t:t.n,c})));
+  cm.sort(()=>Math.random()-.5);
+  $("comments").innerHTML=cm.map(x=>`<div class="cm">“${x.c}” <span class="sub">— on ${x.t}</span></div>`).join("")||'<div class="sub">No comments.</div>';
+}
+
+function renderImprove(){
+  const ts=topics(), recs=[];
+  ts.filter(t=>avg(t.w)<50).sort((a,b)=>avg(a.w)-avg(b.w)).slice(0,2)
+    .forEach(t=>recs.push(`Schedule a <b>revision session</b> on <b>${t.n}</b> (${avg(t.w)}% understanding).`));
+  const count=g=>ts.filter(t=>t.tags.includes(g));
+  if(count("Need more examples").length) recs.push(`Add <b>worked examples</b> for: ${count("Need more examples").map(t=>t.n).join(", ")}.`);
+  if(count("Fast pace").length) recs.push(`Students find the pace fast in: ${count("Fast pace").map(t=>t.n).join(", ")}. Consider splitting these across two lectures.`);
+  if(count("Prerequisite gap").length) recs.push(`<b>Prerequisite gap</b> flagged in ${count("Prerequisite gap").map(t=>t.n).join(", ")}. A short recap of the basics may help.`);
+  if(count("Too abstract").length) recs.push(`Use <b>visuals or real-world analogies</b> for: ${count("Too abstract").map(t=>t.n).join(", ")}.`);
+  const up=ts.filter(t=>t.w[3]-t.w[0]>=5);
+  if(up.length) recs.push(`What's working: understanding rose in ${up.map(t=>t.n).join(", ")}. Keep that teaching style.`);
+  $("recs").innerHTML=recs.map(r=>`<div class="rec">${r}</div>`).join("");
+  $("eng").innerHTML=DATA[cur].engagement.map(e=>`<div class="row" style="grid-template-columns:1fr 44px;cursor:default"><div><div class="lbl" style="white-space:normal">${e[0]}</div>
+    <div class="track"><div class="fill" style="width:${e[1]}%;background:var(--ac)"></div></div></div><b>${e[1]}%</b></div>`).join("")
+    +`<div class="note">${DATA[cur].students} students enrolled. Low response rates make results less reliable.</div>`;
+}
+
+function load(){
+  cur=$("course").value; selTopic=null;
+  renderKpis();renderBars();renderTrend();renderHard();renderImprove();
+}
+
+$("course").innerHTML=Object.keys(DATA).map(k=>`<option>${k}</option>`).join("");
+$("course").onchange=load;
+document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#tabs button").forEach(x=>x.classList.toggle("on",x===b));
+  ["overview","hard","improve"].forEach(id=>$(id).classList.toggle("hide",id!==b.dataset.t));
+});
+load();
+</script>
+</body>
+</html>
