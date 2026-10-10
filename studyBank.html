@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StudyBank | VIT Pune</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#1c1424; --surface:#271b30; --surface2:#33243d; --line:#4a3556;
+  --text:#f4eaf3; --muted:#b9a3b9; --amber:#ff7f6e; --mint:#ffd166; --rose:#f4a3c8; --lav:#c5b8ff;
+  --head:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --body:'DM Sans','Segoe UI',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--text);font-family:var(--body);line-height:1.5;min-height:100vh}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:34px}
+.brand{font-family:var(--head);font-weight:700;color:var(--muted);font-size:15px}
+.back{color:var(--muted);text-decoration:none;font-size:14px;border:1px solid var(--line);padding:7px 14px;border-radius:999px}
+.back:hover{border-color:var(--amber);color:var(--text)}
+h1{font-family:var(--head);font-weight:800;font-size:clamp(44px,8vw,84px);line-height:.98;letter-spacing:-.03em;max-width:11ch}
+.lede{margin-top:18px;color:var(--muted);max-width:58ch;font-size:17px}
+.hero{margin-bottom:34px}
+.layout{display:grid;grid-template-columns:260px 1fr;gap:28px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
+.panel h2{font-family:var(--head);font-size:18px;margin-bottom:4px}
+.sub{font-size:13px;color:var(--muted)}
+.sync{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:var(--mint)}
+.sync i{width:8px;height:8px;border-radius:50%;background:var(--mint)}
+.folders{display:grid;gap:8px;margin-top:16px}
+.folder{display:flex;justify-content:space-between;align-items:center;width:100%;text-align:left;font:inherit;font-size:15px;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer}
+.folder:hover{color:var(--text);border-color:var(--muted)}
+.folder[aria-pressed=true]{background:var(--surface2);color:var(--text);border-color:var(--amber)}
+.folder em{font-style:normal;font-size:13px;color:var(--muted)}
+aside{position:sticky;top:20px}
+.tools{display:grid;gap:14px;margin-bottom:18px}
+.search{width:100%;font:inherit;font-size:16px;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.search::placeholder{color:var(--muted)}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:14px;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;padding:7px 15px;cursor:pointer}
+.chip:hover{color:var(--text);border-color:var(--muted)}
+.chip[aria-pressed=true]{background:var(--surface2);color:var(--text);border-color:var(--amber)}
+select{font:inherit;font-size:14px;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.count{font-size:14px;color:var(--muted);margin-bottom:12px}
+.list{display:grid;gap:10px}
+.row{display:grid;grid-template-columns:52px 1fr auto;gap:16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 18px}
+.ft{width:52px;height:52px;border-radius:12px;display:grid;place-items:center;font-family:var(--head);font-weight:700;font-size:14px;background:var(--surface2)}
+.ft.Paper{color:var(--rose)} .ft.Book{color:var(--amber)} .ft.Notes{color:var(--mint)}
+.row h3{font-family:var(--head);font-size:18px;line-height:1.25}
+.meta{font-size:13.5px;color:var(--muted);margin-top:3px}
+.pill{display:inline-block;font-size:12.5px;padding:2px 10px;border-radius:999px;background:var(--surface2);color:var(--lav);margin-right:6px}
+.btn{font:inherit;font-weight:600;font-size:14px;border:0;border-radius:10px;padding:9px 16px;cursor:pointer;background:var(--amber);color:#2a0d08;white-space:nowrap}
+.btn:hover{filter:brightness(1.08)}
+.empty{color:var(--muted);padding:34px;text-align:center;border:1px dashed var(--line);border-radius:16px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--mint);color:#2a1c00;font-weight:600;padding:12px 20px;border-radius:12px;opacity:0;pointer-events:none;transition:.3s;z-index:9}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:860px){.layout{grid-template-columns:1fr}aside{position:static}}
+@media(max-width:520px){.row{grid-template-columns:44px 1fr}.row .btn{grid-column:1/-1}.ft{width:44px;height:44px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="brand">VIT Pune student portal</span>
+    <a class="back" href="index.html">Back to timetable</a>
+  </header>
+
+  <section class="hero">
+    <h1>StudyBank</h1>
+    <p class="lede">Previous year papers, books and notes in one place. Everything is pulled from the Unoff-group Google Drive, shared by seniors and teachers.</p>
+  </section>
+
+  <div class="layout">
+    <aside>
+      <section class="panel">
+        <h2>Drive folders</h2>
+        <p class="sub">Unoff-group Google Drive</p>
+        <div class="sync"><i></i>Connected to Drive (demo data)</div>
+        <div class="folders" id="folders"></div>
+      </section>
+    </aside>
+
+    <main>
+      <div class="tools">
+        <input class="search" id="q" type="search" placeholder="Search by subject, title or uploader" aria-label="Search resources">
+        <div class="bar">
+          <div class="chips" id="types" role="group" aria-label="Filter by type"></div>
+          <select id="year" aria-label="Filter by year"></select>
+        </div>
+      </div>
+      <p class="count" id="count"></p>
+      <div class="list" id="list"></div>
+    </main>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const TYPES=["All","Paper","Book","Notes"];
+const TYPE_LABEL={All:"All",Paper:"Previous year papers",Book:"Books",Notes:"Notes"};
+const FOLDERS=["All folders","Seniors","Teachers","Senior notes"];
+const YEARS=["All years","FY","SY","TY","Final"];
+const DATA=[
+  {t:"Paper",n:"Engineering Mathematics 2, End sem 2024",s:"Engineering Mathematics",y:"FY",f:"Seniors",by:"Aarav K.",ext:"PDF",sz:"2.1 MB"},
+  {t:"Paper",n:"Data Structures, In-sem 2024",s:"Data Structures",y:"SY",f:"Seniors",by:"Sneha P.",ext:"PDF",sz:"1.4 MB"},
+  {t:"Paper",n:"Operating Systems, End sem 2023",s:"Operating Systems",y:"TY",f:"Seniors",by:"Rohan D.",ext:"PDF",sz:"1.8 MB"},
+  {t:"Paper",n:"Digital Electronics, End sem 2024",s:"Digital Electronics",y:"SY",f:"Seniors",by:"Meera J.",ext:"PDF",sz:"2.6 MB"},
+  {t:"Book",n:"Introduction to Algorithms, reference copy",s:"Data Structures",y:"SY",f:"Teachers",by:"Prof. Kulkarni",ext:"PDF",sz:"18 MB"},
+  {t:"Book",n:"Engineering Physics, recommended text",s:"Engineering Physics",y:"FY",f:"Teachers",by:"Prof. Deshmukh",ext:"PDF",sz:"9.5 MB"},
+  {t:"Book",n:"Computer Networks, unit-wise book list",s:"Computer Networks",y:"TY",f:"Teachers",by:"Prof. Joshi",ext:"DOCX",sz:"120 KB"},
+  {t:"Notes",n:"Teacher slides, Unit 1 to 3",s:"Operating Systems",y:"TY",f:"Teachers",by:"Prof. Patil",ext:"PPT",sz:"6.2 MB"},
+  {t:"Notes",n:"Handwritten notes, Calculus and Linear Algebra",s:"Engineering Mathematics",y:"FY",f:"Senior notes",by:"Kunal S.",ext:"PDF",sz:"11 MB"},
+  {t:"Notes",n:"Last-night revision sheet, DSA",s:"Data Structures",y:"SY",f:"Senior notes",by:"Sneha P.",ext:"PDF",sz:"900 KB"},
+  {t:"Notes",n:"Machine Learning, summary and formulas",s:"Machine Learning",y:"Final",f:"Senior notes",by:"Ishaan R.",ext:"PDF",sz:"3.3 MB"},
+  {t:"Notes",n:"DBMS, SQL practice with solutions",s:"Database Management",y:"SY",f:"Senior notes",by:"Meera J.",ext:"DOCX",sz:"540 KB"},
+  {t:"Paper",n:"Machine Learning, End sem 2024",s:"Machine Learning",y:"Final",f:"Seniors",by:"Ishaan R.",ext:"PDF",sz:"1.9 MB"},
+  {t:"Book",n:"Database System Concepts, reference copy",s:"Database Management",y:"SY",f:"Teachers",by:"Prof. Kulkarni",ext:"PDF",sz:"14 MB"}
+];
+let type="All",folder="All folders",q="";
+const $=s=>document.querySelector(s);
+const esc=s=>s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function folders(){
+  $("#folders").innerHTML=FOLDERS.map(f=>{
+    const n=f==="All folders"?DATA.length:DATA.filter(d=>d.f===f).length;
+    return `<button class="folder" aria-pressed="${f===folder}" data-f="${f}">${f}<em>${n}</em></button>`}).join("");
+  document.querySelectorAll(".folder").forEach(b=>b.onclick=()=>{folder=b.dataset.f;folders();render()});
+}
+function types(){
+  $("#types").innerHTML=TYPES.map(t=>`<button class="chip" aria-pressed="${t===type}" data-t="${t}">${TYPE_LABEL[t]}</button>`).join("");
+  document.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{type=b.dataset.t;types();render()});
+}
+function render(){
+  const yr=$("#year").value,term=q.toLowerCase();
+  const list=DATA.filter(d=>
+    (type==="All"||d.t===type)&&
+    (folder==="All folders"||d.f===folder)&&
+    (yr==="All years"||d.y===yr)&&
+    (!term||(d.n+" "+d.s+" "+d.by).toLowerCase().includes(term)));
+  $("#count").textContent=`${list.length} ${list.length===1?"resource":"resources"}`;
+  $("#list").innerHTML=list.length?list.map(d=>`
+    <article class="row">
+      <div class="ft ${d.t}">${d.ext}</div>
+      <div>
+        <h3>${esc(d.n)}</h3>
+        <p class="meta"><span class="pill">${d.y}</span>${esc(d.s)}, shared by ${esc(d.by)} in ${d.f}, ${d.sz}</p>
+      </div>
+      <button class="btn" data-n="${esc(d.n)}">Open in Drive</button>
+    </article>`).join(""):`<div class="empty">Nothing matches these filters. Clear the search or pick another folder.</div>`;
+  document.querySelectorAll(".btn").forEach(b=>b.onclick=()=>toast("Demo only. This will open the file in Google Drive."));
+}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2600)}
+
+$("#year").innerHTML=YEARS.map(y=>`<option>${y}</option>`).join("");
+$("#year").onchange=render;
+$("#q").oninput=e=>{q=e.target.value;render()};
+folders();types();render();
+</script>
+</body>
+</html>
