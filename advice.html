@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Advice | VIT Pune</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#17162a; --surface:#222040; --surface2:#2b2850; --line:#3a3666;
+  --text:#ece9f7; --muted:#a9a5c9; --amber:#ffb454; --mint:#7fd6c2; --rose:#ff8fa3;
+  --head:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;
+  --body:'DM Sans','Segoe UI',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--text);font-family:var(--body);line-height:1.55;min-height:100vh}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:34px}
+.brand{font-family:var(--head);font-weight:700;color:var(--muted);font-size:15px}
+.back{color:var(--muted);text-decoration:none;font-size:14px;border:1px solid var(--line);padding:7px 14px;border-radius:999px}
+.back:hover{border-color:var(--amber);color:var(--text)}
+h1{font-family:var(--head);font-weight:800;font-size:clamp(44px,8vw,84px);line-height:.98;letter-spacing:-.03em;max-width:12ch}
+.lede{margin-top:18px;color:var(--muted);max-width:56ch;font-size:17px}
+.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:38px}
+.btn{font-family:var(--body);font-weight:600;font-size:15px;border:0;border-radius:12px;padding:12px 22px;cursor:pointer;background:var(--amber);color:#2a1a00}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+.layout{display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.chip{font-family:var(--body);font-size:14px;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;padding:7px 15px;cursor:pointer}
+.chip:hover{color:var(--text);border-color:var(--muted)}
+.chip[aria-pressed=true]{background:var(--surface2);color:var(--text);border-color:var(--amber)}
+.feed{display:grid;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 22px}
+.tag{display:inline-block;font-size:13px;font-weight:600;padding:3px 11px;border-radius:999px;background:var(--surface2)}
+.tag.Clubs{color:var(--mint)} .tag.Skills{color:var(--amber)} .tag.Placements{color:var(--rose)}
+.tag.Academics{color:#b9a8ff} .tag.Hostel{color:#8ec5ff}
+.card h3{font-family:var(--head);font-size:21px;margin:10px 0 6px;line-height:1.25}
+.card p{color:#d5d1ec}
+.meta{display:flex;justify-content:space-between;align-items:center;margin-top:16px;gap:12px;flex-wrap:wrap}
+.who{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
+.av{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;color:#1b1500;background:var(--amber);font-family:var(--head)}
+.who b{color:var(--text);font-weight:600}
+.help{font-family:var(--body);font-size:14px;background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:6px 14px;cursor:pointer}
+.help[aria-pressed=true]{color:var(--mint);border-color:var(--mint)}
+.empty{color:var(--muted);padding:30px;text-align:center;border:1px dashed var(--line);border-radius:16px}
+aside{position:sticky;top:20px;display:grid;gap:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px}
+.panel h2{font-family:var(--head);font-size:19px;margin-bottom:4px}
+.pts{display:flex;align-items:baseline;gap:8px;margin:12px 0 2px}
+.pts strong{font-family:var(--head);font-size:52px;line-height:1;color:var(--amber)}
+.pts span{color:var(--muted)}
+.conv{font-size:14px;color:var(--muted)}
+.conv b{color:var(--mint);font-weight:600}
+.note{font-size:13px;color:var(--muted);margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.track{list-style:none;padding:0;margin-top:16px;position:relative}
+.track::before{content:"";position:absolute;left:11px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.ms{position:relative;padding:0 0 18px 38px}
+.ms:last-child{padding-bottom:0}
+.dot{position:absolute;left:3px;top:3px;width:18px;height:18px;border-radius:50%;background:var(--surface);border:2px solid var(--line)}
+.ms.done .dot{background:var(--mint);border-color:var(--mint)}
+.ms.next .dot{border-color:var(--amber)}
+.ms h4{font-family:var(--head);font-size:16px;font-weight:700}
+.ms small{display:block;color:var(--muted);font-size:13px}
+.bar{height:6px;border-radius:6px;background:var(--surface2);margin-top:7px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--amber);border-radius:6px;transition:width .5s}
+dialog{background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:18px;padding:26px;width:min(520px,92vw);margin:auto}
+dialog::backdrop{background:rgba(8,7,20,.7)}
+dialog h2{font-family:var(--head);margin-bottom:4px}
+label{display:block;font-size:14px;color:var(--muted);margin:16px 0 6px}
+input,select,textarea{width:100%;font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{min-height:110px;resize:vertical}
+.row{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--mint);color:#06251f;font-weight:600;padding:12px 20px;border-radius:12px;opacity:0;pointer-events:none;transition:.3s;z-index:9}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:860px){.layout{grid-template-columns:1fr}aside{position:static;order:-1}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="brand">VIT Pune student portal</span>
+    <a class="back" href="index.html">Back to timetable</a>
+  </header>
+
+  <section class="hero">
+    <div>
+      <h1>Advice from seniors</h1>
+      <p class="lede">Which club to join, which skill to start now, what to do before placements. Seniors share what they wish they had known. Advisors earn advicemaxxing points for every piece of advice they post.</p>
+    </div>
+    <button class="btn" id="openForm">Give advice</button>
+  </section>
+
+  <div class="layout">
+    <main>
+      <div class="chips" id="chips" role="group" aria-label="Filter by topic"></div>
+      <div class="feed" id="feed"></div>
+    </main>
+
+    <aside>
+      <section class="panel">
+        <h2>Your advisor points</h2>
+        <div class="pts"><strong id="ap">35</strong><span>advicemaxxing points</span></div>
+        <p class="conv">Worth <b id="cp">17.5</b> credit-maxxing points</p>
+        <p class="note">1 advicemaxxing point = 0.5 credit-maxxing point. Advising has no quiz. Demo: each advice posted earns 10 points.</p>
+      </section>
+
+      <section class="panel">
+        <h2>Advisor milestones</h2>
+        <p class="conv">Separate from the quiz milestones.</p>
+        <ol class="track" id="track"></ol>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<dialog id="dlg">
+  <form method="dialog" id="form">
+    <h2>Give advice</h2>
+    <p class="conv">Keep it specific and useful for juniors.</p>
+    <label for="fTopic">Topic</label>
+    <select id="fTopic"></select>
+    <label for="fTitle">Headline</label>
+    <input id="fTitle" maxlength="80" placeholder="e.g. Join one club in first year, not four" required>
+    <label for="fBody">Your advice</label>
+    <textarea id="fBody" maxlength="500" placeholder="What should juniors do, and why?" required></textarea>
+    <div class="row">
+      <button type="button" class="btn ghost" id="cancel">Cancel</button>
+      <button type="submit" class="btn">Post advice</button>
+    </div>
+  </form>
+</dialog>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const TOPICS=["Clubs","Skills","Placements","Academics","Hostel"];
+const MILESTONES=[
+  {n:"First word",at:10},{n:"Regular advisor",at:50},
+  {n:"Mentor",at:100},{n:"Campus guide",at:250}
+];
+let ap=35, filter="All";
+const posts=[
+  {t:"Clubs",h:"Join one club properly instead of four casually",b:"Recruitment week makes everything look exciting. Pick the one where you will actually show up every week. Depth gets you a core-team spot by second year.",a:"Aarav K.",y:"TY Computer",v:7},
+  {t:"Skills",h:"Start DSA in first year, but build one project alongside",b:"Problem solving opens interview doors, and a deployed project gives you something real to talk about. Do both, a little each week.",a:"Sneha P.",y:"Final year IT",v:12},
+  {t:"Placements",h:"Update your resume every semester, not the month before",b:"Add each project, certificate and role as it happens. Recruiters notice a steady trail, and you will not forget what you did.",a:"Rohan D.",y:"Final year E&TC",v:9},
+  {t:"Academics",h:"Attend the first two weeks of every course",b:"That is when the evaluation pattern and the useful faculty tips come out. Catching up later costs much more than sitting through it once.",a:"Meera J.",y:"SY AI&DS",v:5},
+  {t:"Hostel",h:"Fix your sleep schedule before your first exam week",b:"Everyone says they will study at 3 am. Almost nobody retains anything. Set a routine early and ask your roommate to hold you to it.",a:"Kunal S.",y:"TY Mechanical",v:4}
+];
+const $=s=>document.querySelector(s);
+
+function chips(){
+  $("#chips").innerHTML=["All",...TOPICS].map(t=>`<button class="chip" aria-pressed="${t===filter}" data-t="${t}">${t}</button>`).join("");
+  $("#chips").querySelectorAll(".chip").forEach(c=>c.onclick=()=>{filter=c.dataset.t;chips();feed();});
+}
+function feed(){
+  const list=posts.filter(p=>filter==="All"||p.t===filter);
+  $("#feed").innerHTML=list.length?list.map((p,i)=>`
+    <article class="card">
+      <span class="tag ${p.t}">${p.t}</span>
+      <h3>${esc(p.h)}</h3>
+      <p>${esc(p.b)}</p>
+      <div class="meta">
+        <div class="who"><div class="av">${esc(p.a[0])}</div><div><b>${esc(p.a)}</b><br>${esc(p.y)}</div></div>
+        <button class="help" aria-pressed="false" data-i="${posts.indexOf(p)}">Helpful (${p.v})</button>
+      </div>
+    </article>`).join(""):`<div class="empty">No advice on this topic yet. Be the first to share some.</div>`;
+  document.querySelectorAll(".help").forEach(b=>b.onclick=()=>{
+    const p=posts[b.dataset.i],on=b.getAttribute("aria-pressed")==="true";
+    p.v+=on?-1:1;b.setAttribute("aria-pressed",!on);b.textContent=`Helpful (${p.v})`;
+  });
+}
+function esc(s){return s.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+
+function points(){
+  $("#ap").textContent=ap;
+  $("#cp").textContent=(ap*0.5).toFixed(1).replace(/\.0$/,"");
+  const nextIdx=MILESTONES.findIndex(m=>ap<m.at);
+  $("#track").innerHTML=MILESTONES.map((m,i)=>{
+    const done=ap>=m.at,next=i===nextIdx;
+    const prev=i?MILESTONES[i-1].at:0;
+    const pct=done?100:next?Math.max(0,(ap-prev)/(m.at-prev)*100):0;
+    return `<li class="ms ${done?"done":next?"next":""}">
+      <span class="dot"></span>
+      <h4>${m.n}</h4>
+      <small>${m.at} points, worth ${m.at*0.5} credit-maxxing points</small>
+      ${next?`<div class="bar"><i style="width:${pct}%"></i></div><small>${m.at-ap} more to go</small>`:""}
+    </li>`}).join("");
+}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),2800)}
+
+$("#fTopic").innerHTML=TOPICS.map(t=>`<option>${t}</option>`).join("");
+$("#openForm").onclick=()=>$("#dlg").showModal();
+$("#cancel").onclick=()=>$("#dlg").close();
+$("#form").onsubmit=e=>{
+  const before=ap;
+  posts.unshift({t:$("#fTopic").value,h:$("#fTitle").value.trim(),b:$("#fBody").value.trim(),a:"You",y:"Advisor",v:0});
+  ap+=10;
+  e.target.reset();
+  filter="All";chips();feed();points();
+  const hit=MILESTONES.find(m=>before<m.at&&ap>=m.at);
+  toast(hit?`Advice posted. +10 points. Milestone reached: ${hit.n}`:"Advice posted. +10 advicemaxxing points");
+};
+
+chips();feed();points();
+</script>
+</body>
+</html>
