@@ -246,6 +246,93 @@ dialog#broInfo[open],dialog#broApp[open],dialog#teacherInfo[open],dialog#teacher
 dialog#broInfo::backdrop,dialog#broApp::backdrop,dialog#teacherInfo::backdrop,dialog#teacherApp::backdrop{background:rgba(12,16,32,.55)}
 @media (max-width:600px){dialog#broInfo,dialog#broApp,dialog#teacherInfo,dialog#teacherApp{width:100%;margin:auto 0 0;border-radius:18px 18px 0 0}dialog#broInfo[open],dialog#broApp[open],dialog#teacherInfo[open],dialog#teacherApp[open]{animation-name:sheetUp}}
 @media (prefers-reduced-motion:reduce){dialog#broInfo[open],dialog#broApp[open],dialog#teacherInfo[open],dialog#teacherApp[open]{animation:none}}
+
+.bro-p{margin:0 0 10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--wash);min-width:0}
+.bro-ph{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.bro-ph legend{float:left;padding:0;font-weight:800;font-size:13px;color:var(--ink)}
+.bro-rm{min-height:32px;padding:2px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--muted);font:600 12px var(--body);cursor:pointer}
+.bro-rm:hover{color:var(--danger);border-color:var(--danger)}
+.bro-nm{margin-bottom:8px}
+.bro-p .bro-roll{margin-bottom:0;max-width:200px}
+.bro-p .bro-chk{margin:10px 0 6px}
+.bro-me{margin:0 0 10px}
+.bro-add{width:100%;margin:0 0 12px;min-height:42px;font-size:13.5px}
+.bro-main{margin-top:2px;align-items:stretch}
+.bro-main .btn{flex:1}
+.bro-disk{flex:none;width:48px;min-height:44px;display:grid;place-items:center;border:1px solid var(--ink);border-radius:10px;background:var(--surface);color:var(--ink);cursor:pointer}
+.bro-disk:hover:not([disabled]){background:var(--ink);color:var(--surface)}
+.bro-disk[disabled]{opacity:.4;cursor:not-allowed;border-color:var(--line)}
+.bro-disk:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.bro-savep{margin:12px 0 0;padding:12px;border:1.5px solid var(--line);border-radius:12px;background:var(--wash)}
+.bro-savep[hidden]{display:none}
+.bro-k2{margin:0 0 4px;font-weight:800;font-size:14px}
+.bro-lane{grid-template-columns:64px minmax(0,1fr)}
+.bro-l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---- Find a teacher: subject browse + name plates ---- */
+@media (min-width:601px){dialog#teacherApp{width:min(1040px,calc(100vw - 24px))}}
+dialog#teacherDetail{padding:0;border:0;margin:auto;background:var(--surface);color:var(--ink);width:min(520px,calc(100vw - 24px));max-width:none;max-height:none;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(8,12,30,.4)}
+dialog#teacherDetail[open]{animation:sheetIn .2s ease-out}
+dialog#teacherDetail::backdrop{background:rgba(12,16,32,.55)}
+@media (max-width:600px){dialog#teacherDetail{width:100%;margin:auto 0 0;border-radius:18px 18px 0 0}dialog#teacherDetail[open]{animation-name:sheetUp}}
+@media (prefers-reduced-motion:reduce){dialog#teacherDetail[open]{animation:none}}
+.tp-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start}
+.tp-side{position:sticky;top:0;display:grid;gap:10px}
+@media (max-width:760px){.tp-layout{grid-template-columns:1fr}.tp-side{order:-1;position:static}}
+.tp-card{padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--wash)}
+.tp-card h4{margin:0 0 8px;font-family:var(--display);font-weight:800;font-size:17px}
+.tp-card .teacher-search input{background:var(--surface)}
+.tp-res{display:grid;gap:8px;margin-top:10px;max-height:340px;overflow-y:auto;overscroll-behavior:contain}
+@media (max-width:760px){.tp-res{max-height:230px}}
+.tp-card .teacher-msg{margin:8px 0 0;min-height:0}
+.tp-chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px;padding:4px 4px 2px}
+.tp-chip{min-height:40px;padding:4px 13px;border:1.5px solid var(--line);border-radius:99px;background:var(--wash);color:var(--ink);font:600 13px var(--body);cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.tp-chip b{font-weight:700;opacity:.65}
+.tp-chip:hover{border-color:var(--ink)}
+.tp-chip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.terms-body p.tp-sum{margin:0 0 14px;font-size:12.5px}
+.tp-sub{margin:0 0 20px}
+.tp-sh{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 10px;margin:0 0 9px;padding:3px 0 3px 11px;border-left:5px solid var(--c)}
+.tp-sh h4{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(17px,4vw,20px);line-height:1.15}
+.tp-sh span{color:var(--muted);font-size:12.5px;font-weight:600}
+.tp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:8px}
+.tp-plate{display:grid;grid-template-columns:42px minmax(0,1fr);gap:11px;align-items:center;width:100%;min-height:62px;padding:9px 11px;border:1.5px solid var(--line);border-left:5px solid var(--c);border-radius:13px;background:var(--surface);color:var(--ink);text-align:left;font-family:var(--body);cursor:pointer}
+.tp-plate:hover{border-color:var(--c);background:var(--wash)}
+.tp-av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--c);color:#fff;font:800 14px var(--display)}
+.tp-nm{display:block;font-weight:700;font-size:14px;line-height:1.25;overflow-wrap:anywhere}
+.tp-ss{display:block;margin-top:1px;color:var(--muted);font-size:11.5px;line-height:1.3}
+.tp-st{display:flex;align-items:center;gap:6px;margin-top:3px;color:var(--muted);font-size:12px;font-weight:600}
+.tp-st.on{color:color-mix(in srgb,#16a34a 62%,var(--ink))}
+.tp-dot{display:inline-block;flex:none;width:9px;height:9px;border-radius:50%;background:var(--line)}
+.tp-dot.on{background:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,.22)}
+.tp-state{margin:6px 0;padding:14px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:13.5px;text-align:center}
+.tp-state .btn{margin-top:10px}
+.td-subs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.td-s{padding:3px 11px;border-radius:99px;border-left:4px solid var(--c);background:var(--wash);border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line);font-size:12px;font-weight:700}
+.td-now{margin:0 0 4px;padding:14px;border-radius:14px;background:var(--wash);border:1px solid var(--line)}
+.td-now.on{color:#fff;border:0;background:linear-gradient(135deg,#16a34a,#0d9488)}
+.terms-body .td-now p{color:inherit;margin:0}
+.td-k{display:flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.9}
+.td-now.on .tp-dot{background:#fff;box-shadow:0 0 0 3px rgba(255,255,255,.3)}
+.terms-body .td-big{margin:4px 0 2px;font-family:var(--display);font-weight:800;font-size:clamp(26px,7vw,34px);line-height:1.05}
+.terms-body .td-bs{margin-top:3px;font-size:13.5px;line-height:1.45}
+.td-now:not(.on) .td-bs{color:var(--muted)}
+.td-now:not(.on) .td-bs b{color:var(--ink)}
+.td-h{margin:18px 0 8px;font-family:var(--display);font-weight:800;font-size:17px}
+.td-list{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.td-list li{display:grid;grid-template-columns:30px minmax(0,1fr);gap:11px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--wash)}
+.td-n{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;background:var(--ink);color:var(--surface);font-weight:800;font-size:13px}
+.terms-body .td-list p{margin:0}
+.terms-body .td-w{color:var(--ink);font-weight:700;font-size:13.5px}
+.td-in{color:var(--muted);font-weight:600}
+.terms-body .td-r{margin-top:1px;color:var(--ink);font-family:var(--display);font-weight:800;font-size:20px;line-height:1.2}
+.terms-body .td-m{margin-top:2px;font-size:12.5px;line-height:1.4}
+.td-week{margin:14px 0 0;border:1px solid var(--line);border-radius:12px;padding:0 12px}
+.td-week summary{min-height:44px;display:flex;align-items:center;font-weight:700;font-size:13.5px;cursor:pointer}
+.td-day{padding:8px 0;border-top:1px solid var(--line)}
+.td-day b{font-size:13px}
+.terms-body .td-day p{margin:2px 0 0;font-size:12.5px}
+.terms-body p.td-note{margin-top:14px;font-size:12px}
 .bro-acts{display:flex;gap:8px;margin-top:14px}
 .bro-acts .btn,.bro-acts .btn2{flex:1;margin:0}
 
@@ -706,12 +793,12 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       <div class="beta-grid">
         <article class="feature-card">
           <div class="feature-card-top"><p class="feature-name">Bro connect</p><button type="button" class="ibtn" data-act="bro-info" aria-label="About Bro connect">i</button></div>
-          <p class="feature-desc">Compare your timetable with a friend&rsquo;s and find a time when you are both free.</p>
+          <p class="feature-desc">Compare timetables of two or more people, with or without yours, find a time when everyone is free, and save them as a PDF.</p>
           <button type="button" class="btn" data-act="bro-open" aria-haspopup="dialog">Open Bro connect</button>
         </article>
         <article class="feature-card">
           <div class="feature-card-top"><p class="feature-name">Find a teacher</p><button type="button" class="ibtn" data-act="teacher-info" aria-label="About Find a teacher">i</button></div>
-          <p class="feature-desc">Search a faculty member to see their timetable-based current class, room, or next free period.</p>
+          <p class="feature-desc">Browse teachers by subject and tap a name to see their current room and next four periods.</p>
           <button type="button" class="btn" data-act="teacher-open" aria-haspopup="dialog">Find a teacher</button>
         </article>
         <article class="feature-card">
@@ -894,9 +981,9 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       </div>
       <div class="terms-body">
         <p><span class="bro-tag">Experimental &middot; Beta</span></p>
-        <p>Bro connect is built to answer one question: <b>when are you and a friend both free?</b> Enter your friend&rsquo;s branch, division, lab batch (and whether they take German), and it lines up both weekly timetables and highlights the best time slots to hang out.</p>
+        <p>Bro connect is built to answer one question: <b>when are you and a friend both free?</b> Add one or more friends (branch, division, lab batch, and whether they take German) and it lines up all the weekly timetables and highlights the best time slots to hang out. You can leave your own timetable out to compare just two friends, and save everything as a PDF with the floppy-disk button.</p>
         <p>It&rsquo;s a new, experimental feature, so results can be wrong or incomplete. It only compares the regular weekly timetable, so holidays, exams and one-off changes are not considered. Please double-check with your friend.</p>
-        <p>Your friend&rsquo;s class details stay on this device. Only anonymous usage counts (like how often the feature is opened or used) are recorded, never roll numbers or names.</p>
+        <p>Your friends&rsquo; class details, and the PDF you save, stay on this device. Only anonymous usage counts (like how often the feature is opened or used) are recorded, never roll numbers or names.</p>
         <div class="bro-acts"><button type="button" class="btn2" data-act="bro-no">Not now</button><button type="button" class="btn" data-act="bro-ack">Got it, let&rsquo;s try</button></div>
       </div>
     </div>
@@ -911,10 +998,26 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
     </div>
   </dialog>
   <dialog id="teacherInfo" aria-labelledby="teacherInfoT">
-    <div class="terms"><div class="terms-head"><h3 id="teacherInfoT">Find a teacher <span class="bro-tag">Experimental</span></h3><button type="button" class="terms-x" data-act="teacher-info-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div><div class="terms-body"><p>Search the faculty names in the <b>FY timetable</b>. Choose a matching faculty member to see where they are scheduled to teach now, or their next scheduled class when they are free.</p><p>Campus labels are inferred from the branch: CS, CS-AIML, CS-AI and IT are at <b>Bibwewadi Campus</b>; all other branches are shown as <b>Kondhwa Campus</b>.</p><p>This is an experimental timetable helper, not live location tracking. It cannot account for attendance, substitutions, holidays, or last-minute changes—please verify before visiting.</p><div class="bro-acts"><button type="button" class="btn" data-act="teacher-info-ack">Got it, find a teacher</button></div></div></div>
+    <div class="terms"><div class="terms-head"><h3 id="teacherInfoT">Find a teacher <span class="bro-tag">Experimental</span></h3><button type="button" class="terms-x" data-act="teacher-info-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div><div class="terms-body"><p>Faculty from the <b>FY timetable</b> are grouped by subject. Tap any name plate to see which room that teacher is in right now and the room and time of their next four periods. The search box on the side still lets you look a teacher up by name.</p><p>Campus labels are inferred from the branch: CS, CS-AIML, CS-AI and IT are at <b>Bibwewadi Campus</b>; all other branches are shown as <b>Kondhwa Campus</b>.</p><p>This is an experimental timetable helper, not live location tracking. It cannot account for attendance, substitutions, holidays, or last-minute changes—please verify before visiting.</p><div class="bro-acts"><button type="button" class="btn" data-act="teacher-info-ack">Got it, find a teacher</button></div></div></div>
   </dialog>
   <dialog id="teacherApp" aria-labelledby="teacherAppT">
-    <div class="terms"><div class="terms-head"><h3 id="teacherAppT">Find a teacher <span class="bro-tag">Beta</span></h3><button type="button" class="terms-x" data-act="teacher-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div><div class="terms-body"><form id="teacherForm"><label class="sr" for="teacherQuery">Teacher name</label><div class="teacher-search"><input id="teacherQuery" type="search" autocomplete="off" minlength="2"><button class="btn" type="submit">Search</button></div></form><p class="teacher-msg" id="teacherMsg" role="status" aria-live="polite">Search by at least two letters of a faculty name.</p><div class="teacher-results" id="teacherResults"></div><p class="teacher-note">Results use the published timetable and are not live location data.</p></div></div>
+    <div class="terms"><div class="terms-head"><h3 id="teacherAppT">Find a teacher <span class="bro-tag">Beta</span></h3><button type="button" class="terms-x" data-act="teacher-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div>
+      <div class="terms-body"><div class="tp-layout">
+        <div class="tp-main">
+          <div class="tp-chips" id="teacherChips" role="group" aria-label="Filter by subject"><button type="button" class="tp-chip" aria-pressed="true">All subjects</button></div>
+          <p class="tp-sum" id="teacherSum" role="status" aria-live="polite"></p>
+          <div id="teacherBrowse"><p class="tp-state tp-load">Loading faculty…</p></div>
+        </div>
+        <aside class="tp-side" aria-label="Search teachers by name"><div class="tp-card">
+          <h4>Search by name</h4>
+          <form id="teacherForm"><label class="sr" for="teacherQuery">Teacher name</label><div class="teacher-search"><input id="teacherQuery" type="search" autocomplete="off" minlength="2" placeholder="e.g. Dhake"><button class="btn" type="submit">Search</button></div></form>
+          <p class="teacher-msg" id="teacherMsg" role="status" aria-live="polite">Search by at least two letters of a faculty name.</p>
+          <div class="tp-res" id="teacherResults"></div>
+        </div></aside>
+      </div></div></div>
+  </dialog>
+  <dialog id="teacherDetail" aria-labelledby="teacherDetailName">
+    <div class="terms"><div class="terms-head"><h3 id="teacherDetailName">Teacher</h3><button type="button" class="terms-x" data-act="teacher-detail-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div><div class="terms-body" id="teacherDetailBody"></div></div>
   </dialog>
   <dialog id="admin" aria-labelledby="admTitle">
     <div class="terms" id="admWrap">
@@ -1883,6 +1986,7 @@ document.addEventListener('click',function(e){
   if(e.target&&e.target.id==='broInfo'){broAct('bro-no');return;}
   if(e.target&&e.target.id==='broApp'){broAct('bro-close');return;}
   if(e.target&&e.target.id==='teacherInfo'){teacherAct('teacher-info-close');return;}
+  if(e.target&&e.target.id==='teacherDetail'){teacherAct('teacher-detail-close');return;}
   if(e.target&&e.target.id==='teacherApp'){teacherAct('teacher-close');return;}
   if(e.target&&e.target.id==='admin'){ if(Date.now()-adminOpenedAt>500) closeAdmin(); return; }
   var b=e.target.closest('[data-act]');if(!b)return;
@@ -2165,33 +2269,63 @@ document.addEventListener('submit',function(e){
   }
 });
 
-/* ---------- Bro connect (beta): compare two weekly timetables ---------- */
-var BRO={f:{b:'',d:'',t:'',de:false,roll:''},cf:null,meta:null,lang:null,note:'',res:null,key:'',shown:false};
-try{var bsv=JSON.parse(store.get('tt-bro','{}'));if(bsv&&typeof bsv==='object'){BRO.f.b=String(bsv.b||'');BRO.f.d=String(bsv.d||'');BRO.f.t=String(bsv.t||'');BRO.f.de=!!bsv.de;}}catch(e){}
-// analytics: own class goes in branch/division/batch; the friend's class only in `link`. Roll numbers are never logged.
+/* ---------- Bro connect (beta): compare two or more weekly timetables ---------- */
+var BRO_MAX=5;
+var BRO_COLS=['#C2410C','#2F5BD6','#7C4DCB','#B8357C','#8F6B00'];
+var BRO={me:true,friends:[],cmp:null,res:null,people:null,key:'',shown:false};
+function broBlank(){return {n:'',b:'',d:'',t:'',de:false,roll:''};}
+try{
+  var bsv=JSON.parse(store.get('tt-bro','{}'));
+  if(bsv&&typeof bsv==='object'){
+    if(bsv.me===false) BRO.me=false;
+    if(Array.isArray(bsv.friends)) bsv.friends.slice(0,BRO_MAX).forEach(function(x){BRO.friends.push({n:String(x.n||'').slice(0,20),b:String(x.b||''),d:String(x.d||''),t:String(x.t||''),de:!!x.de,roll:''});});
+    else if(bsv.b) BRO.friends.push({n:'',b:String(bsv.b||''),d:String(bsv.d||''),t:String(bsv.t||''),de:!!bsv.de,roll:''});
+  }
+}catch(e){}
+if(!BRO.friends.length) BRO.friends.push(broBlank());
+// analytics: own class goes in branch/division/batch; the others' classes only in `link`. Roll numbers and names are never logged.
 function broLog(ev,link){logVisit(ev,{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch,link:link||null});}
-function broSave(){store.set('tt-bro',JSON.stringify({b:BRO.f.b,d:BRO.f.d,t:BRO.f.t,de:BRO.f.de}));}
+function broSave(){store.set('tt-bro',JSON.stringify({me:BRO.me,friends:BRO.friends.map(function(f){return {n:f.n,b:f.b,d:f.d,t:f.t,de:f.de};})}));}
 function broOpts(list,cur,ph){return '<option value="">'+ph+'</option>'+list.map(function(o){return '<option value="'+esc(o.v)+'"'+(o.v===cur?' selected':'')+'>'+esc(o.t)+'</option>';}).join('');}
 function broDivs(b){return b&&CLASSES[b]?Object.keys(CLASSES[b].divs).map(function(k){return {v:k,t:k};}):[];}
 function broYou(){return branchLabel(st.branch)+'-'+st.div+' · batch '+st.batch+(st.lang?' · German':'');}
-function broFormHTML(){
-  var f=BRO.f;
+function broFriendHTML(f,i){
   if(f.b&&!CLASSES[f.b]){f.b='';f.d='';}
   if(f.d&&!(CLASSES[f.b]&&CLASSES[f.b].divs[f.d])) f.d='';
   var brs=Object.keys(CLASSES).map(function(k){return {v:k,t:CLASSES[k].label};});
   var bts=['B1','B2','B3'].map(function(k){return {v:k,t:k};});
-  return '<p class="bro-you">You: <b id="broYou">'+esc(broYou())+'</b></p>'+
+  return '<fieldset class="bro-p" data-i="'+i+'"><div class="bro-ph"><legend>Person '+(i+1)+'</legend>'+
+      '<button type="button" class="bro-rm" data-act="bro-rm" data-i="'+i+'" aria-label="Remove person '+(i+1)+'"'+(BRO.friends.length<2?' hidden':'')+'>Remove</button></div>'+
+    '<label class="bro-f bro-nm"><span>Name (optional)</span><input type="text" maxlength="20" autocomplete="off" placeholder="e.g. Aryan" data-bro="n" data-i="'+i+'" value="'+esc(f.n)+'"></label>'+
     '<div class="bro-grid">'+
-      '<label class="bro-f"><span>Friend&rsquo;s branch</span><select id="broB" data-bro="b">'+broOpts(brs,f.b,'Select')+'</select></label>'+
-      '<label class="bro-f"><span>Division</span><select id="broD" data-bro="d">'+broOpts(broDivs(f.b),f.d,'Select')+'</select></label>'+
-      '<label class="bro-f"><span>Lab batch</span><select id="broT" data-bro="t">'+broOpts(bts,f.t,'Select')+'</select></label>'+
+      '<label class="bro-f"><span>Branch</span><select data-bro="b" data-i="'+i+'">'+broOpts(brs,f.b,'Select')+'</select></label>'+
+      '<label class="bro-f"><span>Division</span><select data-bro="d" data-i="'+i+'">'+broOpts(broDivs(f.b),f.d,'Select')+'</select></label>'+
+      '<label class="bro-f"><span>Lab batch</span><select data-bro="t" data-i="'+i+'">'+broOpts(bts,f.t,'Select')+'</select></label>'+
     '</div>'+
-    '<label class="bro-chk"><input type="checkbox" id="broDe" data-bro="de"'+(f.de?' checked':'')+'> Friend has a foreign language (German)</label>'+
-    '<label class="bro-f" id="broRollW"'+(f.de?'':' hidden')+'><span>Friend&rsquo;s roll number</span><input id="broRoll" data-bro="roll" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="e.g. 346" value="'+esc(f.roll)+'"></label>'+
-    '<button type="button" class="btn" id="broGo" data-act="bro-go">Compare schedules</button>'+
+    '<label class="bro-chk"><input type="checkbox" data-bro="de" data-i="'+i+'"'+(f.de?' checked':'')+'> Has a foreign language (German)</label>'+
+    '<label class="bro-f bro-roll"'+(f.de?'':' hidden')+'><span>Roll number</span><input type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="e.g. 346" data-bro="roll" data-i="'+i+'" value="'+esc(f.roll)+'"></label>'+
+  '</fieldset>';
+}
+function broFriendsHTML(){
+  return BRO.friends.map(broFriendHTML).join('')+
+    '<button type="button" class="btn2 bro-add" data-act="bro-add"'+(BRO.friends.length>=BRO_MAX?' hidden':'')+'>+ Add another person</button>';
+}
+function broFormHTML(){
+  return '<p class="bro-you">You: <b id="broYou">'+esc(broYou())+'</b></p>'+
+    '<label class="bro-chk bro-me"><input type="checkbox" id="broMe" data-bro="me"'+(BRO.me?' checked':'')+'> Include my timetable in the comparison</label>'+
+    '<div id="broFriends">'+broFriendsHTML()+'</div>'+
+    '<div class="bro-acts bro-main"><button type="button" class="btn" id="broGo" data-act="bro-go">Compare schedules</button>'+
+    '<button type="button" class="bro-disk" id="broDisk" data-act="bro-savebtn" disabled aria-label="Save timetables as PDF" title="Save as PDF">'+
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M5 3h11l4 4v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M8 3v5h7V3"/><rect x="7" y="13" width="10" height="8" rx="1"/></svg></button></div>'+
+    '<div class="bro-savep" id="broSaveP" hidden>'+
+      '<p class="bro-k2">Save as PDF</p>'+
+      '<label class="bro-chk"><input type="checkbox" id="broSaveMe" checked> Include my timetable</label>'+
+      '<p class="bro-note" style="margin:0 0 8px">Saves the comparison chart plus each person&rsquo;s weekly timetable. It is created on this device and never uploaded.</p>'+
+      '<div class="bro-acts"><button type="button" class="btn2" data-act="bro-savecancel">Cancel</button><button type="button" class="btn" data-act="bro-pdf">Download PDF</button></div>'+
+    '</div>'+
     '<p class="bro-msg" id="broMsg" role="status" aria-live="polite"></p>'+
     '<div id="broOut"></div>'+
-    '<p class="bro-note">Compares the regular weekly timetable only. Holidays and exam weeks are not considered. The roll number is only used on this device to find the German slot.</p>';
+    '<p class="bro-note">Compares the regular weekly timetable only. Holidays and exam weeks are not considered. Roll numbers are only used on this device to find the German slot.</p>';
 }
 function showBro(){
   if(!CUR) return;
@@ -2200,7 +2334,7 @@ function showBro(){
   var app=$('#broApp');
   if(typeof app.showModal==='function') app.showModal(); else app.setAttribute('open','');
   broLog('bro_start');
-  var el=$('#broB'); if(el) el.focus({preventScroll:true});
+  var el=$('#broFriends select'); if(el) el.focus({preventScroll:true});
 }
 function markFeatureUsed(){try{store.set('tt-beta-used','1');}catch(e){}var n=$('#featureNudge');if(n)n.hidden=true;}
 function broAct(a){
@@ -2222,44 +2356,84 @@ function broAct(a){
     var app=$('#broApp');if(typeof app.close==='function') app.close(); else app.removeAttribute('open');
   }else if(a==='bro-go') broGo();
 }
+function broFriendsRepaint(){var c=$('#broFriends');if(c) c.innerHTML=broFriendsHTML();}
+document.addEventListener('click',function(e){
+  var b=e.target.closest&&e.target.closest('[data-act^="bro-"]');if(!b) return;
+  var a=b.getAttribute('data-act');
+  if(a==='bro-add'){
+    if(BRO.friends.length<BRO_MAX){BRO.friends.push(broBlank());broSave();broFriendsRepaint();var s=document.querySelectorAll('#broFriends .bro-p');var l=s[s.length-1];if(l){var x=l.querySelector('input,select');if(x) x.focus({preventScroll:false});}}
+  }else if(a==='bro-rm'){
+    var i=+b.getAttribute('data-i');
+    if(BRO.friends.length>1&&i>=0){BRO.friends.splice(i,1);broSave();broFriendsRepaint();}
+  }else if(a==='bro-savebtn'){
+    if(b.disabled) return;
+    var p=$('#broSaveP'),m=$('#broSaveMe');if(!p) return;
+    if(m) m.checked=BRO.me;
+    p.hidden=false;broMsg('');
+  }else if(a==='bro-savecancel'){
+    var p2=$('#broSaveP');if(p2) p2.hidden=true;
+  }else if(a==='bro-pdf'){
+    broPdf();
+  }
+});
 document.addEventListener('change',function(e){
   var t=e.target,k=t&&t.getAttribute&&t.getAttribute('data-bro');
   if(!k) return;
-  var f=BRO.f;
-  if(k==='b'){f.b=t.value;f.d='';$('#broD').innerHTML=broOpts(broDivs(f.b),'','Select');}
+  if(k==='me'){BRO.me=t.checked;broSave();if(BRO.cmp){BRO.key='';broRefresh();}return;}
+  var i=+t.getAttribute('data-i'),f=BRO.friends[i];if(!f) return;
+  var box=t.closest('.bro-p');
+  if(k==='b'){f.b=t.value;f.d='';var dd=box&&box.querySelector('[data-bro="d"]');if(dd) dd.innerHTML=broOpts(broDivs(f.b),'','Select');}
   else if(k==='d') f.d=t.value;
   else if(k==='t') f.t=t.value;
-  else if(k==='de'){f.de=t.checked;$('#broRollW').hidden=!f.de;}
+  else if(k==='de'){f.de=t.checked;var rw=box&&box.querySelector('.bro-roll');if(rw) rw.hidden=!f.de;}
   broSave();
 });
 document.addEventListener('input',function(e){
-  var t=e.target;
-  if(t&&t.getAttribute&&t.getAttribute('data-bro')==='roll'){t.value=t.value.replace(/\D/g,'').slice(0,4);BRO.f.roll=t.value;}
+  var t=e.target,k=t&&t.getAttribute&&t.getAttribute('data-bro');
+  if(k!=='roll'&&k!=='n') return;
+  var f=BRO.friends[+t.getAttribute('data-i')];if(!f) return;
+  if(k==='roll'){t.value=t.value.replace(/\D/g,'').slice(0,4);f.roll=t.value;}
+  else{f.n=t.value.slice(0,20);broSave();}
 });
 function broMsg(m,ok){var el=$('#broMsg');if(el){el.textContent=m||'';el.className='bro-msg'+(ok?' ok':'');}}
 function broGo(){
-  var f=BRO.f;
-  if(!(f.b&&f.d&&f.t)){broMsg('Pick your friend’s branch, division and lab batch first.');return;}
-  var meta=CLASSES[f.b]&&CLASSES[f.b].divs[f.d];
-  if(!meta){broMsg('That class was not found.');return;}
+  var fr=BRO.friends;
+  for(var i=0;i<fr.length;i++){
+    if(!(fr[i].b&&fr[i].d&&fr[i].t)){broMsg('Pick the branch, division and lab batch for person '+(i+1)+' first.');return;}
+    if(!(CLASSES[fr[i].b]&&CLASSES[fr[i].b].divs[fr[i].d])){broMsg('The class for person '+(i+1)+' was not found.');return;}
+  }
+  if(!BRO.me&&fr.length<2){broMsg('Add at least two people, or tick “Include my timetable”.');return;}
   var btn=$('#broGo');btn.disabled=true;btn.textContent='Loading…';broMsg('');
-  loadDivisionData(meta).then(function(){
-    var lang=null,note='';
-    if(f.de){
-      if(!f.roll) note='German was ticked but no roll number was entered, so the German slot is not included.';
-      else{lang=germanFor(f.b,f.d,f.roll);if(!lang) note='That roll number was not found in the German list for this division, so no German slot is included.';}
-    }
-    BRO.cf={b:f.b,d:f.d,t:f.t};BRO.meta=meta;BRO.lang=lang;BRO.note=note;
-    BRO.res=broCompute();BRO.key=broKey();
-    broPaint();
-    broLog('bro_compare','bro:'+f.b+'-'+f.d+'-'+f.t+(lang?'+DE':''));
-    btn.disabled=false;btn.textContent='Compare schedules';
+  var done=function(){btn.disabled=false;btn.textContent='Compare schedules';};
+  Promise.all(fr.map(function(f){return loadDivisionData(CLASSES[f.b].divs[f.d]);})).then(function(){
+    var notes=[],list=fr.map(function(f,i){
+      var meta=CLASSES[f.b].divs[f.d],label=(f.n||'').trim()||('Person '+(i+1)),lang=null;
+      if(f.de){
+        if(!f.roll) notes.push(label+': German was ticked but no roll number was entered, so the German slot is not included.');
+        else{lang=germanFor(f.b,f.d,f.roll);if(!lang) notes.push(label+': that roll number was not found in the German list for this division, so no German slot is included.');}
+      }
+      var sess=meta.sess.filter(function(x){return !x.b||x.b===f.t;});
+      if(lang){var g=GER_SLOTS[lang];sess=sess.concat([{d:g[0],s:g[1],e:g[2],sub:GER_SUBJ,type:'Foreign Language',room:g[3],ger:true}]);}
+      return {label:label,b:f.b,d:f.d,t:f.t,lang:lang,sess:sess};
+    });
+    BRO.cmp={friends:list,notes:notes};
+    broRecompute();broPaint();
+    broLog('bro_compare','bro:'+list.map(function(p){return p.b+'-'+p.d+'-'+p.t+(p.lang?'+DE':'');}).join(',')+(BRO.me?'+me':''));
+    var dk=$('#broDisk');if(dk) dk.disabled=false;
+    done();
   }).catch(function(){
-    btn.disabled=false;btn.textContent='Compare schedules';
-    broMsg('Could not load that timetable. Check your connection and try again.');
+    done();
+    broMsg('Could not load a timetable. Check your connection and try again.');
   });
 }
-function broKey(){return [st.fmt,st.branch,st.div,st.batch,st.lang||''].join('|');}
+function broKey(){return [st.fmt,st.branch,st.div,st.batch,st.lang||'',BRO.me?1:0].join('|');}
+function broMine(){return SESS.filter(function(x){return !x.b||x.b===st.batch;});}
+function broPeople(includeMe){
+  var out=[];
+  if(includeMe) out.push({label:'You',b:st.branch,d:st.div,t:st.batch,lang:st.lang,sess:broMine(),me:true,color:'#1B2340'});
+  BRO.cmp.friends.forEach(function(p,i){out.push({label:p.label,b:p.b,d:p.d,t:p.t,lang:p.lang,sess:p.sess,color:BRO_COLS[i%BRO_COLS.length]});});
+  return out;
+}
 function broMerge(iv){
   iv=iv.slice().sort(function(a,b){return a[0]-b[0];});
   var out=[];
@@ -2272,58 +2446,66 @@ function broFree(busy,lo,hi){
   if(c<hi) out.push([c,hi]);
   return out.filter(function(x){return x[1]-x[0]>=30;});
 }
-function broCompute(){
-  var cf=BRO.cf,mine=SESS.filter(function(x){return !x.b||x.b===st.batch;});
-  var theirs=BRO.meta.sess.filter(function(x){return !x.b||x.b===cf.t;});
-  if(BRO.lang){var g=GER_SLOTS[BRO.lang];theirs=theirs.concat([{d:g[0],s:g[1],e:g[2]}]);}
+function broCompute(people){
   var lo=480,hi=1080;
-  mine.concat(theirs).forEach(function(x){lo=Math.min(lo,Math.floor(x.s/60)*60);hi=Math.max(hi,Math.ceil(x.e/60)*60);});
+  people.forEach(function(p){p.sess.forEach(function(x){lo=Math.min(lo,Math.floor(x.s/60)*60);hi=Math.max(hi,Math.ceil(x.e/60)*60);});});
   var rows=[];
   for(var d=1;d<=6;d++){
-    var a=broMerge(mine.filter(function(x){return x.d===d;}).map(function(x){return [x.s,x.e];}));
-    var b=broMerge(theirs.filter(function(x){return x.d===d;}).map(function(x){return [x.s,x.e];}));
-    rows.push({d:d,a:a,b:b,active:!!(a.length||b.length),free:broFree(broMerge(a.concat(b)),lo,hi)});
+    var lanes=people.map(function(p){return broMerge(p.sess.filter(function(x){return x.d===d;}).map(function(x){return [x.s,x.e];}));});
+    var all=[];lanes.forEach(function(l){all=all.concat(l);});
+    rows.push({d:d,lanes:lanes,active:lanes.some(function(l){return l.length;}),free:broFree(broMerge(all),lo,hi)});
   }
   return {lo:lo,hi:hi,rows:rows};
 }
+function broRecompute(){
+  BRO.people=broPeople(BRO.me);
+  BRO.res=broCompute(BRO.people);
+  BRO.key=broKey();
+}
 function broPct(m,r){return ((m-r.lo)/(r.hi-r.lo)*100).toFixed(2);}
-function broLane(label,cls,list,r){
-  return '<div class="bro-lane"><span class="bro-l">'+label+'</span><div class="bro-t">'+list.map(function(x){
-    return '<i class="bro-s '+cls+'" style="left:'+broPct(x[0],r)+'%;width:'+((x[1]-x[0])/(r.hi-r.lo)*100).toFixed(2)+'%" title="'+fmtRange(x[0],x[1])+'"></i>';
+function broLane(label,cls,color,list,r){
+  return '<div class="bro-lane"><span class="bro-l" title="'+esc(label)+'">'+esc(label)+'</span><div class="bro-t">'+list.map(function(x){
+    return '<i class="bro-s '+cls+'" style="left:'+broPct(x[0],r)+'%;width:'+((x[1]-x[0])/(r.hi-r.lo)*100).toFixed(2)+'%'+(color?';background:'+color:'')+'" title="'+fmtRange(x[0],x[1])+'"></i>';
   }).join('')+'</div></div>';
 }
-function broResultHTML(r){
-  var dn=nowFloor().getDay(),picks=[],idle=[];
+function broBestPicks(r){
+  var picks=[],idle=[];
   r.rows.forEach(function(w){
     if(!w.active){idle.push(DAYS[w.d]);return;}
     w.free.forEach(function(x){if(x[1]-x[0]>=60) picks.push({d:w.d,s:x[0],e:x[1],l:x[1]-x[0]});});
   });
   picks.sort(function(a,b){return b.l-a.l||a.d-b.d||a.s-b.s;});
-  var cf=BRO.cf,html='';
+  return {picks:picks,idle:idle};
+}
+function broWho(n){return n===2?'both of you':(n===3?'all three of you':'all '+n+' of you');}
+function broCls(p){return branchLabel(p.b)+'-'+p.d+' · batch '+p.t+(p.lang?' · German '+p.lang:'');}
+function broResultHTML(r){
+  var ppl=BRO.people,n=ppl.length,dn=nowFloor().getDay(),bp=broBestPicks(r),picks=bp.picks,idle=bp.idle,html='';
   if(picks.length){
     var p=picks[0];
-    html+='<div class="bro-best"><p class="bro-k">Best time to meet</p><p class="bro-big">'+DAYS[p.d]+', '+fmtRange(p.s,p.e)+'</p><p class="bro-bs">'+dur(p.l*60000)+' free for both of you</p></div>';
+    html+='<div class="bro-best"><p class="bro-k">Best time to meet</p><p class="bro-big">'+DAYS[p.d]+', '+fmtRange(p.s,p.e)+'</p><p class="bro-bs">'+dur(p.l*60000)+' free for '+broWho(n)+'</p></div>';
     if(picks.length>1) html+='<ul class="bro-alt" aria-label="Other options">'+picks.slice(1,4).map(function(q){
       return '<li><b>'+DAYS[q.d]+'</b> '+fmtRange(q.s,q.e)+' · '+dur(q.l*60000)+'</li>';}).join('')+'</ul>';
   }else{
-    html+='<p class="bro-none">No common gap of an hour or more on class days. '+(idle.length?'Try '+idle.join(' or ')+', when neither of you has class.':'Try Sunday, which is free for both.')+'</p>';
+    html+='<p class="bro-none">No common gap of an hour or more on class days. '+(idle.length?'Try '+idle.join(' or ')+', when nobody has class.':'Try Sunday, which is free for everyone.')+'</p>';
   }
   var ticks='';
   for(var h=r.lo/60;h<=r.hi/60;h+=2) ticks+='<span'+(h===r.hi/60?' class="last"':'')+' style="left:'+broPct(h*60,r)+'%">'+fmtH(h)+'</span>';
   html+='<div class="bro-res" style="--n:'+((r.hi-r.lo)/60)+'">'+
-    '<p class="bro-you">Friend: <b>'+esc(branchLabel(cf.b))+'-'+esc(cf.d)+' · batch '+esc(cf.t)+(BRO.lang?' · German '+BRO.lang:'')+'</b></p>'+
-    '<div class="bro-legend"><span><i class="y"></i>You in class</span><span><i class="f"></i>Friend in class</span><span><i class="g"></i>Free together</span></div>'+
+    ppl.map(function(p){return '<p class="bro-you">'+esc(p.label)+': <b>'+esc(broCls(p))+'</b></p>';}).join('')+
+    '<div class="bro-legend">'+ppl.map(function(p){return '<span><i style="background:'+p.color+'"></i>'+esc(p.label)+' in class</span>';}).join('')+'<span><i class="g"></i>Free together</span></div>'+
     '<div class="bro-lane"><span class="bro-l"></span><div class="bro-t bro-axt">'+ticks+'</div></div>';
   r.rows.forEach(function(w){
     if(!w.active) return;
     var best=w.free.slice().sort(function(a,b){return (b[1]-b[0])-(a[1]-a[0]);})[0];
     html+='<div class="bro-day"><div class="bro-dh'+(w.d===dn?' today':'')+'"><b>'+DAYS[w.d]+'</b><span>'+(best&&best[1]-best[0]>=60?'Longest gap: '+fmtRange(best[0],best[1]):'No long common gap')+'</span></div>'+
-      broLane('You','y',w.a,r)+broLane('Friend','f',w.b,r)+broLane('Both free','g',w.free,r)+'</div>';
+      ppl.map(function(p,i){return broLane(p.label,p.me?'y':'f',p.me?'':p.color,w.lanes[i],r);}).join('')+broLane('All free','g','',w.free,r)+'</div>';
   });
   html+='</div>';
-  if(idle.length) html+='<p class="bro-note">'+idle.join(' and ')+' and Sunday have no classes for either of you.</p>';
-  if(campusFor(st.branch)!==campusFor(cf.b)) html+='<p class="bro-warn">You’re on the '+campusFor(st.branch)+' and your friend is on the '+campusFor(cf.b)+', so leave some travel time.</p>';
-  if(BRO.note) html+='<p class="bro-warn">'+esc(BRO.note)+'</p>';
+  if(idle.length) html+='<p class="bro-note">'+idle.join(' and ')+' and Sunday have no classes for anyone.</p>';
+  var camps={};ppl.forEach(function(p){(camps[campusFor(p.b)]=camps[campusFor(p.b)]||[]).push(p.label);});
+  if(Object.keys(camps).length>1) html+='<p class="bro-warn">Not everyone is on the same campus ('+Object.keys(camps).map(function(c){return esc(camps[c].join(', '))+': '+c;}).join('; ')+'), so leave some travel time.</p>';
+  (BRO.cmp.notes||[]).forEach(function(nt){html+='<p class="bro-warn">'+esc(nt)+'</p>';});
   return html;
 }
 function broPaint(){var o=$('#broOut');if(o) o.innerHTML=broResultHTML(BRO.res);}
@@ -2331,9 +2513,192 @@ function broPaint(){var o=$('#broOut');if(o) o.innerHTML=broResultHTML(BRO.res);
 function broRefresh(){
   if(!BRO.shown) return;
   var y=$('#broYou');if(y) y.textContent=broYou();
-  if(!BRO.res) return;
+  if(!BRO.cmp) return;
   var k=broKey();
-  if(k!==BRO.key){BRO.key=k;BRO.res=broCompute();broPaint();}
+  if(k!==BRO.key){broRecompute();broPaint();}
+}
+
+/* ---------- Bro connect: save as PDF (self-contained writer, works offline) ---------- */
+var PDF_HW=[278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584];
+var PDF_BW=[278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584];
+function pdfClean(s){
+  return String(s==null?'':s).replace(/[\u2013\u2014\u2212]/g,'-').replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/[\u00B7\u2022]/g,'|').replace(/\u2026/g,'...').replace(/&/g,'&').replace(/[^\x20-\x7E]/g,'');
+}
+function pdfW(s,size,bold){var t=bold?PDF_BW:PDF_HW,w=0;for(var i=0;i<s.length;i++){var c=s.charCodeAt(i)-32;w+=(t[c]||556);}return w*size/1000;}
+function pdfFit(s,size,bold,max){
+  s=pdfClean(s);if(pdfW(s,size,bold)<=max) return s;
+  while(s.length>1&&pdfW(s+'...',size,bold)>max) s=s.slice(0,-1);
+  return s.length>1?s+'...':'';
+}
+function pdfRGB(hex){var h=hex.replace('#','');return [parseInt(h.substr(0,2),16)/255,parseInt(h.substr(2,2),16)/255,parseInt(h.substr(4,2),16)/255];}
+function pdfTint(hex,k){var c=pdfRGB(hex);return c.map(function(v){return v+(1-v)*k;});}
+function pdfNum(n){return (Math.round(n*100)/100).toString();}
+function PdfDoc(w,h){this.w=w;this.h=h;this.pages=[];this.cur=null;this.newPage();}
+PdfDoc.prototype.newPage=function(){this.cur=[];this.pages.push(this.cur);};
+PdfDoc.prototype.rect=function(x,y,w,h,rgb,stroke){ // y measured from top
+  var c=rgb.map(pdfNum).join(' ');
+  this.cur.push(stroke?(c+' RG '+pdfNum(stroke)+' w '+pdfNum(x)+' '+pdfNum(this.h-y-h)+' '+pdfNum(w)+' '+pdfNum(h)+' re S'):(c+' rg '+pdfNum(x)+' '+pdfNum(this.h-y-h)+' '+pdfNum(w)+' '+pdfNum(h)+' re f'));
+};
+PdfDoc.prototype.line=function(x1,y1,x2,y2,rgb,wd){this.cur.push(rgb.map(pdfNum).join(' ')+' RG '+pdfNum(wd||0.5)+' w '+pdfNum(x1)+' '+pdfNum(this.h-y1)+' m '+pdfNum(x2)+' '+pdfNum(this.h-y2)+' l S');};
+PdfDoc.prototype.text=function(s,x,y,size,rgb,bold){ // y = baseline from top
+  s=pdfClean(s).replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');
+  this.cur.push('BT /'+(bold?'F2':'F1')+' '+pdfNum(size)+' Tf '+rgb.map(pdfNum).join(' ')+' rg '+pdfNum(x)+' '+pdfNum(this.h-y)+' Td ('+s+') Tj ET');
+};
+PdfDoc.prototype.build=function(title){
+  var objs=[],n=this.pages.length;
+  // 1 catalog, 2 pages, 3 F1, 4 F2, 5 info, then (page, content) pairs
+  objs[1]='<< /Type /Catalog /Pages 2 0 R >>';
+  var kids=[];for(var i=0;i<n;i++) kids.push((6+i*2)+' 0 R');
+  objs[2]='<< /Type /Pages /Kids ['+kids.join(' ')+'] /Count '+n+' >>';
+  objs[3]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
+  objs[4]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
+  objs[5]='<< /Title ('+pdfClean(title).replace(/[()\\]/g,'')+') /Producer (Timetable) >>';
+  for(var p=0;p<n;p++){
+    var body=this.pages[p].join('\n');
+    objs[6+p*2]='<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+this.w+' '+this.h+'] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents '+(7+p*2)+' 0 R >>';
+    objs[7+p*2]='<< /Length '+body.length+' >>\nstream\n'+body+'\nendstream';
+  }
+  var out='%PDF-1.4\n',off=[0];
+  for(var k=1;k<objs.length;k++){off[k]=out.length;out+=k+' 0 obj\n'+objs[k]+'\nendobj\n';}
+  var xr=out.length;
+  out+='xref\n0 '+objs.length+'\n0000000000 65535 f \n';
+  for(var j=1;j<objs.length;j++) out+=('0000000000'+off[j]).slice(-10)+' 00000 n \n';
+  out+='trailer\n<< /Size '+objs.length+' /Root 1 0 R /Info 5 0 R >>\nstartxref\n'+xr+'\n%%EOF';
+  var bytes=new Uint8Array(out.length);for(var q=0;q<out.length;q++) bytes[q]=out.charCodeAt(q)&255;
+  return new Blob([bytes],{type:'application/pdf'});
+};
+function broPdfDoc(people){
+  var W=842,H=595,M=34,INK=[0.106,0.137,0.251],MUT=[0.35,0.38,0.5],LINE=[0.84,0.855,0.9],GREEN=[0.086,0.639,0.294];
+  var doc=new PdfDoc(W,H),r=broCompute(people),n=people.length;
+  var now=new Date(),stamp=now.getDate()+' '+MONS[now.getMonth()]+' '+now.getFullYear();
+  function head(sub){
+    doc.rect(0,0,W,46,INK);
+    doc.text('Bro connect',M,29,17,[1,1,1],true);
+    doc.text(sub,M+112,29,10.5,[0.85,0.88,1],false);
+    var s='Created '+stamp;doc.text(s,W-M-pdfW(s,9,false),28,9,[0.85,0.88,1],false);
+  }
+  // ----- page 1+: comparison -----
+  head('Timetable comparison - '+n+' people');
+  var y=64;
+  doc.text('Who is compared',M,y,11,INK,true);y+=14;
+  people.forEach(function(p){
+    doc.rect(M,y-8,9,9,pdfRGB(p.color));
+    doc.text(pdfFit(p.label,9.5,true,150),M+15,y,9.5,INK,true);
+    doc.text(pdfFit(broCls(p)+' | '+campusFor(p.b),9.5,false,W-2*M-180),M+175,y,9.5,MUT,false);
+    y+=14;
+  });
+  y+=6;
+  var bp=broBestPicks(r);
+  doc.text('Best times to meet',M,y,11,INK,true);y+=14;
+  if(bp.picks.length){
+    bp.picks.slice(0,4).forEach(function(q,i){
+      doc.rect(M,y-9,6,11,GREEN);
+      doc.text(DAYS[q.d]+',  '+fmtRange(q.s,q.e)+'  ('+dur(q.l*60000)+' free for '+broWho(n)+')',M+12,y,i?9.5:11,i?INK:GREEN,!i);
+      y+=i?13:16;
+    });
+  }else{
+    doc.text('No common gap of an hour or more on class days'+(bp.idle.length?'. Try '+bp.idle.join(' or ')+'.':'.'),M,y,9.5,INK,false);y+=14;
+  }
+  y+=8;
+  // lanes
+  var LX=M+78,LW=W-M-LX,LH=9,GAP=2.5;
+  var dayH=14+(n+1)*(LH+GAP)+10;
+  function axis(yy){
+    for(var h=r.lo/60;h<=r.hi/60;h+=1){
+      var gx=LX+(h*60-r.lo)/(r.hi-r.lo)*LW;
+      doc.line(gx,yy,gx,yy+(n+1)*(LH+GAP),LINE,0.4);
+    }
+  }
+  function ticks(yy){
+    for(var h=r.lo/60;h<=r.hi/60;h+=1){
+      var gx=LX+(h*60-r.lo)/(r.hi-r.lo)*LW,t=fmtH(h).replace(' ',''),tw=pdfW(t,7.5,false);
+      doc.text(t,Math.min(Math.max(gx-tw/2,LX-2),LX+LW-tw),yy,7.5,MUT,false);
+    }
+  }
+  function legend(){
+    var lx=M;
+    people.forEach(function(p){doc.rect(lx,y-7,8,8,pdfRGB(p.color));var s=pdfFit(p.label,8.5,false,90);doc.text(s,lx+12,y,8.5,INK,false);lx+=12+pdfW(s,8.5,false)+14;});
+    doc.rect(lx,y-7,8,8,GREEN);doc.text('Free together',lx+12,y,8.5,INK,false);
+    y+=10;
+    ticks(y+4);y+=10;
+  }
+  legend();
+  r.rows.forEach(function(w){
+    if(!w.active) return;
+    if(y+dayH>H-M){doc.newPage();head('Timetable comparison (continued)');y=66;legend();}
+    doc.text(DAYS[w.d],M,y+8,10,INK,true);
+    var best=w.free.slice().sort(function(a,b){return (b[1]-b[0])-(a[1]-a[0]);})[0];
+    var gl=best&&best[1]-best[0]>=60?'Longest common gap: '+fmtRange(best[0],best[1]):'No long common gap';
+    doc.text(gl,W-M-pdfW(gl,8,false),y+8,8,MUT,false);
+    var ly=y+13;
+    axis(ly);
+    var rowsList=people.map(function(p,i){return {label:p.label,color:pdfRGB(p.color),list:w.lanes[i]};});
+    rowsList.push({label:'All free',color:GREEN,list:w.free});
+    rowsList.forEach(function(rw){
+      doc.rect(LX,ly,LW,LH,[0.95,0.955,0.97]);
+      rw.list.forEach(function(x){doc.rect(LX+(x[0]-r.lo)/(r.hi-r.lo)*LW,ly+1,(x[1]-x[0])/(r.hi-r.lo)*LW,LH-2,rw.color);});
+      doc.text(pdfFit(rw.label,7.5,false,LX-M-6),M,ly+7,7.5,MUT,false);
+      ly+=LH+GAP;
+    });
+    y+=dayH;
+  });
+  if(bp.idle.length&&y<H-M){doc.text(bp.idle.join(' and ')+' and Sunday have no classes for anyone.',M,y+4,8.5,MUT,false);y+=12;}
+  var camps={};people.forEach(function(p){camps[campusFor(p.b)]=1;});
+  if(Object.keys(camps).length>1&&y<H-M){doc.text('Note: not everyone is on the same campus, so leave some travel time.',M,y+4,8.5,[0.76,0.25,0.05],false);y+=12;}
+  // ----- one page per person -----
+  people.forEach(function(p){
+    doc.newPage();
+    head('Weekly timetable');
+    doc.rect(M,58,10,10,pdfRGB(p.color));
+    doc.text(pdfFit(p.label,15,true,300),M+16,68,15,INK,true);
+    doc.text(pdfFit(broCls(p)+' | '+campusFor(p.b),10,false,W-2*M-330),M+16+Math.min(pdfW(p.label,15,true),300)+10,67.5,10,MUT,false);
+    var days=[1,2,3,4,5];if(p.sess.some(function(x){return x.d===6;})||true) days.push(6);
+    var lo=480,hi=1080;p.sess.forEach(function(x){lo=Math.min(lo,Math.floor(x.s/60)*60);hi=Math.max(hi,Math.ceil(x.e/60)*60);});
+    var GX=M+34,GY=94,GW=W-M-GX,GH=H-GY-M-4,cw=GW/days.length,sc=GH/(hi-lo);
+    days.forEach(function(d,i){
+      doc.rect(GX+i*cw,GY-16,cw-2,14,INK);
+      var dl=DAYS[d];doc.text(dl,GX+i*cw+(cw-2-pdfW(dl,9,true))/2,GY-6,9,[1,1,1],true);
+    });
+    for(var h=lo/60;h<=hi/60;h++){
+      var gy=GY+(h*60-lo)*sc;
+      doc.line(GX-4,gy,W-M,gy,LINE,0.4);
+      doc.text(fmtH(h).replace(' ',''),M,gy+3,7.5,MUT,false);
+    }
+    days.forEach(function(d,i){
+      var list=p.sess.filter(function(x){return x.d===d;}).sort(function(a,b){return a.s-b.s;});
+      var x0=GX+i*cw;
+      // overlaps: place side by side
+      var cols=[];list.forEach(function(s){var c=0;while(cols[c]&&cols[c]>s.s) c++;cols[c]=s.e;s._c=c;});
+      list.forEach(function(s){
+        var nOver=1;list.forEach(function(o){if(o!==s&&o.s<s.e&&o.e>s.s) nOver=Math.max(nOver,o._c+1,s._c+1);});
+        var bw=(cw-3)/nOver,bx=x0+s._c*bw,by=GY+(s.s-lo)*sc,bh=(s.e-s.s)*sc-1;
+        var sub=getSubj(s.sub,s.sub),col=sub.color||'#5B6478';
+        doc.rect(bx,by,bw-1,bh,pdfTint(col,0.82));
+        doc.rect(bx,by,3,bh,pdfRGB(col));
+        var tx=bx+6,mw=bw-9;
+        doc.text(pdfFit(sub.short||sub.name||s.sub,8.5,true,mw),tx,by+10,8.5,INK,true);
+        if(bh>22) doc.text(pdfFit(s.type+(s.b?' ('+s.b+')':''),7.2,false,mw),tx,by+19.5,7.2,MUT,false);
+        if(bh>31) doc.text(pdfFit(fmtRange(s.s,s.e)+(s.room?' | '+s.room:''),7.2,false,mw),tx,by+28.5,7.2,MUT,false);
+      });
+    });
+  });
+  return doc;
+}
+function broPdf(){
+  if(!BRO.cmp){broMsg('Compare schedules first.');return;}
+  var cb=$('#broSaveMe'),inc=cb?cb.checked:BRO.me;
+  var people=broPeople(inc);
+  if(people.length<2){broMsg('At least two timetables are needed. Add another person or include your own timetable.');return;}
+  try{
+    var doc=broPdfDoc(people),blob=doc.build('Bro connect timetable comparison');
+    var names=people.map(function(p){return p.label;}).join('-').replace(/[^A-Za-z0-9-]+/g,'').slice(0,40)||'timetables';
+    var fn='bro-connect-'+names+'.pdf',url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download=fn;a.style.display='none';document.body.appendChild(a);a.click();
+    setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},4000);
+    var p=$('#broSaveP');if(p) p.hidden=true;
+    broMsg('Saved '+fn+' ('+people.length+' timetables'+(inc?', including yours':', yours not included')+').',true);
+    broLog('bro_save',inc?'with_me':'without_me');
+  }catch(err){broMsg('Could not create the PDF on this device.');}
 }
 // one anonymous 'bro_view' per session when the pane is scrolled into view
 (function(){
@@ -2350,68 +2715,185 @@ function broRefresh(){
 
 /* ---------- Find a teacher (Beta): timetable-based faculty availability ---------- */
 function teacherDialog(id,open){var d=$(id);if(!d)return;if(open){if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','');}else{if(typeof d.close==='function')d.close();else d.removeAttribute('open');}}
-var teacherRows=[],teacherTimer=null,teacherQueryId=0;
-function teacherAct(a){
-  if(a==='teacher-open'){
-    markFeatureUsed();logVisit('teacher_open',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});
-    if(!store.get('tt-teacher-seen','')){teacherDialog('#teacherInfo',true);return;}
-    teacherDialog('#teacherApp',true);setTimeout(function(){var q=$('#teacherQuery');if(q)q.focus();},0);
-  }
-  else if(a==='teacher-close') teacherDialog('#teacherApp',false);
-  else if(a==='teacher-info'){teacherDialog('#teacherInfo',true);}
-  else if(a==='teacher-info-close') teacherDialog('#teacherInfo',false);
-  else if(a==='teacher-info-ack'){store.set('tt-teacher-seen','1');teacherDialog('#teacherInfo',false);teacherDialog('#teacherApp',true);setTimeout(function(){var q=$('#teacherQuery');if(q)q.focus();},0);}
-}
-function teacherWhen(s,now){
-  var today=now.getDay(),m=mins(now),delta=(s.weekday-today+7)%7;
-  if(delta===0&&toMin(s.end_time)<=m)delta=7;
-  return delta*1440+toMin(s.start_time)-m;
-}
+var TEACH={loading:false,ok:false,err:false,fac:{},subs:{},slugs:null,filter:'',q:'',tid:0};
+var teacherTimer=null;
 function teacherCampus(division){
   var branch=(String(division||'').toLowerCase().match(/^fy-([a-z0-9]+)/)||[])[1]||'';
   return ['cs','csaiml','csai','it'].indexOf(branch)>-1?'Bibwewadi Campus':'Kondhwa Campus';
 }
-function teacherNamesHTML(rows){
-  var seen={};return rows.filter(function(r){var n=String(r.faculty_name||'').trim();if(!n||seen[n])return false;seen[n]=1;return true;}).map(function(r){var h=humanName(r.faculty_name);return '<button type="button" class="teacher-pick" data-act="teacher-pick" data-name="'+esc(String(r.faculty_name).trim())+'">'+esc((h.title?h.title+' ':'')+h.name)+'</button>';}).join('');
+function teacherDivLabel(slug){
+  if(!TEACH.slugs){TEACH.slugs={};Object.keys(CLASSES).forEach(function(b){Object.keys(CLASSES[b].divs).forEach(function(d){TEACH.slugs[CLASSES[b].divs[d].slug]=branchLabel(b)+'-'+d;});});}
+  return TEACH.slugs[slug]||String(slug||'').toUpperCase();
 }
-function teacherScheduleHTML(rows){
-  var now=nowFloor(),day=now.getDay(),m=mins(now),by={};
-  rows.forEach(function(r){if(r.faculty_name){var k=String(r.faculty_name).trim();(by[k]||(by[k]=[])).push(r);}});
-  return Object.keys(by).sort().slice(0,8).map(function(name){
-    var ss=by[name],today=ss.filter(function(s){return +s.weekday===day;}).sort(function(a,b){return toMin(a.start_time)-toMin(b.start_time);});
-    var h=humanName(name),html='<article class="teacher-result"><h4>'+esc((h.title?h.title+' ':'')+h.name)+'</h4>';
-    if(today.length){
-      html+='<p class="teacher-next">Today&rsquo;s FY timetable</p>'+today.map(function(s){
-        var live=toMin(s.start_time)<=m&&toMin(s.end_time)>m;
-        return '<p'+(live?' class="teacher-live"':'')+'>'+esc(fmtRange(toMin(s.start_time),toMin(s.end_time)))+' &middot; '+esc(s.subject_name||s.subject_code||'Class')+(s.room?' &middot; Room '+esc(s.room):'')+(live?' <b>· Teaching now</b>':'')+'</p><p class="teacher-campus">'+teacherCampus(s.division)+'</p>';
-      }).join('');
-    }else{
-      html+='<p class="teacher-next">No FY classes scheduled for today.</p>';
+function teacherFocus(sel){setTimeout(function(){var q=$(sel);if(q)q.focus({preventScroll:true});},0);}
+function teacherAct(a){
+  if(a==='teacher-open'){
+    markFeatureUsed();logVisit('teacher_open',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});
+    if(!store.get('tt-teacher-seen','')){teacherDialog('#teacherInfo',true);return;}
+    teacherShow();
+  }
+  else if(a==='teacher-close') teacherDialog('#teacherApp',false);
+  else if(a==='teacher-info'){teacherDialog('#teacherInfo',true);}
+  else if(a==='teacher-info-close') teacherDialog('#teacherInfo',false);
+  else if(a==='teacher-info-ack'){store.set('tt-teacher-seen','1');teacherDialog('#teacherInfo',false);teacherShow();}
+  else if(a==='teacher-detail-close') teacherDialog('#teacherDetail',false);
+  else if(a==='teacher-retry'){TEACH.err=false;teacherEnsure();}
+}
+function teacherShow(){teacherDialog('#teacherApp',true);teacherEnsure();teacherFocus('#teacherChips button');}
+
+/* ---- data: every FY session with a named teacher, loaded once (paged) and grouped by teacher and by subject ---- */
+function teacherFetchAll(){
+  var rows=[],off=0,pages=0;
+  function next(){
+    return fetchSupa('tt_sessions?select=weekday,start_time,end_time,subject_code,subject_name,session_type,batch,division,room,faculty_name&faculty_name=not.is.null&order=faculty_name.asc,weekday.asc,start_time.asc,division.asc&limit=1000&offset='+off)
+      .then(function(r){
+        r=r||[];rows=rows.concat(r);off+=r.length;pages++;
+        return (r.length&&pages<60)?next():rows;
+      });
+  }
+  return next();
+}
+function teacherBuild(rows){
+  var fac={},subs={};
+  rows.forEach(function(r){
+    var raw=String(r.faculty_name||'').trim();if(!raw) return;
+    var key=raw.toUpperCase(),f=fac[key];
+    if(!f) f=fac[key]={key:key,raw:raw,h:humanName(raw),subs:{},ses:[],seen:{}};
+    var code=r.subject_code||'OTHER',sn=r.subject_name||code;
+    f.subs[code]=f.subs[code]||sn;
+    var d=+r.weekday,s=toMin(r.start_time),e=toMin(r.end_time),room=r.room||'';
+    var k=[d,s,e,code,room].join('|'),x=f.seen[k];
+    if(x){
+      if(r.division&&x.divs.indexOf(r.division)<0) x.divs.push(r.division);
+      if(r.batch&&x.bs.indexOf(r.batch)<0) x.bs.push(r.batch);
+      return;
     }
-    return html+'</article>';
+    x={d:d,s:s,e:e,code:code,sub:sn,type:r.session_type||'Class',room:room,divs:r.division?[r.division]:[],bs:r.batch?[r.batch]:[]};
+    f.seen[k]=x;f.ses.push(x);
+    var sb=subs[code]||(subs[code]={code:code,name:sn,list:[]});
+    if(sb.list.indexOf(f)<0) sb.list.push(f);
+  });
+  TEACH.fac=fac;TEACH.subs=subs;
+}
+function teacherEnsure(){
+  var box=$('#teacherBrowse');if(!box) return;
+  if(TEACH.ok){teacherRender();return;}
+  if(TEACH.err){box.innerHTML='<div class="tp-state"><p>Could not load the faculty timetable. Check your connection and try again.</p><button type="button" class="btn" data-act="teacher-retry">Try again</button></div>';return;}
+  box.innerHTML='<p class="tp-state tp-load" role="status">Loading faculty…</p>';
+  if(TEACH.loading) return;
+  TEACH.loading=true;
+  teacherFetchAll().then(function(rows){TEACH.loading=false;teacherBuild(rows);TEACH.ok=true;if($('#teacherApp').open){teacherRender();if(TEACH.q) teacherLookup();}})
+    .catch(function(){TEACH.loading=false;TEACH.err=true;if($('#teacherApp').open) teacherEnsure();});
+}
+
+/* ---- timetable maths ---- */
+function teacherUntil(s,now){var dl=(s.d-now.getDay()+7)%7;if(dl===0&&s.e<=mins(now)) dl=7;return dl*1440+s.s-mins(now);}
+function teacherState(f){
+  var now=nowFloor(),day=now.getDay(),m=mins(now),cur=null,up=[];
+  f.ses.forEach(function(s){
+    if(s.d===day&&s.s<=m&&s.e>m){cur=s;up.push({s:s,w:7*1440+s.s-m});}
+    else up.push({s:s,w:teacherUntil(s,now)});
+  });
+  up.sort(function(a,b){return a.w-b.w;});
+  return {cur:cur,next:up.slice(0,4),m:m};
+}
+function teacherDayWord(w,s){
+  var dl=Math.floor((mins(nowFloor())+w)/1440);
+  return dl===0?'Today':dl===1?'Tomorrow':(dl>=7?'Next ':'')+DAYS[s.d];
+}
+function teacherSorted(list){return list.slice().sort(function(a,b){return a.h.name.localeCompare(b.h.name);});}
+function teacherName(f){return (f.h.title?f.h.title+' ':'')+f.h.name;}
+function teacherInit(f){var w=f.h.name.split(/\s+/).filter(Boolean);return ((w[0]||'?').charAt(0)+(w.length>1?w[w.length-1].charAt(0):'')).toUpperCase();}
+function teacherRoom(s){return s.room?'Room '+s.room:'Room not listed';}
+function teacherDivs(s){return s.divs.map(teacherDivLabel).join(', ');}
+
+/* ---- browse: subject sections of name plates ---- */
+function teacherPlate(f,code,showSubs){
+  var S=teacherState(f),col=getSubj(code,f.subs[code]||code).color;
+  var stx=S.cur?'<span class="tp-st on"><i class="tp-dot on"></i>Teaching now · '+esc(teacherRoom(S.cur))+'</span>':'<span class="tp-st"><i class="tp-dot"></i>Free right now</span>';
+  return '<button type="button" class="tp-plate" data-act="teacher-pick" data-key="'+esc(f.key)+'" style="--c:'+col+'">'+
+    '<span class="tp-av" aria-hidden="true">'+esc(teacherInit(f))+'</span>'+
+    '<span><span class="tp-nm">'+esc(teacherName(f))+'</span>'+
+    (showSubs?'<span class="tp-ss">'+esc(Object.keys(f.subs).map(function(c){return f.subs[c];}).join(' · '))+'</span>':'')+stx+'</span></button>';
+}
+function teacherSubjectList(){return Object.keys(TEACH.subs).map(function(c){return TEACH.subs[c];}).sort(function(a,b){return a.name.localeCompare(b.name);});}
+function teacherRender(){
+  var box=$('#teacherBrowse'),chips=$('#teacherChips'),sum=$('#teacherSum');if(!box||!TEACH.ok) return;
+  var subs=teacherSubjectList(),total=Object.keys(TEACH.fac).length;
+  if(TEACH.filter&&!TEACH.subs[TEACH.filter]) TEACH.filter='';
+  chips.innerHTML='<button type="button" class="tp-chip" data-act="teacher-chip" data-code="" aria-pressed="'+(!TEACH.filter)+'">All subjects <b>'+total+'</b></button>'+
+    subs.map(function(sb){return '<button type="button" class="tp-chip" data-act="teacher-chip" data-code="'+esc(sb.code)+'" aria-pressed="'+(TEACH.filter===sb.code)+'">'+esc(sb.name)+' <b>'+sb.list.length+'</b></button>';}).join('');
+  var shown=TEACH.filter?subs.filter(function(sb){return sb.code===TEACH.filter;}):subs;
+  if(!shown.length){box.innerHTML='<p class="tp-state">No faculty found in the timetable yet.</p>';sum.textContent='';return;}
+  sum.textContent=total+' faculty across '+subs.length+' subjects · status as of '+fmtT(mins(nowFloor()))+'. Tap a name plate for location and upcoming periods.';
+  box.innerHTML=shown.map(function(sb){
+    var col=getSubj(sb.code,sb.name).color;
+    return '<section class="tp-sub" aria-labelledby="tps-'+esc(sb.code)+'" style="--c:'+col+'"><header class="tp-sh"><h4 id="tps-'+esc(sb.code)+'">'+esc(sb.name)+'</h4><span>'+esc(sb.code)+' · '+sb.list.length+(sb.list.length===1?' teacher':' teachers')+'</span></header>'+
+      '<div class="tp-grid">'+teacherSorted(sb.list).map(function(f){return teacherPlate(f,sb.code,false);}).join('')+'</div></section>';
   }).join('');
 }
+
+/* ---- sidebox search (same behaviour as before: type 2+ letters, pick a match) ---- */
 function teacherLookup(){
-  var q=($('#teacherQuery').value||'').trim(),msg=$('#teacherMsg'),out=$('#teacherResults'),token=++teacherQueryId;
+  var inp=$('#teacherQuery'),msg=$('#teacherMsg'),out=$('#teacherResults');if(!inp) return;
+  var q=(inp.value||'').trim().toLowerCase();TEACH.q=q;
   if(q.length<2){msg.textContent='Enter at least two letters of the teacher’s name.';out.innerHTML='';return;}
-  msg.textContent='Finding faculty names…';out.innerHTML='';
-  /* The query only sends the name needed to search; analytics below records the feature use, never the search text. */
-  fetchSupa('tt_sessions?select=weekday,start_time,end_time,subject_code,subject_name,division,room,faculty_name&faculty_name=ilike.*'+encodeURIComponent(q)+'*&order=faculty_name.asc,weekday.asc,start_time.asc')
-    .then(function(rows){if(token!==teacherQueryId)return;teacherRows=rows||[];var html=teacherNamesHTML(teacherRows);msg.textContent=html?'Choose a faculty member.':'No faculty member matched that name.';out.innerHTML=html;logVisit('teacher_search',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});})
-    .catch(function(){msg.textContent='Could not search the faculty timetable. Check your connection and try again.';});
+  if(!TEACH.ok){msg.textContent=TEACH.err?'Could not load the faculty list.':'Loading faculty…';out.innerHTML='';teacherEnsure();return;}
+  var hits=teacherSorted(Object.keys(TEACH.fac).map(function(k){return TEACH.fac[k];}).filter(function(f){return (f.raw+' '+teacherName(f)).toLowerCase().indexOf(q)>-1;})).slice(0,12);
+  msg.textContent=hits.length?hits.length+(hits.length===1?' match. ':' matches. ')+'Choose a faculty member.':'No faculty member matched that name.';
+  out.innerHTML=hits.map(function(f){return teacherPlate(f,Object.keys(f.subs)[0],true);}).join('');
+  logVisit('teacher_search',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});
 }
 document.addEventListener('input',function(e){
   if(!e.target||e.target.id!=='teacherQuery')return;
-  clearTimeout(teacherTimer);teacherTimer=setTimeout(teacherLookup,280);
+  clearTimeout(teacherTimer);teacherTimer=setTimeout(teacherLookup,200);
 });
 document.addEventListener('submit',function(e){
   if(!e.target||e.target.id!=='teacherForm')return;e.preventDefault();teacherLookup();
 });
+
+/* ---- detail: where is the teacher now + next 4 periods ---- */
+function teacherDetailHTML(f){
+  var S=teacherState(f),m=S.m,html='';
+  html+='<div class="td-subs">'+Object.keys(f.subs).map(function(c){return '<span class="td-s" style="--c:'+getSubj(c,f.subs[c]).color+'">'+esc(f.subs[c])+'</span>';}).join('')+'</div>';
+  if(S.cur){
+    var c=S.cur;
+    html+='<div class="td-now on"><p class="td-k"><i class="tp-dot on"></i>Right now</p><p class="td-big">'+esc(teacherRoom(c))+'</p>'+
+      '<p class="td-bs"><b>'+esc(c.sub)+'</b> · '+esc(c.type)+'</p><p class="td-bs">'+esc(teacherDivs(c))+(c.bs.length?' · batch '+esc(c.bs.join(', ')):'')+' · '+teacherCampus(c.divs[0])+'</p>'+
+      '<p class="td-bs">Until '+fmtT(c.e)+' ('+dur((c.e-m)*60000)+' left)</p></div>';
+  }else{
+    var n0=S.next[0];
+    html+='<div class="td-now"><p class="td-k"><i class="tp-dot"></i>Right now</p><p class="td-big">Not in class</p>'+
+      (n0?'<p class="td-bs">Next: <b>'+esc(teacherDayWord(n0.w,n0.s))+', '+esc(fmtRange(n0.s.s,n0.s.e))+'</b> in <b>'+esc(teacherRoom(n0.s))+'</b>'+(n0.w<1440?' (in '+dur(n0.w*60000)+')':'')+'</p>':'<p class="td-bs">No classes are listed for this teacher.</p>')+'</div>';
+  }
+  if(S.next.length){
+    html+='<h4 class="td-h">Next '+S.next.length+(S.next.length===1?' period':' periods')+'</h4><ol class="td-list">'+S.next.map(function(n,i){
+      var s=n.s;
+      return '<li><span class="td-n" aria-hidden="true">'+(i+1)+'</span><div><p class="td-w">'+esc(teacherDayWord(n.w,s))+' · '+esc(fmtRange(s.s,s.e))+(n.w<1440?'<span class="td-in"> · in '+esc(dur(n.w*60000))+'</span>':'')+'</p>'+
+        '<p class="td-r">'+esc(teacherRoom(s))+'</p><p class="td-m">'+esc(s.sub)+' · '+esc(s.type)+' · '+esc(teacherDivs(s))+(s.bs.length?' (batch '+esc(s.bs.join(', '))+')':'')+' · '+teacherCampus(s.divs[0])+'</p></div></li>';
+    }).join('')+'</ol>';
+  }
+  var wk='';
+  for(var d=1;d<=6;d++){
+    var ds=f.ses.filter(function(s){return s.d===d;}).sort(function(a,b){return a.s-b.s;});
+    if(!ds.length) continue;
+    wk+='<div class="td-day"><b>'+DAYS[d]+'</b>'+ds.map(function(s){return '<p>'+esc(fmtRange(s.s,s.e))+' · '+esc(teacherRoom(s))+' · '+esc(s.sub)+'</p>';}).join('')+'</div>';
+  }
+  if(wk) html+='<details class="td-week"><summary>Full weekly schedule</summary>'+wk+'</details>';
+  html+='<p class="td-note">Based on the published FY timetable, not live location. Holidays, substitutions and one-off changes are not included.</p>';
+  return html;
+}
+function teacherOpenDetail(key){
+  var f=TEACH.fac[key];if(!f) return;
+  $('#teacherDetailName').textContent=teacherName(f);
+  $('#teacherDetailBody').innerHTML=teacherDetailHTML(f);
+  teacherDialog('#teacherDetail',true);
+  var body=$('#teacherDetailBody');if(body) body.scrollTop=0;
+}
 document.addEventListener('click',function(e){
-  var b=e.target.closest('[data-act="teacher-pick"]');if(!b)return;
-  var name=b.getAttribute('data-name'),out=$('#teacherResults'),msg=$('#teacherMsg');
-  var html=teacherScheduleHTML(teacherRows.filter(function(r){return String(r.faculty_name).trim()===name;}));
-  msg.textContent='FY timetable status as of '+fmtT(mins(nowFloor()))+'.';out.innerHTML=html;
+  var b=e.target.closest&&e.target.closest('[data-act="teacher-pick"],[data-act="teacher-chip"]');if(!b) return;
+  if(b.getAttribute('data-act')==='teacher-chip'){TEACH.filter=b.getAttribute('data-code')||'';teacherRender();var nb=$('#teacherChips [aria-pressed="true"]');if(nb) nb.focus({preventScroll:true});return;}
+  teacherOpenDetail(b.getAttribute('data-key'));
 });
 /* A light-touch onboarding prompt: random on each landing, never more than 2–3 views,
    and permanently gone once either beta feature is opened. */
