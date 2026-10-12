@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Study Planner - VIT Pune FY Timetable</title>
+<meta name="theme-color" content="#1B2340">
+<link rel="icon" href="icons/icon-32.png" sizes="32x32">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --ground:#ECEEF3; --surface:#FFFFFF; --ink:#1B2340; --muted:#596080; --line:#D6DAE6; --wash:#F3F4F8;
+  --now:#E5383B; --focus:#2F5BD6; --danger:#C4302B; --ok:#0D7B50; --tint:13%;
+  --display:"Big Shoulders Display","Barlow Condensed","Arial Narrow",sans-serif;
+  --body:"Instrument Sans","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0F1320; --surface:#181E33; --ink:#EDEFF7; --muted:#A0A8C4; --line:#2B3352; --wash:#1F2640;
+    --tint:30%; --focus:#8FA8FF; --danger:#FF6B6B; --ok:#4CC38A; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0F1320; --surface:#181E33; --ink:#EDEFF7; --muted:#A0A8C4; --line:#2B3352; --wash:#1F2640;
+  --tint:30%; --focus:#8FA8FF; --danger:#FF6B6B; --ok:#4CC38A; color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-tap-highlight-color:transparent}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.45;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.app{max-width:900px;margin:0 auto;padding:12px 12px 40px}
+@media (min-width:720px){.app{padding:22px 22px 52px}}
+[hidden]{display:none!important}
+
+/* header */
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:10px 20px;flex-wrap:wrap;margin-bottom:12px}
+.back{display:inline-flex;align-items:center;gap:6px;color:var(--muted);text-decoration:none;font-weight:600;font-size:12.5px;margin-bottom:8px}
+.back:hover{color:var(--ink)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(30px,7vw,44px);line-height:.92;margin:0;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.tag{font-family:var(--body);font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:var(--ink);color:var(--surface)}
+.sub{margin:7px 0 0;color:var(--muted);font-size:13px;max-width:52ch}
+.count{text-align:right}
+.count b{display:block;font-family:var(--display);font-weight:800;font-size:clamp(30px,7vw,44px);line-height:.92;font-variant-numeric:tabular-nums;color:var(--now)}
+.count span{color:var(--muted);font-size:12.5px}
+
+
+.ai-pill{position:relative;display:inline-flex;align-items:center;gap:5px;font-family:var(--body);font-size:12px;font-weight:800;letter-spacing:.08em;line-height:1;padding:6px 12px;border-radius:99px;color:#fff;background:linear-gradient(120deg,#7C4DFF,#2F8CFF 45%,#19D3C5 75%,#C04DFF);background-size:220% 220%;animation:aiShift 5s ease-in-out infinite;box-shadow:0 0 0 1px rgba(255,255,255,.25) inset,0 0 14px rgba(124,77,255,.55),0 0 28px rgba(47,140,255,.35);text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.ai-pill::before{content:"\2726";font-size:11px;animation:aiTwinkle 2.4s ease-in-out infinite}
+@keyframes aiShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes aiTwinkle{0%,100%{opacity:.65;transform:scale(.9)}50%{opacity:1;transform:scale(1.15)}}
+@media (prefers-reduced-motion:reduce){.ai-pill,.ai-pill::before{animation:none}}
+@media print{.ai-pill{box-shadow:none}}
+
+/* cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}
+.card h2{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(20px,4.6vw,25px);line-height:1}
+.card h2 .n{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;margin-right:8px;border-radius:50%;background:var(--ink);color:var(--surface);font-family:var(--body);font-size:12px;font-weight:700;vertical-align:3px}
+.hint{margin:5px 0 12px;color:var(--muted);font-size:12.5px}
+.privacy{display:flex;gap:10px;align-items:flex-start;border-color:color-mix(in srgb,var(--ok) 45%,var(--line));background:color-mix(in srgb,var(--ok) 7%,var(--surface))}
+.privacy svg{flex:none;margin-top:1px;color:var(--ok)}
+.privacy p{margin:0;font-size:12.5px;color:var(--ink)}
+.privacy b{font-weight:700}
+
+/* chips & subjects */
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;border:1px solid var(--line);background:var(--wash);font-size:12px;font-weight:600}
+.chip.mod{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.subs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+@media (max-width:560px){.subs{grid-template-columns:1fr}}
+.sub-card{display:flex;align-items:center;gap:10px;padding:9px 11px;border:1px solid var(--line);border-radius:11px;background:var(--wash);border-left:5px solid var(--c,#888)}
+.sub-card .nm{font-weight:700;font-size:13.5px;line-height:1.2}
+.sub-card .mt{color:var(--muted);font-size:11.5px;margin-top:2px}
+.sub-card .cr{margin-left:auto;text-align:right;font-family:var(--display);font-weight:800;font-size:22px;line-height:1}
+.sub-card .cr small{display:block;font-family:var(--body);font-weight:600;font-size:10px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+details.ttd{margin-top:12px;border:1px solid var(--line);border-radius:11px;background:var(--wash)}
+details.ttd summary{cursor:pointer;padding:10px 12px;font-weight:700;font-size:13px}
+.ttd-body{padding:0 12px 12px;display:grid;gap:10px}
+.ttd-day b{display:block;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.ttd-row{display:flex;gap:8px;font-size:12.5px;padding:2px 0}
+.ttd-row .t{flex:none;width:96px;font-variant-numeric:tabular-nums;color:var(--muted)}
+
+/* forms */
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (max-width:480px){.grid2{grid-template-columns:1fr}}
+label.f{display:block;font-weight:600;font-size:12.5px;color:var(--muted)}
+label.f>span{display:block;margin-bottom:4px}
+.in{width:100%;min-height:42px;padding:7px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--wash);color:var(--ink);font-weight:600;font-size:14px}
+textarea.in{min-height:84px;resize:vertical;font-weight:500;line-height:1.4}
+.act{display:grid;grid-template-columns:minmax(130px,1.1fr) minmax(0,1.6fr) minmax(120px,1fr) 78px auto;gap:8px;align-items:end;padding:10px;border:1px solid var(--line);border-radius:11px;background:var(--wash);margin-bottom:8px}
+@media (max-width:720px){.act{grid-template-columns:1fr 1fr}.act .a-title{grid-column:1/-1}}
+.act .x{min-height:42px;width:42px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;color:var(--muted);font-size:18px;line-height:1}
+.act .x:hover{color:var(--danger);border-color:var(--danger)}
+.act .nodl{align-self:center;color:var(--muted);font-size:12px;font-weight:600;padding-top:18px}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:8px 18px;border:0;border-radius:11px;background:var(--ink);color:var(--surface);font-weight:700;font-size:14px;cursor:pointer;text-decoration:none}
+.btn:hover{filter:brightness(1.12)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn2{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:40px;padding:6px 14px;border:1.5px solid var(--line);border-radius:11px;background:var(--surface);color:var(--ink);font-weight:600;font-size:13px;cursor:pointer}
+.btn2:hover{border-color:var(--focus)}
+.btn.big{width:100%;min-height:50px;font-size:15.5px;margin-top:4px}
+.note{color:var(--muted);font-size:12px;margin:8px 0 0}
+.err{margin-top:12px;padding:11px 12px;border:1px solid var(--danger);border-radius:11px;background:color-mix(in srgb,var(--danger) 9%,var(--surface));font-size:13px}
+.err b{color:var(--danger)}
+
+/* loading */
+.loader{text-align:center;padding:34px 12px}
+.spin{width:38px;height:38px;margin:0 auto 14px;border-radius:50%;border:4px solid var(--line);border-top-color:var(--focus);animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader p{margin:0;font-weight:600}.loader small{color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.spin{animation-duration:2.4s}}
+
+/* results */
+.seg{display:inline-flex;gap:2px;padding:3px;background:var(--wash);border:1px solid var(--line);border-radius:12px;max-width:100%;overflow-x:auto}
+.seg button{white-space:nowrap;border:0;background:transparent;border-radius:9px;padding:4px 12px;min-height:36px;font-weight:600;font-size:13px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.res-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.summary{margin:12px 0 0;padding:11px 12px;border-radius:11px;background:var(--wash);border:1px solid var(--line);font-size:13.5px}
+.days{display:flex;gap:6px;overflow-x:auto;padding:2px 0 4px;margin:12px 0 4px}
+.days button{flex:1 0 auto;min-width:56px;padding:7px 8px;border:1.5px solid var(--line);border-radius:11px;background:var(--surface);cursor:pointer;text-align:center;font-weight:700;font-size:13px}
+.days button small{display:block;font-weight:500;color:var(--muted);font-size:10.5px}
+.days button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.days button[aria-pressed="true"] small{color:inherit;opacity:.8}
+.days button.today{box-shadow:inset 0 -3px 0 var(--now)}
+.tl{display:grid;gap:7px;margin-top:8px}
+.blk{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px;padding:9px 11px;border:1px solid var(--line);border-left:5px solid var(--c,#8a90a8);border-radius:11px;background:var(--surface)}
+.blk .tm{font-variant-numeric:tabular-nums;font-weight:700;font-size:12.5px}
+.blk .tm small{display:block;color:var(--muted);font-weight:500;font-size:11px}
+.blk .ti{font-weight:700;font-size:14px;line-height:1.25}
+.blk .de{margin-top:2px;color:var(--muted);font-size:12.5px}
+.blk .kd{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:99px;background:var(--wash);border:1px solid var(--line);color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;vertical-align:1px}
+.blk.class{background:color-mix(in srgb,var(--c) var(--tint),var(--surface))}
+.blk.soft{background:var(--wash);border-left-color:var(--line)}
+.blk.now{box-shadow:0 0 0 2px var(--now)}
+.blk.now .tm::after{content:"NOW";display:inline-block;margin-left:6px;padding:0 5px;border-radius:5px;background:var(--now);color:#fff;font-size:9.5px;letter-spacing:.06em}
+.empty{padding:18px;text-align:center;color:var(--muted)}
+.wk{border:1px solid var(--line);border-radius:13px;background:var(--surface);padding:13px;margin-top:10px}
+.wk.cur{border-color:var(--focus);box-shadow:0 0 0 1px var(--focus)}
+.wk-h{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap}
+.wk-h h3{margin:0;font-family:var(--display);font-weight:800;font-size:23px;line-height:1}
+.wk-h .dt{color:var(--muted);font-size:12.5px;font-weight:600;margin-top:3px}
+.wk-theme{margin:8px 0 0;font-weight:600}
+.badges{display:flex;gap:5px;flex-wrap:wrap}
+.bd{padding:2px 9px;border-radius:99px;font-size:11px;font-weight:700;border:1px solid var(--line);background:var(--wash)}
+.bd.cur{background:var(--focus);color:#fff;border-color:var(--focus)}.bd.hol{background:#F6A800;color:#2a1c00;border-color:#F6A800}.bd.ex{background:var(--now);color:#fff;border-color:var(--now)}
+.focus{display:grid;gap:7px;margin-top:10px}
+.fc{padding:8px 10px;border-radius:10px;background:var(--wash);border-left:5px solid var(--c,#888)}
+.fc b{font-size:13px}.fc .hrs{float:right;color:var(--muted);font-size:12px;font-weight:600}
+.fc ul{margin:4px 0 0;padding-left:18px;color:var(--muted);font-size:12.5px}
+.sec-h{margin:12px 0 4px;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.ck{display:flex;gap:8px;align-items:flex-start;padding:3px 0;font-size:13px;cursor:pointer}
+.ck input{margin-top:3px;width:16px;height:16px;accent-color:var(--ok);flex:none}
+.ck input:checked+span{text-decoration:line-through;color:var(--muted)}
+.chk{margin-top:10px;padding:8px 10px;border-radius:10px;border:1px dashed var(--line);font-size:12.5px}
+.tips{margin:6px 0 0;padding-left:18px;font-size:13px}.tips li{margin:3px 0}
+.foot{margin-top:18px;color:var(--muted);font-size:12px}
+@media print{
+  body{background:#fff}.noprint{display:none!important}.card,.wk{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <div class="noprint"><a class="back" href="index.html"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg>Back to timetable</a></div>
+  <header class="top">
+    <div>
+      <h1>Study Planner <span class="ai-pill" title="Plans are written by AI">AI</span> <span class="tag">Beta</span></h1>
+      <p class="sub">Your timetable, your habits and your syllabus, turned into a day-by-day and week-by-week plan for the mid-semester exams.</p>
+    </div>
+    <div class="count" id="count" aria-live="polite"></div>
+  </header>
+
+  <div id="view"></div>
+  <p class="foot noprint">AI-generated suggestions, not an official schedule. Check topics and exam dates with your faculty and the academic calendar.</p>
+</main>
+
+<script>
+/* ---------- config ---------- */
+var SUPA_URL='https://fqfzygubyjqkimsphmdn.supabase.co';
+var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxZnp5Z3VieWpxa2ltc3BobWRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NzQwMDYsImV4cCI6MjEwNTQ1MDAwNn0.k0T2HEH8cJlrQvxHWU4lcImLgtcXKGTAaowKyNDg1gI';
+var FN_URL=SUPA_URL+'/functions/v1/swift-function';
+var EXAM_START='2026-11-18', EXAM_LABEL='Mid-semester exams';
+var DIWALI={from:'2026-11-06',to:'2026-11-12'};
+var HOLIDAYS={'2026-10-20':'Vijaya Dashami / Dasara','2026-11-06':'Diwali','2026-11-07':'Diwali','2026-11-08':'Diwali','2026-11-09':'Diwali','2026-11-10':'Diwali','2026-11-11':'Diwali','2026-11-12':'Diwali'};
+var DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+var ORDER=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+var MONS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+/* ---------- helpers ---------- */
+function $(s){return document.querySelector(s)}
+function pad(n){return (n<10?'0':'')+n}
+function ymd(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function pd(s){var p=String(s).split('-');return new Date(+p[0],+p[1]-1,+p[2])}
+function addDays(d,n){return new Date(d.getFullYear(),d.getMonth(),d.getDate()+n)}
+function sd(d){return d.getDate()+' '+MONS[d.getMonth()]}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function toMin(t){var m=/^(\d{1,2}):(\d{2})/.exec(String(t));return m?(+m[1])*60+(+m[2]):NaN}
+function hhmm(m){return pad(Math.floor(m/60)%24)+':'+pad(m%60)}
+var store={get:function(k,d){try{var v=localStorage.getItem(k);return v==null?d:v}catch(e){return d}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}},del:function(k){try{localStorage.removeItem(k)}catch(e){}}};
+var FMT24=store.get('tt-fmt','12')==='24';
+function fmtT(m){var h=Math.floor(m/60)%24,mm=m%60;if(FMT24)return pad(h)+':'+pad(mm);return ((h+11)%12+1)+':'+pad(mm)+' '+(h<12?'am':'pm')}
+var NOW=(function(){try{var a=new URLSearchParams(location.search).get('at');if(a){var d=new Date(a);if(!isNaN(d))return d}}catch(e){}return new Date()})();
+var TODAY=new Date(NOW.getFullYear(),NOW.getMonth(),NOW.getDate());
+function fetchSupa(path){return fetch(SUPA_URL+'/rest/v1/'+path,{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY}}).then(function(r){if(!r.ok)throw new Error('Timetable request failed ('+r.status+')');return r.json()})}
+
+/* ---------- anonymous usage logging (same traffic table as the main page; no timetable or answers are logged) ---------- */
+function rid(){try{var a=new Uint8Array(12);crypto.getRandomValues(a);return Array.prototype.map.call(a,function(b){return('0'+b.toString(16)).slice(-2)}).join('')}catch(e){return Date.now().toString(36)+Math.random().toString(36).slice(2,12)}}
+var visitorId=(function(){try{var v=localStorage.getItem('tt-vid');if(!v){v=rid();localStorage.setItem('tt-vid',v)}return v}catch(e){return rid()}})();
+var sessionId=(function(){try{var v=sessionStorage.getItem('tt-sid');if(!v){v=rid();sessionStorage.setItem('tt-sid',v)}return v}catch(e){return rid()}})();
+function parseUA(ua){var os='Other';if(/Windows/i.test(ua))os='Windows';else if(/Android/i.test(ua))os='Android';else if(/iPhone|iPad|iPod/i.test(ua))os='iOS';else if(/Mac OS X|Macintosh/i.test(ua))os='macOS';else if(/CrOS/i.test(ua))os='ChromeOS';else if(/Linux/i.test(ua))os='Linux';
+  var br='Other';if(/Edg\//i.test(ua))br='Edge';else if(/OPR\/|Opera/i.test(ua))br='Opera';else if(/SamsungBrowser/i.test(ua))br='Samsung Internet';else if(/Firefox|FxiOS/i.test(ua))br='Firefox';else if(/Chrome|CriOS/i.test(ua))br='Chrome';else if(/Safari/i.test(ua))br='Safari';
+  var dv='desktop';if(/iPad|Tablet/i.test(ua)||(/Android/i.test(ua)&&!/Mobile/i.test(ua)))dv='tablet';else if(/Mobi|iPhone|iPod|Android/i.test(ua))dv='mobile';return{os:os,browser:br,device:dv}}
+function logVisit(event,cls){try{if(location.protocol==='file:')return;var ua=navigator.userAgent||'',u=parseUA(ua);cls=cls||{};
+  fetch(SUPA_URL+'/rest/v1/traffic',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},keepalive:true,
+    body:JSON.stringify({visitor_id:visitorId,session_id:sessionId,event:event,path:location.pathname.slice(0,300),referrer:(document.referrer||'').slice(0,500)||null,branch:cls.branch||null,division:cls.div||null,batch:cls.batch||null,link:cls.link||null,device:u.device,os:u.os,browser:u.browser,
+      is_standalone:!!(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true,screen:(screen.width||0)+'x'+(screen.height||0),language:navigator.language,timezone:(Intl.DateTimeFormat().resolvedOptions()||{}).timeZone,user_agent:ua.slice(0,400)})}).catch(function(){})}catch(e){}}
+
+/* ---------- foreign language (German) slots, copied from the main page; checked on-device only ---------- */
+var GER_SUBJ='LANG-DE';
+var GER_ROLLS={"AIDS":{"B":{"D8":[201,203,207,213,215,224,227,233,234,235,251,253,254,261]},"E":{"D9":[504,506,511,517,520,523,537,559]},"C":{"D10":[315,321,327,333,341,343,347,358,359,361,364,366]},"A":{"D11":[106,111,112,122,135,142,145,146,148,164,168]},"F":{"D11":[604,605,628,629,630,631,636,638,664,666]},"D":{"D14":[409,410,421,440,441,443,447,459,464]}},"CSCBI":{"B":{"D8":[208,212,226,227,230,232,235,242,256,265]},"C":{"D8":[301,302,321,329,341,348,354]},"A":{"D11":[104,105,106,116,119,124,126,127,128,130,134,135,145,152,155,160]}},"ET":{"A":{"D8":[104,105,108,120,123,126,127,135,136,142,150,151,152,155,160,162,163,165]},"B":{"D9":[203,204,206,209,212,216,221,224,226,232,235,236,240,244,246,248,249,253,267]},"C":{"D9":[301,303,304,305,308,314,332,335,336,339,345,346,347,352,362,366]},"D":{"D9":[416,419,423,432,434,445,447,448,451,455,457,464,468]},"E":{"D10":[505,518,521,530,537,546,551,558,562,565,568]},"F":{"D10":[601,603,608,609,611,621,627,630,633,634,635,637,642,649,650,651,652,657,665,666,667]}},"CSSE":{"C":{"D8":[312,321,322,324,333,335,340,342,351,352,354,363]},"A":{"D12":[104,105,115,120,121,133,136,137,138,144,152,155,157]},"B":{"D12":[202,208,209,212,215,224,230,231,240,251,253,259,264,265,266]}},"CV":{"A":{"D9":[122,126,129,131,154,161,162,163,166]},"B":{"D9":[211,219,236,237,241,265]}},"IC":{"C":{"D10":[308,310,313,321,326,327,332,335,337,338,343,349,364]},"B":{"D12":[213,214,218,224,228,232,233,236,245,247]},"A":{"D14":[105,115,130,133,137,143,151,152,160,161,163]}},"ME":{"F":{"D10":[603,604,605,608,609,611,613,614,622,626,629,635,640,643,646,658,660,662]},"B":{"D12":[206,207,215,217,218,221,223,228,229,230,232,237,248,250,255,257,258,262,263,264,266,267,269,270]},"A":{"D13":[102,104,106,116,125,127,135,136,137,139,142,144,150,154,155,159,161,170]},"C":{"D13":[302,304,305,306,308,309,310,323,324,326,337,338,340,344,346,349,350,351,354,355,357,364,368,369,370]},"D":{"D14":[414,415,416,422,424,428,437,439,441,444,452,457,465,467,469]},"E":{"D14":[501,502,503,506,507,509,513,514,517,518,523,526,527,530,543,552,553,560,561]}},"CSDS":{"A":{"D11":[26,63,103,104,115,119,122,129,130,136,146,161,168]},"B":{"D11":[201,207,209,217,222,225,238,240,242,248,250,252]},"C":{"D13":[303,306,309,314,324,333,340,344,350,352,353,354,359]}}};
+var GER_SLOTS={"D8":[2,480,600,"E312"],"D9":[3,480,600,"E215"],"D10":[4,480,600,"E303"],"D11":[2,960,1080,"E305"],"D12":[3,960,1080,"E304"],"D13":[4,960,1080,"E305"],"D14":[5,960,1080,"E312"]};   // language division -> [weekday, start min, end min, room]
+function germanFor(branch,div,roll){var b=GER_ROLLS[branch],d=b&&b[div],n=parseInt(roll,10);if(!d||!n)return null;for(var k in d)if(d[k].indexOf(n)>-1)return k;return null}
+
+/* ---------- subjects, credits & syllabus (FY B.Tech Pattern 2026-27 syllabus booklet) ---------- */
+var SUBJ_COLOR={ES26101:'#2F5BD6',ES26103:'#7C4DCB',ES26104:'#0E7C69',ES26105:'#B84E0F',ES26106:'#8F6B00',ES26107:'#3F7D1E',ES26108A:'#B8357C',ES26109:'#5B6478','LANG-DE':'#C2410C',ES26201:'#2F5BD6',ES26205:'#B84E0F',ES26206:'#3F7D1E',ES26207:'#8F6B00'};
+var PALETTE=['#2F5BD6','#7C4DCB','#0E7C69','#B84E0F','#8F6B00','#3F7D1E','#B8357C','#5B6478','#1E88A8','#C2410C','#6D28D9','#0D9488'];
+function colorFor(code){if(SUBJ_COLOR[code])return SUBJ_COLOR[code];var h=0;for(var i=0;i<code.length;i++)h=(h*31+code.charCodeAt(i))>>>0;return PALETTE[h%PALETTE.length]}
+var SYL={
+ES26101:{name:'Linear Algebra',credits:4,exam:'Term work 25, MSE 25 (written), ESE 50 (written); 3 lectures + 1 tutorial per week',
+ s1:['System of Linear Equations (6h): rank of a matrix, row echelon form, Gaussian elimination, applications of linear systems','Vector Spaces (8h): vector spaces over reals (Euclidean, polynomial, matrix, C[a,b]), subspace, linear combination, spanning set, linear dependence and independence, basis and dimension, row/column/null space','Inner Product Spaces (7h): inner product, norm, distance, angle, projection, orthogonal/orthonormal vectors, orthogonal complement, Gram-Schmidt, least squares fitting'],
+ s2:['Linear Transformation (8h): matrix representation, kernel and range, one-one/onto, Rank-Nullity theorem, composite and orthogonal transformations, geometric transformations in R2','Eigen Values and Eigen Vectors (7h): eigenvalues/eigenvectors, algebraic and geometric multiplicity, Cayley-Hamilton theorem, diagonalization','Quadratic Forms (6h): orthogonal diagonalization, nature and canonical form of quadratic forms, Principal Axes Theorem, Singular Value Decomposition']},
+ES26201:{name:'Calculus',credits:4,exam:'Term work 25, MSE 25 (written), ESE 50 (written); 3 lectures + 1 tutorial per week',
+ s1:['Infinite Series and Expansion of functions (7h): convergence tests (comparison, ratio), alternating series, power series and region of convergence, Taylor and Maclaurin series','Partial Differentiation (7h): partial derivatives, Euler theorem on homogeneous functions, composite functions, total derivative, implicit differentiation','Application of Partial Derivatives (7h): maxima and minima of two variables, Lagrange multipliers, Jacobian'],
+ s2:['Vector Differentiation (6h): scalar/vector point functions, del operator, gradient, directional derivative, divergence, curl, scalar potential','Multiple Integration and Applications (8h): double integration, polar coordinates, change of order, triple integration, area','Linear Differential Equations (7h): higher order LDE, general method, undetermined coefficients, variation of parameters, applications']},
+ES26105:{name:'Basics of Engineering',credits:3,exam:'Lab 20, MSE 20, ESE 50, CVV 10; 2 lectures + 2 practical hours per week. The syllabus is not split into sections, so Units 1-3 are treated as the first half.',
+ s1:['Unit 1 (5h): computer networks and Internet (OSI/TCP-IP, IP, TCP/UDP, HTTP, DNS), wired/wireless networking, 1G-5G mobile communication, IoT/edge/cloud, cybersecurity basics','Unit 2 (5h): EMF, voltage, current, power, energy, R-L-C elements, AC vs DC, battery and capacitor, energy sources, power grid, semiconductors, ICs, diode, transistor, FET, MOSFET','Unit 3 (5h): engineering materials and selection, manufacturing classification, casting, forming, machining, welding/joining, quality control, additive manufacturing, robotics, AI in industry'],
+ s2:['Unit 4 (5h): structural components, loads, load transfer, truss/arch action, earthquake resistant design, smart cities, building bylaws (built-up, carpet, plinth area, FSI)','Unit 5 (4h): AI/ML/DL and generative AI, blockchain, nanotechnology, space technology','Unit 6 (5h): engineering design process, systems thinking, design standards and tolerances, DFMA, material selection, product life cycle, ethics, sustainability, IPR']},
+ES26106:{name:'Universal Human Values',credits:2,exam:'Assessment by GD/PPT/home assignment 50 and CT2 50 (written/oral); 2 lectures per week. Units 1-3 are treated as the first half.',
+ s1:['Unit 1 (4h): need for value education, universal human values, self-regulation, physical and mental health','Unit 2 (5h): human aspirations and self-exploration, right understanding, needs vs wants, harmony in myself','Unit 3 (5h): concept of human values (trust, respect, affection, care, guidance, glory, gratitude, love), family as a unit of society'],
+ s2:['Unit 4 (5h): harmony in family, human-to-human relationships','Unit 5 (5h): harmony in society and nature, four orders of nature','Unit 6 (4h): human values and ethics in professional life']},
+ES26107:{name:'Indian Knowledge System',credits:1,exam:'MSE (oral) 50, ESE (oral) 50; 1 lecture per week',
+ s1:['Introduction to IKS (3h): Vedas, Vedangas, Sanskrit, ancient Indian universities (Nalanda, Takshashila, Vikramshila etc.)','Arts, Literature, Culture and Scholars (2h): 64 Kalas, Nataraja, Valmiki, Patanjali, Vedavyasa, Panini, Kautilya, Aryabhata, Bhaskaracharya etc.','Science and Mathematics (3h): number systems, zero and pi, decimal/binary, Pingala, magic squares, time measurement, gravity, matter, life and universe'],
+ s2:['Engineering and Technology Heritage (2h): Sindhu valley civilization, metallurgy, Iron Pillar of Delhi, marine technology, Bet Dwarka','Bharatiya Civilization (2h): Saraswati-Sindhu civilization, dynasties, Arthashastra, Vastushastra, temple architecture','Life, Environment and Health (2h): Panchabhutas, Rta, Ayurveda, Charaka and Sushruta samhitas, ecology']},
+ES26109:{name:'Student Activity',credits:2,exam:'MSE 50, ESE 50 (activity based); 2 lectures per week',
+ s1:['Government welfare schemes awareness and presentation (5)','Infosys Springboard course selection and certification (2)','Psychology for students and self-assessment test (2)','Self-evaluation for career planning: career goal tree, SMART goals, SWOT/SWOC (5)'],
+ s2:['Listening skills and professional writing: resume, cover letter, email (5)','Time management: personal weekly planner (2)','Job interviews: STAR technique, etiquette, mock interview (5)','Social activity: plan, do and document one community activity (2)']},
+ES26103:{name:'Logic and Quantitative Aptitude I',credits:2,exam:'CP 30, GD/PPT/HA 20, MSE 20 (written/oral), ESE 30; 2 lectures per week; practicals as timed problem sets',
+ s1:['Unit 1 (4h): career foundation, role archetypes, recruitment, aptitude exam structure, negative marking, attempt strategy','Unit 2 (4h): quantitative aptitude I: remainders, cyclicity, factors, HCF/LCM, divisibility, ratio chains, alligation, partnership','Unit 3 (4h): quantitative aptitude II: percentage, profit/loss/discount, compound growth, time-speed-distance, relative motion, trains/boats, time and work, pipes and cisterns'],
+ s2:['Unit 4 (2h): permutations and combinations, probability, expected value','Unit 5 (4h): data interpretation: tables, bar, line, pie charts, caselets, data sufficiency','Unit 6 (10h): digital practice: Git version control, digital literacy and security, AI literacy and verification, professional profile']},
+ES26104:{name:'Programming for Engineers (Python)',credits:4,exam:'Lab 20, MSE 20, ESE 50, CP 10; 2 lectures + 4 practical hours per week',
+ s1:['Unit I (4h): Python basics: features, identifiers, variables, indentation, input/output','Unit II (5h): operators, precedence, math/trig/random functions, strings: indexing, slicing, methods','Unit III (5h): decision making (if/elif/else), loops (while/for, range), break/continue/pass'],
+ s2:['Unit IV (4h): list, tuple, set, dictionary, mutability, type conversion, comprehensions','Unit V (5h): functions, arguments, lambda, recursion, default and keyword parameters','Unit VI (5h): file handling, NumPy arrays and broadcasting, Matplotlib plots']},
+ES26205:{name:'Engineering Robotics',credits:3,exam:'Lab 20, MSE 20 (written), ESE 50 (written), CP 10; 2 lectures + 2 practical hours per week',
+ s1:['Electromechanical systems (5h): open/closed loop, robot classification, configurations, degrees of freedom','Microcontroller (5h): Renesas ARM Cortex-M4 architecture, ports, registers, timers, PWM, interrupts','Sensors (4h): proximity, tactile, light, Hall-effect, temperature, ultrasonic sensors'],
+ s2:['Communication (5h): Serial I/O, I2C, SPI, CAN','Actuators (5h): pneumatic, hydraulic, DC, BLDC, stepper and servo motors','End effectors and robot control (4h): grippers, forward/inverse kinematics, transformation matrix']},
+ES26206:{name:'Environmental Studies',credits:3,exam:'ESE 50, term work presentation 20 and assignment 30; 3 lectures per week. The syllabus is not split into sections, so Units 1-3 are treated as the first half.',
+ s1:['Unit 1: sustainability, SDGs, global protocols, ESG','Unit 2: water quality characteristics: pH, turbidity, TDS, hardness, alkalinity','Unit 3: wastewater characteristics: DO, BOD, COD, oil and grease, heavy metals'],
+ s2:['Unit 4: air pollution, meteorology, Air Quality Index','Unit 5: noise measurement, decibel scale, noise control','Unit 6: municipal solid waste generation, characteristics and disposal']},
+ES26207:{name:'Design Thinking and Ideation',credits:2,exam:'MSR 50, ESR 50 (presentation/report based); 2 lectures per week',
+ s1:['Introduction to design thinking: innovation vs invention, principles, importance','Theories and phases: empathy, define, ideate, prototype, test; problem statement','Tools and techniques: 5W, point of view, crazy 8, user journey map, persona mapping'],
+ s2:['Ideation: divergent/convergent thinking, brainstorming, brainwriting, SCAMPER, mind maps','Storytelling in design thinking: story elements, structures','Pitching an innovative idea']},
+ES26102:{name:'Engineering Design and Innovation 1',credits:1,exam:'MSE 30, ESE 70 (project based); 2 practical hours per week',
+ s1:['Project centric learning, domain/tools/technology, literature review, synopsis and project planning'],
+ s2:['Project design, prototype development and testing, IEEE style report and presentation']},
+ES26108A:{name:'Language - English',credits:2,exam:'2 lectures per week (no detailed syllabus in the booklet)',s1:[],s2:[]},
+'LANG-DE':{name:'Language - German',credits:2,exam:'2 lectures per week (no detailed syllabus in the booklet)',s1:[],s2:[]}
+};
+
+/* ---------- state ---------- */
+var CLASSES=null;               // tt_divisions grouped, only loaded if the user needs to pick a class
+var TT=null;                    // {cls:{branch,div,batch}, sess:[{d,s,e,sub,name,type}], subjects:{code:{...}}, module}
+var FORM=loadForm();
+var PLAN=loadPlan();
+var UI={tab:'daily',tmpl:'regular',day:null};
+var BUSY=false;
+
+function defaultForm(){return {wake:'07:00',sleep:'23:00',scope:'s1',acts:[],extra:''}}
+function loadForm(){try{var f=JSON.parse(store.get('sp-form',''));if(f&&typeof f==='object'){var d=defaultForm();for(var k in d)if(f[k]==null)f[k]=d[k];return f}}catch(e){}return defaultForm()}
+function saveForm(){store.set('sp-form',JSON.stringify(FORM))}
+function loadPlan(){try{var p=JSON.parse(store.get('sp-plan',''));if(p&&p.plan&&p.plan.daily_regular)return p}catch(e){}return null}
+function savePlan(){store.set('sp-plan',JSON.stringify(PLAN))}
+function loadDone(){try{return JSON.parse(store.get('sp-done',''))||{}}catch(e){return {}}}
+function saveDone(o){store.set('sp-done',JSON.stringify(o))}
+
+/* ---------- timetable import ---------- */
+function savedClass(){
+  var b=store.get('tt-branch',''),d=store.get('tt-div',''),t=store.get('tt-batch','B2');
+  if(b&&d)return {branch:b,div:d,batch:['B1','B2','B3'].indexOf(t)>-1?t:'B2'};
+  try{var c=JSON.parse(store.get('sp-class',''));if(c&&c.branch&&c.div)return c}catch(e){}
+  return null;
+}
+function loadDivisions(){
+  if(CLASSES)return Promise.resolve(CLASSES);
+  return fetchSupa('tt_divisions?select=slug,branch,division,effective_from,effective_to&order=branch.asc,division.asc').then(function(rows){
+    var by={};rows.forEach(function(r){var k=r.division.split('-').pop().trim();(by[r.branch]=by[r.branch]||{slug:{}}).slug[k]=r.slug});CLASSES=by;return by});
+}
+var BRANCH_DISPLAY={CSAIML:'CSE(AI-ML)',CSAI:'CSE (AI)',AIDS:'AI & DS',CSSE:'CSE(Software)',CSCBI:'CSE (IoT & CSBT)',CSDS:'CSE (Data Science)',CV:'Civil',IC:'Instrumentation',ME:'Mechanical',ET:'EnTC'};
+function branchLabel(c){return BRANCH_DISPLAY[c]||c}
+function importTimetable(cls){
+  return loadDivisions().then(function(by){
+    var slug=by[cls.branch]&&by[cls.branch].slug[cls.div];
+    if(!slug)throw new Error('Could not find your class ('+cls.branch+'-'+cls.div+').');
+    return fetchSupa('tt_sessions?division=eq.'+encodeURIComponent(slug)+'&select=weekday,start_time,end_time,subject_code,subject_name,session_type,batch&order=weekday.asc,start_time.asc');
+  }).then(function(rows){
+    var sess=[],names={};
+    rows.forEach(function(r){
+      if(r.batch&&r.batch!==cls.batch)return;                      // only this student's lab batch
+      names[r.subject_code]=r.subject_name;
+      sess.push({d:r.weekday,s:toMin(r.start_time),e:toMin(r.end_time),sub:r.subject_code,name:r.subject_name,type:r.session_type});
+    });
+    var roll=store.get('tt-roll',''),lang=germanFor(cls.branch,cls.div,roll);
+    if(lang){
+      var g=GER_SLOTS[lang];
+      sess=sess.filter(function(x){return !(x.sub==='ES26108A'&&x.d===g[0]&&x.s<g[2]&&g[1]<x.e)});   // German replaces English in that slot
+      names[GER_SUBJ]='German';
+      sess.push({d:g[0],s:g[1],e:g[2],sub:GER_SUBJ,name:'German',type:'Foreign Language'});
+    }
+    var subjects={};
+    sess.forEach(function(x){
+      var o=subjects[x.sub]||(subjects[x.sub]={code:x.sub,name:(SYL[x.sub]&&SYL[x.sub].name)||names[x.sub]||x.sub,hours:0});
+      o.hours+=(x.e-x.s)/60;
+    });
+    var module=subjects.ES26101?1:subjects.ES26201?2:null;     // Linear Algebra = Module 1, Calculus = Module 2
+    sess.sort(function(a,b){return a.d-b.d||a.s-b.s});
+    return {cls:cls,sess:sess,subjects:subjects,module:module,german:!!lang};
+  });
+}
+
+/* ---------- calendar maths ---------- */
+function holidayName(d){return HOLIDAYS[ymd(d)]||null}
+function inDiwali(d){var k=ymd(d);return k>=DIWALI.from&&k<=DIWALI.to}
+function buildWeeks(){
+  var last=addDays(pd(EXAM_START),-1),weeks=[],s=TODAY,n=1;
+  while(s<=last){
+    var dow=(s.getDay()+6)%7,e=addDays(s,6-dow);if(e>last)e=last;
+    var hol=[],college=0;
+    for(var d=s;d<=e;d=addDays(d,1)){var h=holidayName(d);if(h)hol.push({date:ymd(d),name:h});else if(d.getDay()!==0)college++}
+    weeks.push({week:n++,start:ymd(s),end:ymd(e),college_days:college,holiday_days:hol});
+    s=addDays(e,1);
+  }
+  return weeks;
+}
+function daysToExam(){return Math.round((pd(EXAM_START)-TODAY)/86400000)}
+
+/* ---------- build the request ---------- */
+function buildContext(){
+  var tt={};ORDER.forEach(function(n){tt[n]=[]});
+  TT.sess.forEach(function(x){tt[DAYS[x.d]].push({start:hhmm(x.s),end:hhmm(x.e),subject_code:x.sub,subject:x.name,type:x.type})});
+  var subjects=Object.keys(TT.subjects).map(function(c){
+    var o=TT.subjects[c],y=SYL[c];
+    return {code:c,name:o.name,credits:y?y.credits:null,exam_scheme:y?y.exam:'not listed',weekly_class_hours:Math.round(o.hours*10)/10,
+      syllabus_section_1:y?y.s1:[],syllabus_section_2:y?y.s2:[]};
+  });
+  return {
+    today:ymd(TODAY),today_weekday:DAYS[TODAY.getDay()],
+    exam:{name:EXAM_LABEL,starts:EXAM_START,note:'Mid-semester exams run from this date; the plan must end the day before.'},
+    holidays:Object.keys(HOLIDAYS).map(function(k){return {date:k,name:HOLIDAYS[k]}}),
+    diwali_break:{from:DIWALI.from,to:DIWALI.to,note:'No classes on these days, but the student still studies 2-3 hours every day (light, revision focused).',study_hours_per_day:'2-3'},
+    semester:'First year B.Tech, semester 1',module:TT.module?'Module '+TT.module:'unknown',
+    midsem_scope:FORM.scope==='s1'?'Section 1 (first half) of each syllabus is assumed to be in the mid-semester exam; Section 2 only needs light preview.':'Treat the whole syllabus as in scope and pace it across the weeks.',
+    wake_time:FORM.wake,sleep_time:FORM.sleep,
+    timetable:tt,subjects:subjects,
+    activities:FORM.acts.filter(function(a){return a.title&&a.title.trim()}).map(function(a){return {kind:a.kind,title:a.title.trim().slice(0,120),due_date:a.kind==='self'?null:(a.due||null),deadline:a.kind==='self'?'none (self-paced)':(a.due?'fixed':'not given'),hours_per_week:a.hrs?+a.hrs:null}}),
+    other_commitments:(FORM.extra||'').trim().slice(0,800),
+    weeks:buildWeeks()
+  };
+}
+function sig(){return JSON.stringify([TT.cls,FORM.wake,FORM.sleep,FORM.scope,FORM.acts,FORM.extra,ymd(TODAY)])}
+
+/* ---------- plan normalisation ---------- */
+function mergeDay(tmplKey,dayName){
+  var wake=toMin(FORM.wake),sleep=toMin(FORM.sleep);if(sleep<=wake)sleep+=1440;
+  var out=[],classes=[];
+  if(tmplKey==='regular'){
+    var di=DAYS.indexOf(dayName);
+    TT.sess.forEach(function(x){if(x.d===di)classes.push({s:x.s,e:x.e,kind:'class',title:(TT.subjects[x.sub]||{}).name||x.name,sub:x.sub,det:x.type})});
+  }
+  classes.sort(function(a,b){return a.s-b.s});
+  var list=((PLAN.plan['daily_'+tmplKey]||{})[dayName]||[]).map(function(b){return {s:toMin(b.start),e:toMin(b.end),kind:String(b.kind||'study'),title:b.title||'',sub:b.subject_code||null,det:b.details||''}})
+    .filter(function(b){return !isNaN(b.s)&&!isNaN(b.e)});
+  list.forEach(function(b){if(b.e<=b.s)b.e+=1440});
+  list=list.filter(function(b){return b.s>=wake&&b.e<=sleep}).sort(function(a,b){return a.s-b.s});
+  var taken=classes.slice();
+  list.forEach(function(b){
+    if(taken.some(function(c){return b.s<c.e&&c.s<b.e}))return;
+    taken.push(b);out.push(b);
+  });
+  return classes.concat(out).sort(function(a,b){return a.s-b.s||(a.kind==='class'?-1:1)});
+}
+
+/* ---------- rendering ---------- */
+var PRIVACY='<section class="card privacy noprint" aria-label="Privacy">'+
+    '    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>'+
+    '    <p><b>Your data stays yours.</b> Your answers and plan are kept only on this device, and nothing is saved to our database or tied to an account. When you tap <b>Build my plan</b>, your timetable and answers are sent once, over HTTPS, to Google\'s Gemini AI (through our Supabase function) just to write the plan, and we don\'t store them. Your name and roll number are never sent.</p>'+
+    '  </section>';
+var view=$('#view');
+function render(){
+  if(!TT){return}
+  if(daysToExam()<=0){view.innerHTML='<section class="card"><h2>Mid-sems have started</h2><p class="hint">The planner builds a plan up to the day before the mid-semester exams ('+esc(sd(pd(EXAM_START)))+'), so there is nothing left to plan. All the best!</p></section>';return}
+  $('#count').innerHTML='<b>'+daysToExam()+'</b><span>days to mid-sems ('+esc(sd(pd(EXAM_START)))+')</span>';
+  if(BUSY)return;
+  if(PLAN&&!UI.editing)renderResults();else renderForm();
+}
+function renderTimetableCard(){
+  var c=TT.cls,subs=Object.keys(TT.subjects).map(function(k){return TT.subjects[k]}).sort(function(a,b){return ((SYL[b.code]||{}).credits||0)-((SYL[a.code]||{}).credits||0)});
+  var totalCr=subs.reduce(function(t,s){return t+((SYL[s.code]||{}).credits||0)},0);
+  var h='<section class="card noprint"><h2><span class="n">1</span>Your timetable <span style="font-family:var(--body);font-size:12px;font-weight:600;color:var(--ok)">imported automatically</span></h2>';
+  h+='<div class="chips"><span class="chip">'+esc(branchLabel(c.branch))+' - Div '+esc(c.div)+'</span><span class="chip">Batch '+esc(c.batch)+'</span>';
+  h+=TT.module?'<span class="chip mod">Module '+TT.module+(TT.module===1?' (Linear Algebra)':' (Calculus)')+'</span>':'<span class="chip">Module not detected</span>';
+  if(TT.german)h+='<span class="chip">German added</span>';
+  h+='<span class="chip">'+subs.length+' subjects &middot; '+totalCr+' credits</span></div>';
+  h+='<div class="subs">'+subs.map(function(s){var y=SYL[s.code];return '<div class="sub-card" style="--c:'+colorFor(s.code)+'"><div><div class="nm">'+esc(s.name)+'</div><div class="mt">'+esc(s.code)+' &middot; '+(Math.round(s.hours*10)/10)+' class hrs/week</div></div><div class="cr">'+(y?y.credits:'-')+'<small>credits</small></div></div>'}).join('')+'</div>';
+  h+='<details class="ttd"><summary>See your weekly timetable</summary><div class="ttd-body">';
+  ORDER.forEach(function(n){var di=DAYS.indexOf(n),rows=TT.sess.filter(function(x){return x.d===di});if(!rows.length)return;
+    h+='<div class="ttd-day"><b>'+n+'</b>'+rows.map(function(x){return '<div class="ttd-row"><span class="t">'+esc(fmtT(x.s))+' - '+esc(fmtT(x.e))+'</span><span>'+esc((TT.subjects[x.sub]||{}).name||x.name)+' <span style="color:var(--muted)">('+esc(x.type||'')+')</span></span></div>'}).join('')+'</div>'});
+  h+='</div></details>';
+  h+='<div class="row"><a class="btn2" href="index.html">Wrong class? Change it on the timetable page</a></div></section>';
+  return h;
+}
+function actRow(a,i){
+  var kinds=[['self','Self-learning (no deadline)'],['presentation','Presentation'],['assignment','Assignment / submission'],['project','Project'],['event','Club / event / competition'],['other','Other']];
+  return '<div class="act" data-i="'+i+'">'+
+   '<label class="f"><span>Type</span><select class="in a-kind" data-i="'+i+'">'+kinds.map(function(k){return '<option value="'+k[0]+'"'+(a.kind===k[0]?' selected':'')+'>'+k[1]+'</option>'}).join('')+'</select></label>'+
+   '<label class="f a-title"><span>What is it?</span><input class="in a-name" data-i="'+i+'" maxlength="120" placeholder="e.g. Learn Git, DT group presentation" value="'+esc(a.title)+'"></label>'+
+   (a.kind==='self'?'<div class="nodl">No deadline</div>':'<label class="f"><span>Due date</span><input type="date" class="in a-due" data-i="'+i+'" min="'+ymd(TODAY)+'" value="'+esc(a.due||'')+'"></label>')+
+   '<label class="f"><span>Hrs/week</span><input type="number" class="in a-hrs" data-i="'+i+'" min="0" max="40" step="0.5" placeholder="-" value="'+esc(a.hrs||'')+'"></label>'+
+   '<button type="button" class="x" data-rm="'+i+'" aria-label="Remove activity">&times;</button></div>';
+}
+function renderForm(){
+  var h=renderTimetableCard();
+  h+='<section class="card noprint"><h2><span class="n">2</span>Your day</h2><p class="hint">So study blocks never eat into your sleep.</p><div class="grid2">'+
+    '<label class="f"><span>I wake up at</span><input type="time" id="fWake" class="in" value="'+esc(FORM.wake)+'"></label>'+
+    '<label class="f"><span>I go to sleep at</span><input type="time" id="fSleep" class="in" value="'+esc(FORM.sleep)+'"></label></div></section>';
+  h+='<section class="card noprint"><h2><span class="n">3</span>Anything else on your plate?</h2><p class="hint">Self-learning, presentations, assignments, projects. Add each one, with a due date if it has one. Skip this if you have nothing extra.</p><div id="acts">'+FORM.acts.map(actRow).join('')+'</div>'+
+    '<div class="row"><button type="button" class="btn2" data-add="self">+ Self-learning</button><button type="button" class="btn2" data-add="presentation">+ Presentation</button><button type="button" class="btn2" data-add="assignment">+ Assignment</button><button type="button" class="btn2" data-add="other">+ Other</button></div>'+
+    '<label class="f" style="margin-top:14px"><span>Other extracurricular activities or commitments (optional)</span><textarea id="fExtra" class="in" maxlength="800" placeholder="e.g. Football practice Tue/Thu 5-6:30 pm, coding club on Saturday mornings, going home on weekends...">'+esc(FORM.extra)+'</textarea></label></section>';
+  h+='<section class="card noprint"><h2><span class="n">4</span>Mid-sem focus</h2><p class="hint">Mid-semester exams start on '+esc(sd(pd(EXAM_START)))+'. Diwali break ('+esc(sd(pd(DIWALI.from)))+' - '+esc(sd(pd(DIWALI.to)))+') and Dasara are built in, with a light 2-3 hours of study each day of the break.</p>'+
+    '<label class="f"><span>What does your mid-sem cover?</span><select id="fScope" class="in"><option value="s1"'+(FORM.scope==='s1'?' selected':'')+'>First half (Section 1) of each syllabus (usual pattern)</option><option value="all"'+(FORM.scope==='all'?' selected':'')+'>Everything in the syllabus</option></select></label>'+
+    '<p class="note">The syllabus booklet splits each course into Section 1 and Section 2. Confirm the exact mid-sem coverage with your teachers.</p></section>';
+  h+='<div id="formErr"></div><button type="button" class="btn big noprint" id="build">'+(PLAN?'Rebuild my plan':'Build my plan')+'</button>';
+  if(PLAN)h+='<div class="row noprint"><button type="button" class="btn2" id="backRes">Back to my saved plan</button></div>';
+  h+=PRIVACY;
+  view.innerHTML=h;
+}
+function renderLoading(){
+  var msgs=['Reading your timetable...','Weighing credits and syllabus...','Fitting study blocks around your classes...','Planning week by week up to mid-sems...','Almost there...'];
+  view.innerHTML='<section class="card"><div class="loader"><div class="spin"></div><p id="lmsg">'+msgs[0]+'</p><small>This usually takes 20 to 60 seconds. Please keep this tab open.</small></div></section>';
+  var i=0;window._lt=setInterval(function(){i=Math.min(i+1,msgs.length-1);var e=$('#lmsg');if(e)e.textContent=msgs[i]},9000);
+}
+function stopLoading(){clearInterval(window._lt)}
+
+function renderResults(){
+  var P=PLAN.plan,weeks=P.weeks||[];
+  var h='<section class="card"><div class="res-top noprint"><div class="seg" role="group" aria-label="View"><button type="button" data-tab="daily" aria-pressed="'+(UI.tab==='daily')+'">Daily schedule</button><button type="button" data-tab="weekly" aria-pressed="'+(UI.tab==='weekly')+'">Week by week</button></div>'+
+    '<div class="row" style="margin:0"><button type="button" class="btn2" id="edit">Edit answers</button><button type="button" class="btn2" id="print">Print / PDF</button></div></div>';
+  if(P.summary)h+='<p class="summary">'+esc(P.summary)+'</p>';
+  h+=UI.tab==='daily'?dailyHTML():weeklyHTML();
+  h+='</section>';
+  if(P.tips&&P.tips.length)h+='<section class="card"><h2>Tips</h2><ul class="tips">'+P.tips.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ul></section>';
+  h+='<div class="row noprint"><button type="button" class="btn2" id="clear">Clear my saved data</button></div>';
+  h+=PRIVACY;
+  view.innerHTML=h;
+  if(UI.tab==='daily'){var n=$('.blk.now');if(n&&window.innerWidth<720){}}
+}
+function dailyHTML(){
+  var tm=UI.tmpl,dow=DAYS[TODAY.getDay()];
+  if(!UI.day)UI.day=dow;
+  var h='<div class="res-top noprint" style="margin-top:12px"><div class="seg" role="group" aria-label="Schedule type"><button type="button" data-tmpl="regular" aria-pressed="'+(tm==='regular')+'">Regular college week</button><button type="button" data-tmpl="diwali" aria-pressed="'+(tm==='diwali')+'">Diwali break ('+esc(sd(pd(DIWALI.from)))+' - '+esc(sd(pd(DIWALI.to)))+')</button></div></div>';
+  h+='<div class="days noprint" role="group" aria-label="Day">'+ORDER.map(function(n){return '<button type="button" data-day="'+n+'" aria-pressed="'+(UI.day===n)+'" class="'+(n===dow?'today':'')+'">'+n.slice(0,3)+'<small>'+(n===dow?'today':'')+'</small></button>'}).join('')+'</div>';
+  var blocks=mergeDay(tm,UI.day),nowM=NOW.getHours()*60+NOW.getMinutes(),isToday=UI.day===dow&&(tm==='diwali')===inDiwali(TODAY);
+  h+='<h3 style="margin:10px 0 0;font-family:var(--display);font-size:22px">'+UI.day+(tm==='diwali'?' &middot; Diwali break':'')+'</h3>';
+  if(!blocks.length)h+='<div class="empty">Nothing scheduled for this day.</div>';
+  else h+='<div class="tl">'+blocks.map(function(b){
+    var cls='blk'+(b.kind==='class'?' class':'')+((b.kind==='meal'||b.kind==='break'||b.kind==='free')?' soft':'')+(isToday&&nowM>=b.s&&nowM<b.e?' now':'');
+    var col=b.sub?colorFor(b.sub):(b.kind==='exercise'?'#0D7B50':b.kind==='activity'?'#B8357C':'#8a90a8');
+    return '<div class="'+cls+'" style="--c:'+col+'"><div class="tm">'+esc(fmtT(b.s))+'<small>to '+esc(fmtT(b.e))+'</small></div><div><div class="ti">'+esc(b.title)+'<span class="kd">'+esc(b.kind==='class'?'class':b.kind)+'</span></div>'+(b.det?'<div class="de">'+esc(b.det)+'</div>':'')+'</div></div>'}).join('')+'</div>';
+  if(tm==='regular')h+='<p class="note">Classes come straight from your timetable. On a holiday such as Dasara ('+esc(sd(pd('2026-10-20')))+'), follow the Diwali break pattern instead.</p>';
+  return h;
+}
+function weekInfo(start,end){
+  var hol=[],s=pd(start),e=pd(end);
+  for(var d=s;d<=e;d=addDays(d,1)){var h=holidayName(d);if(h)hol.push({date:ymd(d),name:h})}
+  return {start:start,end:end,holiday_days:hol};
+}
+function weeklyHTML(){
+  var planWeeks=(PLAN.plan.weeks||[]).filter(function(w){return w&&/^\d{4}-\d\d-\d\d$/.test(w.start||'')&&/^\d{4}-\d\d-\d\d$/.test(w.end||'')});
+  if(!planWeeks.length)planWeeks=buildWeeks();
+  var done=loadDone(),th=ymd(TODAY),lastDay=ymd(addDays(pd(EXAM_START),-1));
+  return planWeeks.map(function(w,wi){
+    var iw=weekInfo(w.start,w.end),n=w.week||(wi+1),cur=th>=iw.start&&th<=iw.end;
+    var hol=iw.holiday_days.length,exam=iw.end===lastDay;
+    var h='<div class="wk'+(cur?' cur':'')+'"><div class="wk-h"><div><h3>Week '+esc(n)+'</h3><div class="dt">'+esc(sd(pd(iw.start)))+' - '+esc(sd(pd(iw.end)))+'</div></div><div class="badges">'+(cur?'<span class="bd cur">This week</span>':'')+(hol?'<span class="bd hol">'+hol+' holiday day'+(hol>1?'s':'')+'</span>':'')+(exam?'<span class="bd ex">Final prep before mid-sems</span>':'')+'</div></div>';
+    if(w.theme)h+='<p class="wk-theme">'+esc(w.theme)+'</p>';
+    if(hol)h+='<p class="note" style="margin-top:4px">No classes (light 2-3 h study a day): '+iw.holiday_days.map(function(x){return esc(sd(pd(x.date)))+' ('+esc(x.name)+')'}).join(', ')+'</p>';
+    if(w.focus&&w.focus.length){h+='<div class="focus">'+w.focus.map(function(f){var s=TT.subjects[f.subject_code];
+      return '<div class="fc" style="--c:'+colorFor(f.subject_code||'')+'"><b>'+esc(s?s.name:(f.subject_code||'Subject'))+'</b>'+(f.hours?'<span class="hrs">'+esc(f.hours)+' h</span>':'')+((f.topics&&f.topics.length)?'<ul>'+f.topics.map(function(t){return '<li>'+esc(t)+'</li>'}).join('')+'</ul>':'')+'</div>'}).join('')+'</div>'}
+    if(w.activities&&w.activities.length)h+='<div class="sec-h">Extra activities</div>'+w.activities.map(function(t){return '<div style="font-size:13px;padding:2px 0">&bull; '+esc(t)+'</div>'}).join('');
+    if(w.goals&&w.goals.length)h+='<div class="sec-h">Goals for the week</div>'+w.goals.map(function(g,i){var k=iw.start+'g'+i;return '<label class="ck"><input type="checkbox" data-done="'+k+'"'+(done[k]?' checked':'')+'><span>'+esc(g)+'</span></label>'}).join('');
+    if(w.checkpoint)h+='<div class="chk"><b>Checkpoint:</b> '+esc(w.checkpoint)+'</div>';
+    if(!w.theme&&!(w.focus&&w.focus.length))h+='<p class="note">No details came back for this week. Try rebuilding the plan.</p>';
+    return h+'</div>';
+  }).join('');
+}
+
+/* ---------- actions ---------- */
+function readForm(){
+  var w=$('#fWake'),s=$('#fSleep'),x=$('#fExtra'),sc=$('#fScope');
+  if(w&&/^\d\d:\d\d$/.test(w.value))FORM.wake=w.value;
+  if(s&&/^\d\d:\d\d$/.test(s.value))FORM.sleep=s.value;
+  if(x)FORM.extra=x.value;if(sc)FORM.scope=sc.value;
+  saveForm();
+}
+function showErr(msg){var e=$('#formErr');if(e)e.innerHTML='<div class="err" role="alert"><b>Couldn\'t build the plan.</b> '+esc(msg)+'</div>'}
+function build(){
+  readForm();
+  if(toMin(FORM.wake)===toMin(FORM.sleep)){showErr('Your wake-up and sleep times are the same. Please fix them.');return}
+  var sleepM=toMin(FORM.sleep),wakeM=toMin(FORM.wake),awake=(sleepM>wakeM?sleepM-wakeM:sleepM+1440-wakeM);
+  if(awake<8*60){showErr('That leaves under 8 hours awake each day. Please check your wake-up and sleep times.');return}
+  BUSY=true;UI.editing=false;renderLoading();
+  var ctl=new AbortController(),to=setTimeout(function(){ctl.abort()},150000);
+  fetch(FN_URL,{method:'POST',signal:ctl.signal,headers:{'Content-Type':'application/json',apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY},body:JSON.stringify({context:buildContext()})})
+  .then(function(r){return r.json().catch(function(){return {}}).then(function(j){if(!r.ok||!j.plan){var e=new Error(j.error||('Server error ('+r.status+')'));e.status=r.status;throw e}return j.plan})})
+  .then(function(plan){
+    if(!plan.daily_regular||!plan.weeks)throw new Error('The plan came back incomplete. Please try again.');
+    if(!plan.daily_diwali)plan.daily_diwali=plan.daily_regular;
+    PLAN={plan:plan,at:Date.now(),sig:sig(),cls:TT.cls};savePlan();
+    logVisit('study_planner_generate',{branch:TT.cls.branch,div:TT.cls.div,batch:TT.cls.batch});
+    UI.tab='daily';UI.day=DAYS[TODAY.getDay()];UI.tmpl=inDiwali(TODAY)?'diwali':'regular';
+  })
+  .catch(function(e){
+    console.error(e);
+    UI.editing=true;PLAN=PLAN;
+    var m=e.name==='AbortError'?'It took too long. Please try again.':e.status===404?'The planner service is not deployed yet (study-planner edge function not found).':e.status===429?'Too many requests right now. Please wait a minute and try again.':(e.message||'Something went wrong.');
+    BUSY=false;stopLoading();renderForm();showErr(m);throw e;
+  })
+  .then(function(){BUSY=false;stopLoading();UI.editing=false;render();window.scrollTo(0,0)},function(){})
+  .then(function(){clearTimeout(to)});
+}
+document.addEventListener('click',function(e){
+  var t=e.target.closest('button,input[data-done]');if(!t)return;
+  if(t.id==='build'){build();return}
+  if(t.getAttribute('data-add')){readForm();FORM.acts.push({kind:t.getAttribute('data-add'),title:'',due:'',hrs:''});saveForm();renderForm();var r=document.querySelectorAll('.a-name');if(r.length)r[r.length-1].focus();return}
+  if(t.getAttribute('data-rm')!=null){readForm();FORM.acts.splice(+t.getAttribute('data-rm'),1);saveForm();renderForm();return}
+  if(t.getAttribute('data-tab')){UI.tab=t.getAttribute('data-tab');render();return}
+  if(t.getAttribute('data-tmpl')){UI.tmpl=t.getAttribute('data-tmpl');render();return}
+  if(t.getAttribute('data-day')){UI.day=t.getAttribute('data-day');render();return}
+  if(t.getAttribute('data-done')){var d=loadDone(),k=t.getAttribute('data-done');if(t.checked)d[k]=1;else delete d[k];saveDone(d);return}
+  if(t.id==='edit'){UI.editing=true;render();window.scrollTo(0,0);return}
+  if(t.id==='backRes'){UI.editing=false;render();return}
+  if(t.id==='print'){window.print();return}
+  if(t.id==='clear'){if(confirm('Delete your saved answers and plan from this device?')){['sp-form','sp-plan','sp-done','sp-class'].forEach(store.del);FORM=defaultForm();PLAN=null;UI.editing=false;render()}return}
+});
+document.addEventListener('input',function(e){
+  var t=e.target,i=t.getAttribute&&t.getAttribute('data-i');if(i==null)return;i=+i;var a=FORM.acts[i];if(!a)return;
+  if(t.classList.contains('a-name'))a.title=t.value;else if(t.classList.contains('a-due'))a.due=t.value;else if(t.classList.contains('a-hrs'))a.hrs=t.value;saveForm();
+});
+document.addEventListener('change',function(e){
+  var t=e.target;
+  if(t.classList&&t.classList.contains('a-kind')){readForm();var a=FORM.acts[+t.getAttribute('data-i')];if(a){a.kind=t.value;if(a.kind==='self')a.due='';saveForm();renderForm()}}
+  else if(t.id==='fWake'||t.id==='fSleep'||t.id==='fScope'){readForm()}
+});
+document.addEventListener('focusout',function(e){if(e.target.id==='fExtra')readForm()});
+
+/* ---------- class picker (only if no class is saved on this device) ---------- */
+function renderPicker(msg){
+  loadDivisions().then(function(by){
+    var bs=Object.keys(by).sort();
+    view.innerHTML='<section class="card"><h2>Pick your class</h2><p class="hint">'+esc(msg||'We could not find your class on this device. Choose it once and the planner will import your timetable.')+'</p><div class="grid2" style="grid-template-columns:repeat(3,minmax(0,1fr))">'+
+     '<label class="f"><span>Branch</span><select id="pB" class="in">'+bs.map(function(b){return '<option value="'+esc(b)+'">'+esc(branchLabel(b))+'</option>'}).join('')+'</select></label>'+
+     '<label class="f"><span>Division</span><select id="pD" class="in"></select></label>'+
+     '<label class="f"><span>Lab batch</span><select id="pT" class="in"><option>B1</option><option selected>B2</option><option>B3</option></select></label></div>'+
+     '<div class="row"><button type="button" class="btn" id="pGo">Import timetable</button></div></section>';
+    function fill(){var d=Object.keys(by[$('#pB').value].slug).sort();$('#pD').innerHTML=d.map(function(x){return '<option>'+esc(x)+'</option>'}).join('')}
+    $('#pB').addEventListener('change',fill);fill();
+    $('#pGo').addEventListener('click',function(){var c={branch:$('#pB').value,div:$('#pD').value,batch:$('#pT').value};store.set('sp-class',JSON.stringify(c));boot()});
+  }).catch(function(e){view.innerHTML='<section class="card"><div class="err"><b>Could not load classes.</b> '+esc(e.message)+'</div></section>'});
+}
+
+/* ---------- boot ---------- */
+function boot(){
+  var cls=savedClass();
+  if(!cls){renderPicker();return}
+  view.innerHTML='<section class="card"><div class="loader"><div class="spin"></div><p>Importing your timetable...</p></div></section>';
+  importTimetable(cls).then(function(tt){
+    TT=tt;
+    if(PLAN&&(!PLAN.cls||PLAN.cls.branch!==cls.branch||PLAN.cls.div!==cls.div||PLAN.cls.batch!==cls.batch))PLAN=null;   // saved plan belongs to a different class
+    if(PLAN){UI.tmpl=inDiwali(TODAY)?'diwali':'regular';UI.day=DAYS[TODAY.getDay()]}
+    stopLoading();render();
+  }).catch(function(e){console.error(e);view.innerHTML='<section class="card"><div class="err" role="alert"><b>Could not import your timetable.</b> '+esc(e.message||'Please check your connection.')+'</div><div class="row"><button type="button" class="btn" onclick="boot()">Try again</button> <button type="button" class="btn2" onclick="renderPicker()">Pick a class manually</button></div></section>'});
+}
+boot();
+</script>
+</body>
+</html>

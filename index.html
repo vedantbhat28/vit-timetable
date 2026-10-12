@@ -647,6 +647,36 @@ dialog#forumIntro::backdrop{background:rgba(12,16,32,.55)}
 .fi-actions .tn-btn{margin-top:0;display:inline-flex;align-items:center;text-decoration:none}
 .fi-actions .fi-later{background:var(--wash);color:var(--ink);border:1px solid var(--line)}
 
+/* ---- study planner bottom nudge + intro ---- */
+.planner-wrap{position:fixed;left:0;right:0;bottom:0;z-index:40;pointer-events:none;display:flex;justify-content:center;padding:0 12px calc(16px + env(safe-area-inset-bottom,0px))}
+.planner-wrap[hidden]{display:none}
+.pn-box{position:relative;display:inline-block;max-width:100%;pointer-events:auto;animation:pnIn .5s ease-out}
+.planner-nudge{display:inline-flex;align-items:center;gap:10px;max-width:100%;padding:11px 16px;border:0;border-radius:16px;color:#fff;text-align:left;cursor:pointer;
+  background:linear-gradient(120deg,#6d28d9,#2563eb,#0ea5e9,#c026d3,#6d28d9);background-size:300% 300%;
+  box-shadow:0 0 0 1px rgba(255,255,255,.25) inset,0 0 16px rgba(99,102,241,.7),0 0 36px rgba(14,165,233,.4),0 10px 28px rgba(8,12,30,.35);
+  animation:ftGrad 5s linear infinite,pnGlow 2.4s ease-in-out infinite}
+.planner-nudge:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.planner-nudge .pn-spark{font-size:18px;line-height:1;flex:none}
+.planner-nudge .pn-txt{display:flex;flex-direction:column;gap:1px;min-width:0}
+.planner-nudge .pn-txt b{font-size:13.5px;font-weight:800;line-height:1.2}
+.planner-nudge .pn-txt span{font-size:12px;font-weight:600;opacity:.92;line-height:1.25}
+.planner-nudge .pn-arrow{font-size:18px;line-height:1;flex:none;animation:featureBob 1.4s ease-in-out infinite}
+.pn-close{position:absolute;top:-8px;right:-8px;width:22px;height:22px;padding:0;border:0;border-radius:50%;background:var(--ink);color:var(--surface);font-size:14px;line-height:22px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+@keyframes pnGlow{0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.25) inset,0 0 12px rgba(99,102,241,.55),0 0 26px rgba(14,165,233,.3),0 10px 28px rgba(8,12,30,.35)}
+  50%{box-shadow:0 0 0 1px rgba(255,255,255,.3) inset,0 0 22px rgba(139,92,246,.95),0 0 46px rgba(14,165,233,.6),0 10px 28px rgba(8,12,30,.35)}}
+@keyframes pnIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.pn-box,.planner-nudge,.planner-nudge .pn-arrow{animation:none}}
+dialog#plannerIntro{padding:0;border:0;margin:auto;background:var(--surface);color:var(--ink);width:min(440px,calc(100vw - 24px));max-width:none;max-height:none;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(8,12,30,.4)}
+dialog#plannerIntro[open]{animation:sheetIn .2s ease-out}
+dialog#plannerIntro::backdrop{background:rgba(12,16,32,.55)}
+@media (max-width:600px){
+  dialog#plannerIntro{width:100%;margin:auto 0 0;border-radius:18px 18px 0 0}
+  dialog#plannerIntro[open]{animation-name:sheetUp}
+}
+@media (prefers-reduced-motion:reduce){dialog#plannerIntro[open]{animation:none}}
+.feature-card.pn-flash{animation:pnFlash 1.6s ease-out}
+@keyframes pnFlash{0%,60%{box-shadow:0 0 0 2px #6d28d9,0 0 22px rgba(99,102,241,.7)}100%{box-shadow:none}}
+
 /* ---- about-me dialog ---- */
 dialog#about{padding:0;border:0;margin:auto;background:var(--surface);color:var(--ink);width:min(440px,calc(100vw - 24px));max-width:none;max-height:none;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(8,12,30,.4)}
 dialog#about[open]{animation:sheetIn .2s ease-out}
@@ -806,9 +836,21 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
           <p class="feature-desc">Ask questions, share updates and see what other students are posting, all in one place.</p>
           <a class="btn" href="forum.html" data-act="forum-open">Open Forum</a>
         </article>
+        <article class="feature-card" id="plannerCard">
+          <div class="feature-card-top"><p class="feature-name">Study Planner <span class="bro-tag">New</span></p></div>
+          <p class="feature-desc">Turn your timetable into a daily and week-by-week study plan for the mid-sems, around your own activities and sleep.</p>
+          <a class="btn" href="studyPlanner.html" data-act="planner-open">Open Study Planner</a>
+        </article>
       </div>
     </section>
   </main>
+
+  <div class="planner-wrap" id="plannerWrap" hidden>
+    <div class="pn-box">
+      <button type="button" class="planner-nudge" id="plannerNudge" data-act="planner-nudge"><span class="pn-spark" aria-hidden="true">&#10024;</span><span class="pn-txt"><b>Worried about Mid-Sem?</b><span>Make your study plan now</span></span><span class="pn-arrow" aria-hidden="true">&darr;</span></button>
+      <button type="button" class="pn-close" data-act="planner-nudge-close" aria-label="Dismiss">&times;</button>
+    </div>
+  </div>
 
   <footer class="foot">
     <p id="footTxt"></p>
@@ -937,6 +979,30 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
         <div class="fi-actions">
           <a class="tn-btn" href="forum.html" data-act="forum-open-intro">Open the Forum</a>
           <button type="button" class="tn-btn fi-later" data-act="forum-intro-close">Maybe later</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="plannerIntro" aria-labelledby="piTitle">
+    <div class="terms">
+      <div class="terms-head">
+        <h3 id="piTitle">Meet the Study Planner</h3>
+        <button type="button" class="terms-x" data-act="planner-intro-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+      </div>
+      <div class="terms-body">
+        <div class="fi-hero">
+          <svg width="30" height="30" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2.5h10v11H3zM5.5 6h5M5.5 8.5h5M5.5 11h3"/></svg>
+          <p>Mid-sems, planned by AI</p>
+        </div>
+        <p class="tn-body" style="margin:0;text-align:left">The Study Planner uses AI to turn your timetable into a study plan you can actually follow, so you don&rsquo;t have to work out what to study and when.</p>
+        <ul class="fi-list">
+          <li><b>Built around you</b> &mdash; it works around your classes, your own activities and your sleep.</li>
+          <li><b>Daily and week-by-week</b> &mdash; see what to study today and how the weeks leading up to your mid-sems are laid out.</li>
+          <li><b>Private</b> &mdash; your plan is kept on this device only.</li>
+        </ul>
+        <div class="fi-actions">
+          <a class="tn-btn" href="studyPlanner.html" data-act="planner-open">Open Study Planner</a>
+          <button type="button" class="tn-btn fi-later" data-act="planner-intro-close">Maybe later</button>
         </div>
       </div>
     </div>
@@ -1982,6 +2048,7 @@ document.addEventListener('click',function(e){
   if(e.target&&e.target.id==='terms'){closeTerms();return;}
   if(e.target&&e.target.id==='about'){closeAbout();return;}
   if(e.target&&e.target.id==='forumIntro'){closeForumIntro();return;}
+  if(e.target&&e.target.id==='plannerIntro'){closePlannerIntro();return;}
   if(e.target&&e.target.id==='privacy'){closePriv();return;}
   if(e.target&&e.target.id==='broInfo'){broAct('bro-no');return;}
   if(e.target&&e.target.id==='broApp'){broAct('bro-close');return;}
@@ -2000,10 +2067,14 @@ document.addEventListener('click',function(e){
   if(a==='about-close'){closeAbout();return;}
   if(a==='priv-open'){openPriv(b);return;}
   if(a==='priv-close'){closePriv();return;}
+  if(a==='planner-nudge'){plannerNudgeClick(b);return;}
+  if(a==='planner-nudge-close'){dismissPlannerNudge();return;}
+  if(a==='planner-intro-close'){closePlannerIntro();return;}
   if(a==='forum-tip'){openForumIntro(b);return;}
   if(a==='forum-intro-close'){closeForumIntro();return;}
   if(a==='forum-open-intro'){forumLog('open_forum');return;}
   if(a==='forum-open'&&!forumIntroSeen()){e.preventDefault();openForumIntro(b);return;}
+  if(a==='planner-open'){markFeatureUsed();try{store.set('tt-planner-used','1');}catch(e){}hidePlannerNudge();logVisit('open_study_planner',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});return;}
   if(a==='forum-open'){logVisit('open_forum',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});return;}
   if(a==='ext-link'){logVisit('click_link',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch,link:b.getAttribute('data-label')});return;}
   if(a==='admin-close'){closeAdmin();return;}
@@ -2097,6 +2168,9 @@ function escHtml(s){
 var adminOpenedAt=0;
 function openAdmin(){
   adminOpenedAt=Date.now();
+  /* Reset the Study Planner nudge so it can be re-tested: it shows again and the first-click intro replays. */
+  try{localStorage.removeItem('tt-planner-used');localStorage.removeItem('tt-planner-intro');}catch(e){}
+  plannerNudgeDismissed=false;
   var dlg=$('#admin');
   if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open','');
   if(ADM.pin) loadAdmin(); else renderPinForm();
@@ -2231,6 +2305,19 @@ function renderAdmin(){
       {l:'All time',n:teacher.v_all||0,u:(teacher.u_all||0)+' uniq'}
     ].map(function(k){return '<div class="adm-kpi"><span class="n">'+k.n+'</span><span class="u">'+k.u+'</span><span class="l">'+k.l+'</span></div>';}).join('')+'</div>';
   }
+  [['study_planner','Study Planner opens','(clicks from the timetable)'],['study_planner_built','Study Planner plans built','(successful generations)']].forEach(function(x){
+    var w=d[x[0]];
+    if(!w) return;
+    html+='<p class="adm-h">'+x[1]+' <span style="font-weight:400;color:var(--muted)">'+x[2]+'</span></p>';
+    html+='<div class="adm-kpis">'+[
+      {l:'Live now',n:w.live_5m||0,u:'unique'},
+      {l:'1 hour',n:w.v_1h||0,u:(w.u_1h||0)+' uniq'},
+      {l:'24 hours',n:w.v_24h||0,u:(w.u_24h||0)+' uniq'},
+      {l:'7 days',n:w.v_7d||0,u:(w.u_7d||0)+' uniq'},
+      {l:'30 days',n:w.v_30d||0,u:(w.u_30d||0)+' uniq'},
+      {l:'All time',n:w.v_all||0,u:(w.u_all||0)+' uniq'}
+    ].map(function(k){return '<div class="adm-kpi"><span class="n">'+k.n+'</span><span class="u">'+k.u+'</span><span class="l">'+k.l+'</span></div>';}).join('')+'</div>';
+  });
   html+='<p class="adm-h">'+(ADM.range==='30d'?'Last 30 days':'Last 24 hours')+'</p>';
   html+='<div class="adm-chart">'+barChart(ADM.range==='30d'?d.daily_30d:d.hourly_24h)+'</div>';
   html+='<div class="adm-legend"><span><i class="v"></i>Visits</span><span><i class="u"></i>Unique visitors</span></div>';
@@ -2915,6 +3002,44 @@ function updateFeatureNudge(){
 }
 window.addEventListener('scroll',updateFeatureNudge,{passive:true});
 setTimeout(updateFeatureNudge,0);
+
+
+/* ---------- Study Planner bottom nudge: shows at the top of the page, scrolls to the card, explains it on first click ---------- */
+var plannerNudgeDismissed=false;
+function hidePlannerNudge(){var w=$('#plannerWrap');if(w)w.hidden=true;}
+function updatePlannerNudge(){
+  var w=$('#plannerWrap');if(!w)return;
+  var pk=$('#picker');
+  var show=!plannerNudgeDismissed&&!store.get('tt-planner-used','')&&window.scrollY<=120&&!document.querySelector('dialog[open]')&&!!CUR&&!(pk&&!pk.hidden);
+  w.hidden=!show;
+}
+function dismissPlannerNudge(){plannerNudgeDismissed=true;hidePlannerNudge();}
+function plannerLog(a){try{logVisit(a,{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});}catch(e){}}
+function plannerNudgeClick(){
+  plannerLog('click_planner_nudge');
+  plannerNudgeDismissed=true;hidePlannerNudge();
+  var card=$('#plannerCard');
+  if(card){
+    var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+    card.scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});
+    card.classList.remove('pn-flash');void card.offsetWidth;card.classList.add('pn-flash');
+  }
+  if(!store.get('tt-planner-intro','')){
+    store.set('tt-planner-intro','1');
+    setTimeout(function(){
+      var dlg=$('#plannerIntro');
+      if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open','');
+      plannerLog('open_planner_intro');
+    },600);
+  }
+}
+function closePlannerIntro(){
+  var dlg=$('#plannerIntro');
+  if(typeof dlg.close==='function') dlg.close(); else dlg.removeAttribute('open');
+}
+window.addEventListener('scroll',updatePlannerNudge,{passive:true});
+setInterval(updatePlannerNudge,800);
+setTimeout(updatePlannerNudge,0);
 
 /* ---------- Boot loading screen ---------- */
 var LOAD_QUOTES=[
