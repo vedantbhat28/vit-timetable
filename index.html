@@ -767,6 +767,56 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
 .adm-actions{display:flex;gap:8px;margin-top:16px}
 .adm-actions .btn2{flex:1;min-height:40px;padding:6px 12px;font-size:12.5px}
 
+
+/* ---- quick survey popup (almost full screen) + its admin block ---- */
+#surveyPop{position:fixed;inset:0;z-index:86;display:flex;align-items:center;justify-content:center;
+  padding:max(8px,env(safe-area-inset-top,0px)) 8px max(8px,env(safe-area-inset-bottom,0px));
+  background:rgba(12,16,32,.66);animation:svFade .25s ease-out;transition:opacity .25s ease}
+#surveyPop[hidden]{display:none}
+#surveyPop.out{opacity:0;pointer-events:none}
+.sv-card{position:relative;width:100%;height:100%;max-width:1100px;overflow-y:auto;overscroll-behavior:contain;
+  background:var(--surface);color:var(--ink);border-radius:20px;box-shadow:0 24px 70px rgba(8,12,30,.45);
+  padding:clamp(18px,4vw,40px) clamp(16px,4vw,40px);animation:svPop .28s ease-out;outline:0}
+.sv-x{position:absolute;top:12px;right:12px;z-index:2}
+.sv-wrap{max-width:640px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;gap:16px;justify-content:center}
+.sv-kicker{margin:0;color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.sv-title{margin:0;font:800 clamp(24px,5.5vw,34px)/1.12 var(--body)}
+.sv-sub{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+.sv-prog{margin:0;display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;font-weight:600}
+.sv-prog .bar{flex:1;height:6px;border-radius:99px;background:var(--wash);overflow:hidden}
+.sv-prog .bar i{display:block;height:100%;width:0;background:var(--ink);border-radius:99px;transition:width .25s ease}
+.sv-q{padding:14px 14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--wash)}
+.sv-qt{margin:0 0 12px;display:flex;gap:10px;align-items:flex-start;font-weight:700;font-size:16px;line-height:1.35}
+.sv-n{flex:none;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-size:12px;font-weight:800;margin-top:1px}
+.sv-yn{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sv-yn button{min-height:52px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);font-weight:700;font-size:16px;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.sv-yn button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.sv-stars{display:flex;justify-content:center;gap:clamp(4px,2vw,12px)}
+.sv-stars button{width:clamp(46px,14vw,64px);height:clamp(46px,14vw,64px);padding:0;display:grid;place-items:center;border:0;border-radius:12px;background:transparent;color:var(--muted);cursor:pointer}
+.sv-stars button svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round;transition:fill .12s,stroke .12s,transform .12s}
+.sv-stars button.on{color:#F2A600}
+.sv-stars button.on svg{fill:#F2A600}
+.sv-stars button:active svg{transform:scale(.9)}
+.sv-star-lbl{margin:8px 0 0;min-height:18px;text-align:center;color:var(--muted);font-size:13px;font-weight:600}
+.sv-foot{display:flex;flex-direction:column;gap:8px;margin-top:2px}
+.sv-foot .btn,.sv-foot .btn2{margin:0;width:100%;min-height:52px;font-size:16px}
+.sv-foot .btn:disabled{opacity:.4;cursor:not-allowed}
+.sv-err{margin:0;min-height:16px;color:var(--danger);font-size:13px;font-weight:600;text-align:center}
+.sv-wrap[hidden]{display:none}
+.sv-thanks{align-items:center;text-align:center}
+.sv-thanks .btn{margin:6px 0 0;min-width:180px}
+.sv-check{width:68px;height:68px;border-radius:50%;background:var(--ink);color:var(--surface);display:grid;place-items:center}
+@keyframes svFade{from{opacity:0}to{opacity:1}}
+@keyframes svPop{from{opacity:0;transform:translateY(16px) scale(.985)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#surveyPop,.sv-card{animation:none}.sv-prog .bar i{transition:none}}
+.adm-sq{padding:9px 0;border-top:1px dashed var(--line)}
+.adm-sq:first-of-type{border-top:0}
+.adm-sq-h{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;font-weight:600}
+.adm-sq-h b{font-variant-numeric:tabular-nums}
+.adm-sq-bar{margin-top:6px;height:8px;background:var(--wash);border-radius:99px;overflow:hidden}
+.adm-sq-bar span{display:block;height:100%;background:var(--ink);border-radius:99px}
+.adm-sq-n{margin:4px 0 0;color:var(--muted);font-size:11px}
+
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(229,56,59,.55)}70%,100%{box-shadow:0 0 0 7px rgba(229,56,59,0)}}
 .dot{animation-name:pulseW}
 @keyframes pulseW{0%{box-shadow:0 0 0 0 rgba(255,255,255,.6)}70%,100%{box-shadow:0 0 0 7px rgba(255,255,255,0)}}
@@ -1105,6 +1155,32 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       <div class="terms-body" id="admBody"></div>
     </div>
   </dialog>
+  <div id="surveyPop" hidden role="dialog" aria-modal="true" aria-labelledby="svTitle">
+    <div class="sv-card" id="svCard" tabindex="-1">
+      <button type="button" class="terms-x sv-x" data-sv="later" aria-label="Close survey"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+      <div class="sv-wrap" id="svForm">
+        <p class="sv-kicker">Quick survey</p>
+        <h2 class="sv-title" id="svTitle">Do you have 2 mins for a quick survey?</h2>
+        <p class="sv-sub">Four quick questions. No name or roll number is collected.</p>
+        <p class="sv-prog"><span id="svProg">0 of 4 answered</span><span class="bar"><i id="svBar"></i></span></p>
+        <div class="sv-q"><p class="sv-qt"><span class="sv-n">1</span><span id="svq1">Do you find the timetable PDFs annoying &amp; confusing?</span></p><div class="sv-yn" role="group" aria-labelledby="svq1"><button type="button" data-sv="yn" data-q="q1" data-v="1" aria-pressed="false">Yes</button><button type="button" data-sv="yn" data-q="q1" data-v="0" aria-pressed="false">No</button></div></div>
+        <div class="sv-q"><p class="sv-qt"><span class="sv-n">2</span><span id="svq2">How much do you find this Dashboard useful?</span></p><div class="sv-stars" role="group" aria-labelledby="svq2"><button type="button" data-sv="star" data-v="1" aria-label="1 star" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5 1-4.7 4.6 1.1 6.5L12 17.5 6.2 20.6l1.1-6.5L2.6 9.5l6.5-1z"/></svg></button><button type="button" data-sv="star" data-v="2" aria-label="2 stars" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5 1-4.7 4.6 1.1 6.5L12 17.5 6.2 20.6l1.1-6.5L2.6 9.5l6.5-1z"/></svg></button><button type="button" data-sv="star" data-v="3" aria-label="3 stars" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5 1-4.7 4.6 1.1 6.5L12 17.5 6.2 20.6l1.1-6.5L2.6 9.5l6.5-1z"/></svg></button><button type="button" data-sv="star" data-v="4" aria-label="4 stars" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5 1-4.7 4.6 1.1 6.5L12 17.5 6.2 20.6l1.1-6.5L2.6 9.5l6.5-1z"/></svg></button><button type="button" data-sv="star" data-v="5" aria-label="5 stars" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6l2.9 5.9 6.5 1-4.7 4.6 1.1 6.5L12 17.5 6.2 20.6l1.1-6.5L2.6 9.5l6.5-1z"/></svg></button></div><p class="sv-star-lbl" id="svStarLbl" aria-live="polite"></p></div>
+        <div class="sv-q"><p class="sv-qt"><span class="sv-n">3</span><span id="svq3">Do you feel confused on what clubs to join?</span></p><div class="sv-yn" role="group" aria-labelledby="svq3"><button type="button" data-sv="yn" data-q="q3" data-v="1" aria-pressed="false">Yes</button><button type="button" data-sv="yn" data-q="q3" data-v="0" aria-pressed="false">No</button></div></div>
+        <div class="sv-q"><p class="sv-qt"><span class="sv-n">4</span><span id="svq4">Would you like advice from seniors?</span></p><div class="sv-yn" role="group" aria-labelledby="svq4"><button type="button" data-sv="yn" data-q="q4" data-v="1" aria-pressed="false">Yes</button><button type="button" data-sv="yn" data-q="q4" data-v="0" aria-pressed="false">No</button></div></div>
+        <div class="sv-foot">
+          <p class="sv-err" id="svErr" role="alert"></p>
+          <button type="button" class="btn" id="svSubmit" data-sv="submit" disabled>Submit</button>
+          <button type="button" class="btn2" data-sv="later">Maybe later</button>
+        </div>
+      </div>
+      <div class="sv-wrap sv-thanks" id="svThanks" hidden>
+        <div class="sv-check"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+        <h2 class="sv-title">Thank you!</h2>
+        <p class="sv-sub">Your answers were saved and will help make this better.</p>
+        <button type="button" class="btn" data-sv="close">Close</button>
+      </div>
+    </div>
+  </div>
   <div id="installBar" class="install-bar" hidden role="dialog" aria-label="Install app" aria-describedby="installSub">
     <div class="install-card">
       <div class="install-icon"><img src="icons/icon-192.png" width="44" height="44" alt=""></div>
@@ -1926,6 +2002,7 @@ function closePicker(fromBoot){
     maybeShowHolidayIntro();
     maybeShowLabNotice();maybeShowChangeNotice();
   }
+  scheduleSurvey();
   var c=document.querySelector('.chg');
   if(c) c.focus({preventScroll:true});
 }
@@ -2178,7 +2255,7 @@ document.addEventListener('click',function(e){
   if(taps.length>TAP_NEEDED){ taps=[]; openAdmin(); }
 },true);
 
-var ADM={pin:'',data:null,busy:false,range:'24h'};
+var ADM={pin:'',data:null,busy:false,range:'24h',survey:null,surveyErr:false};
 function escHtml(s){
   return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
 }
@@ -2196,7 +2273,7 @@ function closeAdmin(){
   var dlg=$('#admin');
   if(typeof dlg.close==='function') dlg.close(); else dlg.removeAttribute('open');
 }
-function lockAdmin(){ ADM.pin='';ADM.data=null;renderPinForm(); }
+function lockAdmin(){ ADM.pin='';ADM.data=null;ADM.survey=null;ADM.surveyErr=false;renderPinForm(); }
 function renderPinForm(msg){
   $('#admBody').innerHTML=
     '<form id="admPinForm" class="adm-pinform" autocomplete="off">'+
@@ -2227,8 +2304,9 @@ function loadAdmin(){
         renderPinForm('Could not load traffic.');
         return;
       }
-      ADM.data=r.j;
+      ADM.data=r.j;ADM.survey=null;ADM.surveyErr=false;
       renderAdmin();
+      loadSurveyAdmin();
     }).catch(function(){ ADM.busy=false; ADM.pin=''; renderPinForm('Could not reach the server.'); });
 }
 function fmtAdmTime(iso){
@@ -2252,6 +2330,59 @@ function rankList(rows,labelKey,countKey){
     var pct=max?Math.round(((r[countKey]||0)/max)*100):0;
     return '<li><span class="lbl">'+escHtml(r[labelKey])+'</span><span class="barw"><span class="barf" style="width:'+pct+'%"></span></span><span class="cnt">'+(r[countKey]||0)+'</span></li>';
   }).join('')+'</ul>';
+}
+
+/* ---------- Survey results in the admin panel (PIN-checked RPC; only called after the traffic PIN check passed) ---------- */
+function loadSurveyAdmin(){
+  var pin=ADM.pin; if(!pin) return;
+  fetch(SUPA_URL+'/rest/v1/rpc/admin_survey_stats',{
+    method:'POST',
+    headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({p_pin:pin})
+  }).then(function(res){ if(!res.ok) throw new Error('survey '+res.status); return res.json(); })
+    .then(function(j){ if(!ADM.pin||!ADM.data) return; ADM.survey=j;ADM.surveyErr=false;renderAdmin(); })
+    .catch(function(){ if(!ADM.pin||!ADM.data) return; ADM.surveyErr=true;renderAdmin(); });
+}
+function svPct(n,t){ return t?Math.round(n/t*100):0; }
+function svQBlock(label,yes,no){
+  yes=yes||0;no=no||0;
+  var t=yes+no,p=svPct(yes,t);
+  return '<div class="adm-sq"><div class="adm-sq-h"><span>'+label+'</span><b>'+p+'% yes</b></div>'+
+    '<div class="adm-sq-bar"><span style="width:'+p+'%"></span></div>'+
+    '<p class="adm-sq-n">'+yes+' yes \u00b7 '+no+' no</p></div>';
+}
+function surveyAdminHTML(){
+  var s=ADM.survey,h='<p class="adm-h">Timetable survey <span style="font-weight:400;color:var(--muted)">(popup answers)</span></p>';
+  if(ADM.surveyErr) return h+'<p class="adm-empty">Could not load survey results.</p>';
+  if(!s) return h+'<p class="adm-empty">Loading survey\u2026</p>';
+  if(!s.total) return h+'<p class="adm-empty">No survey responses yet.</p>';
+  var rd=s.rating_dist||{};
+  var out=h+'<div class="adm-kpis">'+[
+    {l:'Responses',n:s.total,u:'all time'},
+    {l:'24 hours',n:s.last_24h||0,u:'new'},
+    {l:'7 days',n:s.last_7d||0,u:'new'},
+    {l:'Avg rating',n:(s.rating_avg==null?'-':Number(s.rating_avg).toFixed(2)),u:'out of 5'}
+  ].map(function(k){return '<div class="adm-kpi"><span class="n">'+k.n+'</span><span class="u">'+k.u+'</span><span class="l">'+k.l+'</span></div>';}).join('')+'</div>';
+  out+='<p class="adm-h">Yes / No questions</p>'+
+    svQBlock('1. Timetable PDFs annoying &amp; confusing?',s.q1_yes,s.q1_no)+
+    svQBlock('3. Confused on what clubs to join?',s.q3_yes,s.q3_no)+
+    svQBlock('4. Would like advice from seniors?',s.q4_yes,s.q4_no);
+  out+='<p class="adm-h">2. Dashboard usefulness <span style="font-weight:400;color:var(--muted)">(stars)</span></p>'+
+    rankList([5,4,3,2,1].map(function(i){return {k:i+' \u2605',n:+(rd[i]||0)};}),'k','n');
+  var bc=s.by_class||[];
+  if(bc.length){
+    out+='<p class="adm-h">By class</p><div class="adm-recent">'+bc.map(function(r){
+      return '<div class="adm-row"><span class="t">'+escHtml(r.n)+' resp</span><span class="d"><b>'+escHtml(r.k)+'</b> \u00b7 \u2605 '+(r.avg_rating==null?'-':Number(r.avg_rating).toFixed(1))+
+        ' \u00b7 PDFs confusing '+svPct(r.q1_yes,r.n)+'% \u00b7 clubs confused '+svPct(r.q3_yes,r.n)+'% \u00b7 want seniors '+svPct(r.q4_yes,r.n)+'%</span></div>';
+    }).join('')+'</div>';
+  }
+  var rc=s.recent||[];
+  out+='<p class="adm-h">Latest responses</p><div class="adm-recent">'+rc.map(function(r){
+    var yn=function(v){return v?'Yes':'No';};
+    return '<div class="adm-row"><span class="t">'+escHtml(fmtAdmTime(r.created_at))+'</span><span class="d">PDFs '+yn(r.q1)+' \u00b7 \u2605 '+escHtml(r.q2)+' \u00b7 Clubs '+yn(r.q3)+' \u00b7 Seniors '+yn(r.q4)+
+      (r.class&&r.class!=='-'?' \u00b7 <b>'+escHtml(r.class)+'</b>':'')+' \u00b7 '+escHtml(r.device||'?')+' \u00b7 '+escHtml(r.os||'?')+' \u00b7 '+escHtml(r.vid||'')+'</span></div>';
+  }).join('')+'</div>';
+  return out;
 }
 function renderAdmin(){
   var d=ADM.data||{},t=d.totals||{},ret=d.returning||{},inst=d.install_share||{};
@@ -2352,6 +2483,7 @@ function renderAdmin(){
   '</div>';
   html+='<p class="adm-h">Classes</p>'+rankList(d.classes,'k','n');
   html+='<p class="adm-h">Link clicks <span style="font-weight:400;color:var(--muted)">(30d)</span></p>'+rankList(d.link_clicks,'k','n');
+  html+=surveyAdminHTML();
   html+='<p class="adm-h">Latest visits</p>';
   var recent=d.recent||[];
   html+=recent.length?'<div class="adm-recent">'+recent.map(function(r){
@@ -3190,6 +3322,109 @@ function maybeShowChangeNotice(){
     },{once:true});
   }catch(e){}
 }
+
+/* ---------- Quick survey popup: 2s after the timetable is on screen. Answers -> Supabase table timetable_survey, read in the admin panel ---------- */
+var SV_DELAY=2000;
+var SV_LABELS=['Not useful at all','Slightly useful','Somewhat useful','Very useful','Extremely useful'];
+var SV={ans:{q1:null,q2:0,q3:null,q4:null},shown:false,sending:false,timer:null,opener:null};
+function svForced(){ return /[?&]survey=1\b/.test(location.search); }   // ?survey=1 re-shows it for testing
+function svDone(){ return store.get('tt-survey-done','')==='1'; }
+function svBlocked(){   // wait while a notice, splash or dialog is on screen
+  var ids=['ttNotice','labNotice','chgNotice','holidayIntro','loadScreen'];
+  for(var i=0;i<ids.length;i++){ var el=document.getElementById(ids[i]); if(el&&!el.hidden) return true; }
+  if(document.querySelector('dialog[open]')) return true;
+  return !!$('#view').hidden;
+}
+function scheduleSurvey(){
+  if(SV.shown||SV.timer) return;
+  if(!svForced()&&svDone()) return;
+  SV.timer=setTimeout(function wait(){
+    if(svBlocked()){ SV.timer=setTimeout(wait,1200); return; }
+    SV.timer=null; openSurvey();
+  },SV_DELAY);
+}
+function svRefresh(){
+  var a=SV.ans,n=(a.q1!==null)+(a.q2>0)+(a.q3!==null)+(a.q4!==null);
+  $('#svProg').textContent=n+' of 4 answered';
+  $('#svBar').style.width=(n*25)+'%';
+  $('#svSubmit').disabled=(n<4)||SV.sending;
+  document.querySelectorAll('#surveyPop [data-sv="yn"]').forEach(function(b){
+    b.setAttribute('aria-pressed',String(SV.ans[b.getAttribute('data-q')]===+b.getAttribute('data-v')));
+  });
+  document.querySelectorAll('#surveyPop [data-sv="star"]').forEach(function(b){
+    var v=+b.getAttribute('data-v'); b.classList.toggle('on',v<=a.q2); b.setAttribute('aria-pressed',String(v===a.q2));
+  });
+  $('#svStarLbl').textContent=a.q2?SV_LABELS[a.q2-1]:'';
+}
+function openSurvey(){
+  var el=$('#surveyPop'); if(!el) return;
+  SV.shown=true; SV.sending=false; SV.ans={q1:null,q2:0,q3:null,q4:null};
+  $('#svForm').hidden=false; $('#svThanks').hidden=true; $('#svErr').textContent='';
+  $('#svSubmit').textContent='Submit';
+  svRefresh();
+  SV.opener=document.activeElement;
+  el.classList.remove('out'); el.hidden=false;
+  $('#svCard').scrollTop=0;
+  document.documentElement.style.overflow='hidden';
+  $('#svCard').focus({preventScroll:true});
+}
+function closeSurvey(skipped){
+  var el=$('#surveyPop'); if(!el||el.hidden) return;
+  if(skipped) store.set('tt-survey-done','1');   // skipped counts as done: never show again
+  el.classList.add('out');
+  setTimeout(function(){ el.hidden=true; el.classList.remove('out'); },260);
+  document.documentElement.style.overflow='';
+  try{ if(SV.opener&&SV.opener.focus) SV.opener.focus({preventScroll:true}); }catch(e){}
+}
+function submitSurvey(){
+  var a=SV.ans; if(SV.sending||a.q1===null||!a.q2||a.q3===null||a.q4===null) return;
+  SV.sending=true; svRefresh();
+  var btn=$('#svSubmit'); btn.textContent='Sending\u2026'; $('#svErr').textContent='';
+  var u=parseUA(navigator.userAgent||'');
+  var row={
+    survey_key:'timetable_v1',visitor_id:visitorId,session_id:sessionId,
+    q1_pdf_confusing:a.q1===1,q2_dashboard_rating:a.q2,q3_club_confused:a.q3===1,q4_wants_senior_advice:a.q4===1,
+    branch:st.branch||store.get('tt-branch','')||null,division:st.div||store.get('tt-div','')||null,batch:st.batch||null,
+    device:u.device,os:u.os
+  };
+  fetch(SUPA_URL+'/rest/v1/timetable_survey',{
+    method:'POST',
+    headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json',Prefer:'return=minimal'},
+    body:JSON.stringify(row)
+  }).then(function(res){
+    // 409 = this visitor already answered once (unique per visitor): treat as done
+    if(!(res.ok||res.status===409)) throw new Error('survey '+res.status);
+    store.set('tt-survey-done','1');
+    SV.sending=false;
+    $('#svForm').hidden=true; $('#svThanks').hidden=false;
+    $('#svCard').scrollTop=0;
+    var cb=document.querySelector('#svThanks .btn'); if(cb) cb.focus({preventScroll:true});
+    setTimeout(function(){ closeSurvey(false); },2600);
+  }).catch(function(){
+    SV.sending=false; btn.textContent='Submit';
+    $('#svErr').textContent='Could not send. Check your connection and try again.';
+    svRefresh();
+  });
+}
+document.addEventListener('click',function(e){
+  var b=e.target.closest&&e.target.closest('#surveyPop [data-sv]'); if(!b) return;
+  var a=b.getAttribute('data-sv');
+  if(a==='yn'){ SV.ans[b.getAttribute('data-q')]=+b.getAttribute('data-v'); $('#svErr').textContent=''; svRefresh(); }
+  else if(a==='star'){ SV.ans.q2=+b.getAttribute('data-v'); $('#svErr').textContent=''; svRefresh(); }
+  else if(a==='submit'){ submitSurvey(); }
+  else if(a==='later'){ closeSurvey(true); }
+  else if(a==='close'){ closeSurvey(false); }
+});
+document.addEventListener('keydown',function(e){
+  var el=$('#surveyPop'); if(!el||el.hidden||el.classList.contains('out')) return;
+  if(e.key==='Escape'){ e.preventDefault(); closeSurvey($('#svThanks').hidden); return; }
+  if(e.key!=='Tab') return;
+  var f=[].slice.call(el.querySelectorAll('button:not([disabled])')).filter(function(x){return x.offsetParent!==null;});
+  if(!f.length) return;
+  var first=f[0],last=f[f.length-1],ae=document.activeElement;
+  if(e.shiftKey&&(ae===first||ae===$('#svCard'))){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey&&ae===last){ e.preventDefault(); first.focus(); }
+});
 
 function boot(){
   initForumTip();
