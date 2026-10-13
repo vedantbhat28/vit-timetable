@@ -782,6 +782,9 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
 .sv-kicker{margin:0;color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 .sv-title{margin:0;font:800 clamp(24px,5.5vw,34px)/1.12 var(--body)}
 .sv-sub{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+.sv-anon{margin:0;display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border-radius:12px;background:var(--wash);border:1px solid var(--line);font-size:13px;line-height:1.45;color:var(--muted)}
+.sv-anon svg{flex:none;margin-top:1px;color:#1E8E5A}
+.sv-anon b{color:var(--ink)}
 .sv-prog{margin:0;display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;font-weight:600}
 .sv-prog .bar{flex:1;height:6px;border-radius:99px;background:var(--wash);overflow:hidden}
 .sv-prog .bar i{display:block;height:100%;width:0;background:var(--ink);border-radius:99px;transition:width .25s ease}
@@ -1161,7 +1164,8 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       <div class="sv-wrap" id="svForm">
         <p class="sv-kicker">Quick survey</p>
         <h2 class="sv-title" id="svTitle">Do you have 2 mins for a quick survey?</h2>
-        <p class="sv-sub">Five quick questions. No name or roll number is collected.</p>
+        <p class="sv-sub">Five quick questions.</p>
+        <p class="sv-anon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6z"/><path d="M9 12l2.2 2.2L15.5 10"/></svg><span><b>Your responses are 100% anonymous.</b> We never ask for your name, roll number or login. Only your answers and your class are saved.</span></p>
         <p class="sv-prog"><span id="svProg">0 of 5 answered</span><span class="bar"><i id="svBar"></i></span></p>
         <div class="sv-q"><p class="sv-qt"><span class="sv-n">1</span><span id="svq1">Do you find the timetable PDFs annoying &amp; confusing?</span></p><div class="sv-yn" role="group" aria-labelledby="svq1"><button type="button" data-sv="yn" data-q="q1" data-v="1" aria-pressed="false">Yes</button><button type="button" data-sv="yn" data-q="q1" data-v="0" aria-pressed="false">No</button></div></div>
         <div class="sv-q"><p class="sv-qt"><span class="sv-n">2</span><span id="svqh">Do you feel hesitant while asking doubts in the class?</span></p><div class="sv-yn" role="group" aria-labelledby="svqh"><button type="button" data-sv="yn" data-q="qh" data-v="1" aria-pressed="false">Yes</button><button type="button" data-sv="yn" data-q="qh" data-v="0" aria-pressed="false">No</button></div></div>
@@ -1177,7 +1181,7 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       <div class="sv-wrap sv-thanks" id="svThanks" hidden>
         <div class="sv-check"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
         <h2 class="sv-title">Thank you!</h2>
-        <p class="sv-sub">Your answers were saved and will help make this better.</p>
+        <p class="sv-sub">Your answers were saved anonymously and will help make this better.</p>
         <button type="button" class="btn" data-sv="close">Close</button>
       </div>
     </div>
