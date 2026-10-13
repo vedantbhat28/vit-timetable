@@ -886,8 +886,8 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
     <div class="tn-card">
       <div class="tn-emoji" aria-hidden="true">&#128226;</div>
       <p class="tn-kicker">Schedule change &middot; today only</p>
-      <p class="tn-title" id="chgTitle">Basics of Engineering is preponed</p>
-      <p class="tn-body">Today&rsquo;s <b>Basics of Engineering</b> lecture is moved from 4pm&ndash;5pm to <b>3pm&ndash;4pm</b>, in <b>D301</b>.<br>The <b>break is 4pm&ndash;5pm</b>.<br><br>This applies to <b>13/10/2026</b> and <b>CSSE-C</b> only.</p>
+      <p class="tn-title" id="chgTitle">Basics of Engineering is cancelled</p>
+      <p class="tn-body">Today&rsquo;s <b>Basics of Engineering</b> lecture is <b>cancelled</b>.<br><br>This applies to <b>13/10/2026</b> and <b>CSSE-C</b> only.</p>
       <button type="button" class="tn-btn" id="chgNoticeOk">Got it</button>
     </div>
   </div>
@@ -1392,16 +1392,10 @@ function dur(ms){
   var m=Math.round(ms/60000),h=Math.floor(m/60),r=m%60;
   return h?(r?h+' h '+r+' min':h+' h'):m+' min';
 }
-/* One-day change (13 Oct 2026, CSSE-C only): Basics of Engg. lecture moved from 4-5 pm to 3-4 pm in D301 */
+/* One-day change (13 Oct 2026, CSSE-C only): Basics of Engg. lecture cancelled */
 function dayOverride(list,date){
   if(!date||st.branch!=='CSSE'||st.div!=='C'||ymd(date)!=='2026-10-13') return list;
-  return list.map(function(x){
-    if(x.sub==='ES26105'&&x.s===960&&x.e===1020){
-      var y={};for(var k in x) y[k]=x[k];
-      y.s=900;y.e=960;y.room='D301';return y;
-    }
-    return x;
-  });
+  return list.filter(function(x){return !(x.sub==='ES26105'&&x.s===960&&x.e===1020)});
 }
 function forDay(dow,b,date){
   var l=SESS.filter(function(x){return x.d===dow&&(!x.b||x.b===b)});
@@ -1848,7 +1842,7 @@ function detailHTML(x,dateMs,now){
 
 function fillSheet(){
   if(!openCtx) return;
-  $('#sheetBody').innerHTML=detailHTML(dayOverride([SESS[openCtx.sid]],new Date(openCtx.dateMs))[0],openCtx.dateMs,nowFloor());
+  $('#sheetBody').innerHTML=detailHTML(SESS[openCtx.sid],openCtx.dateMs,nowFloor());
 }
 function openDetail(sid,dateMs,key){
   if(!SESS[sid]) return;
