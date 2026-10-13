@@ -403,12 +403,14 @@ dialog#teacherDetail::backdrop{background:rgba(12,16,32,.55)}
 @media (prefers-reduced-motion:reduce){#holidayIntro,.hi-emoji{animation:none}}
 
 /* new-schedule notice (full-screen, once a day for 2 days) + latest badge */
-#ttNotice,#labNotice{position:fixed;inset:0;z-index:82;display:flex;flex-direction:column;align-items:center;justify-content:center;
+#ttNotice,#labNotice,#chgNotice{position:fixed;inset:0;z-index:82;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:0;text-align:center;padding:24px;background:var(--surface);color:var(--ink);
   animation:hiIn .4s ease-out;transition:opacity .4s ease,transform .4s ease}
-#ttNotice.out,#labNotice.out{opacity:0;transform:scale(1.04);pointer-events:none}
+#ttNotice.out,#labNotice.out,#chgNotice.out{opacity:0;transform:scale(1.04);pointer-events:none}
 #labNotice{z-index:83}
 #labNotice[hidden]{display:none}
+#chgNotice{z-index:84}
+#chgNotice[hidden]{display:none}
 .tn-card{max-width:420px;display:flex;flex-direction:column;align-items:center;gap:10px}
 .tn-emoji{font-size:44px;line-height:1;animation:hiPop .6s ease-out}
 .tn-kicker{margin:4px 0 0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--danger)}
@@ -428,7 +430,7 @@ dialog#teacherDetail::backdrop{background:rgba(12,16,32,.55)}
 .tn-btn .tn-bar{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ink);opacity:.18;z-index:-1}
 .tn-btn.wait .tn-bar{animation:tnFill 2s linear forwards}
 @keyframes tnFill{from{width:0}to{width:100%}}
-@media (prefers-reduced-motion:reduce){#ttNotice,#labNotice,.tn-emoji{animation:none}}
+@media (prefers-reduced-motion:reduce){#ttNotice,#labNotice,#chgNotice,.tn-emoji{animation:none}}
 #rollWarn{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55)}
 #rollWarn[hidden]{display:none}
 .rw-card{width:100%;max-width:400px;display:flex;flex-direction:column;gap:10px;padding:22px 20px 18px;border-radius:16px;background:var(--surface);color:var(--ink);box-shadow:0 12px 40px rgba(0,0,0,.35);text-align:center}
@@ -878,6 +880,15 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       <p class="tn-title" id="labTitle">Lab practical <span id="labDay">tomorrow</span></p>
       <p class="tn-body">There will be a <b>LAB practical period <span id="labDay2">tomorrow</span></b> for an hour, <b>12pm to 1pm</b>.<br>Please <b>come early at 12pm to D307</b>.</p>
       <button type="button" class="tn-btn" id="labNoticeOk">Got it</button>
+    </div>
+  </div>
+  <div id="chgNotice" hidden role="alertdialog" aria-modal="true" aria-labelledby="chgTitle">
+    <div class="tn-card">
+      <div class="tn-emoji" aria-hidden="true">&#128226;</div>
+      <p class="tn-kicker">Schedule change &middot; today only</p>
+      <p class="tn-title" id="chgTitle">Basics of Engineering is preponed</p>
+      <p class="tn-body">Today&rsquo;s <b>Basics of Engineering</b> lecture is moved from 4pm&ndash;5pm to <b>3pm&ndash;4pm</b>, in <b>D301</b>.<br>The <b>break is 4pm&ndash;5pm</b>.<br><br>This applies to <b>13/10/2026</b> and <b>CSSE-C</b> only.</p>
+      <button type="button" class="tn-btn" id="chgNoticeOk">Got it</button>
     </div>
   </div>
   <div id="holidayIntro" hidden>
@@ -1381,8 +1392,20 @@ function dur(ms){
   var m=Math.round(ms/60000),h=Math.floor(m/60),r=m%60;
   return h?(r?h+' h '+r+' min':h+' h'):m+' min';
 }
-function forDay(dow,b){
-  return SESS.filter(function(x){return x.d===dow&&(!x.b||x.b===b)}).sort(function(a,c){return a.s-c.s||(c.ger?1:0)-(a.ger?1:0)});
+/* One-day change (13 Oct 2026, CSSE-C only): Basics of Engg. lecture moved from 4-5 pm to 3-4 pm in D301 */
+function dayOverride(list,date){
+  if(!date||st.branch!=='CSSE'||st.div!=='C'||ymd(date)!=='2026-10-13') return list;
+  return list.map(function(x){
+    if(x.sub==='ES26105'&&x.s===960&&x.e===1020){
+      var y={};for(var k in x) y[k]=x[k];
+      y.s=900;y.e=960;y.room='D301';return y;
+    }
+    return x;
+  });
+}
+function forDay(dow,b,date){
+  var l=SESS.filter(function(x){return x.d===dow&&(!x.b||x.b===b)});
+  return dayOverride(l,date).sort(function(a,c){return a.s-c.s||(c.ger?1:0)-(a.ger?1:0)});
 }
 function typeLine(x){return x.b?x.type+', batch '+x.b:x.type}
 
@@ -1435,7 +1458,7 @@ function occurrences(now,days){
     var d=dayStart(now,i);
     if(!inRange(d)) continue;
     if(holidayFor(d)) continue;   // no classes on a listed holiday
-    forDay(d.getDay(),st.batch).forEach(function(s){
+    forDay(d.getDay(),st.batch,d).forEach(function(s){
       var o=Object.assign({},s);
       o.date=d;o.offset=i;
       o.start=new Date(d.getFullYear(),d.getMonth(),d.getDate(),0,s.s);
@@ -1488,7 +1511,7 @@ function heroModel(now,occ,cur,nxt){
     status='Up next today';
     big='in '+dur(focus.start-now);
   }else{
-    var hadToday=inRange(today)&&forDay(now.getDay(),st.batch).length>0;
+    var hadToday=inRange(today)&&forDay(now.getDay(),st.batch,now).length>0;
     if(today<START) status='The timetable starts on '+longDate(START)+'. First class:';
     else status=hadToday?'Classes are over for today. Next up:':'No classes today. Next up:';
     big=focus.offset===1?'Tomorrow':DAYS[focus.date.getDay()];
@@ -1571,7 +1594,7 @@ function panelHTML(now,occ,sel){
   var tabs='';
   for(var i=0;i<7;i++){
     var d=dayStart(now,i);
-    var list=inRange(d)?forDay(d.getDay(),st.batch):[];
+    var list=inRange(d)?forDay(d.getDay(),st.batch,d):[];
     var sp=specialFor(d);
     var lbl=i===0?'Today':i===1?'Tomorrow':DAYS[d.getDay()];
     tabs+='<button type="button" class="tab'+(list.length?'':' free')+'" data-act="day" data-off="'+i+'" data-key="day-'+i+'" aria-pressed="'+(i===sel)+'">'+
@@ -1580,7 +1603,7 @@ function panelHTML(now,occ,sel){
       '<span class="t3">'+(sp?sp.kind==='holiday'?'Holiday':'Exams':(list.length?list.length+(list.length===1?' class':' classes'):'No classes'))+'</span></button>';
   }
   var sd=dayStart(now,sel);
-  var sl=inRange(sd)?forDay(sd.getDay(),st.batch):[];
+  var sl=inRange(sd)?forDay(sd.getDay(),st.batch,sd):[];
   var special=specialFor(sd);
   var head='<div class="day-head"><h2>'+longDate(sd)+'</h2>';
   var strip='';
@@ -1632,7 +1655,7 @@ function weekHTML(now){
   var rolled=(dow===lastCls&&mins(now)>=lastEnd)||(dow>lastCls&&dow<=last);
   if(rolled) mo=8-dow;
   var cols=[];
-  for(var i=0;i<wd.length;i++){var d=dayStart(now,mo+i);cols.push({d:d,list:inRange(d)?forDay(d.getDay(),st.batch):[]});}
+  for(var i=0;i<wd.length;i++){var d=dayStart(now,mo+i);cols.push({d:d,list:inRange(d)?forDay(d.getDay(),st.batch,d):[]});}
   var all=[].concat.apply([],cols.map(function(c){return c.list}));
   if(!all.length) return '';
   var h0=Math.floor(Math.min.apply(null,all.map(function(x){return x.s}))/60);
@@ -1825,7 +1848,7 @@ function detailHTML(x,dateMs,now){
 
 function fillSheet(){
   if(!openCtx) return;
-  $('#sheetBody').innerHTML=detailHTML(SESS[openCtx.sid],openCtx.dateMs,nowFloor());
+  $('#sheetBody').innerHTML=detailHTML(dayOverride([SESS[openCtx.sid]],new Date(openCtx.dateMs))[0],openCtx.dateMs,nowFloor());
 }
 function openDetail(sid,dateMs,key){
   if(!SESS[sid]) return;
@@ -1907,7 +1930,7 @@ function closePicker(fromBoot){
   if(fromBoot){
     stopLoadScreen();
     maybeShowHolidayIntro();
-    maybeShowLabNotice();
+    maybeShowLabNotice();maybeShowChangeNotice();
   }
   var c=document.querySelector('.chg');
   if(c) c.focus({preventScroll:true});
@@ -1926,7 +1949,7 @@ function submitPicker(){
     store.set('tt-roll',goRoll);store.set('tt-rollq','1');   // roll number: localStorage only
     closePicker();
     maybeShowHolidayIntro();
-    maybeShowLabNotice();
+    maybeShowLabNotice();maybeShowChangeNotice();
   });
 }
 function openRollWarn(){
@@ -2087,7 +2110,7 @@ document.addEventListener('click',function(e){
   if(a.indexOf('pk-')===0){pickerAct(a,b);return;}
   if(a==='open'){openDetail(+b.getAttribute('data-sid'),+b.getAttribute('data-date')||0,b.getAttribute('data-key'));return;}
   if(a==='close'){closeSheet();return;}
-  if(a==='batch'){st.batch=b.getAttribute('data-v');store.set('tt-batch',st.batch);maybeShowLabNotice();}
+  if(a==='batch'){st.batch=b.getAttribute('data-v');store.set('tt-batch',st.batch);maybeShowLabNotice();maybeShowChangeNotice();}
   else if(a==='fmt'){st.fmt=b.getAttribute('data-v');store.set('tt-fmt',st.fmt);}
   else if(a==='day'){st.dayMs=dayStart(nowFloor(),+b.getAttribute('data-off')).getTime();centerTab=true;}
   render();
@@ -3154,6 +3177,21 @@ function maybeShowLabNotice(){
     labShown=true;
     el.classList.remove('out');el.hidden=false;
     $('#labNoticeOk').addEventListener('click',function(){
+      el.classList.add('out');setTimeout(function(){el.hidden=true;},420);
+    },{once:true});
+  }catch(e){}
+}
+
+var chgShown=false;
+function maybeShowChangeNotice(){
+  try{
+    if(chgShown) return;
+    if(st.branch!=='CSSE'||st.div!=='C') return;
+    if(ymd(nowFloor())!=='2026-10-13') return;
+    var el=$('#chgNotice');if(!el) return;
+    chgShown=true;
+    el.classList.remove('out');el.hidden=false;
+    $('#chgNoticeOk').addEventListener('click',function(){
       el.classList.add('out');setTimeout(function(){el.hidden=true;},420);
     },{once:true});
   }catch(e){}
