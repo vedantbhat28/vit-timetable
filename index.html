@@ -403,10 +403,10 @@ dialog#teacherDetail::backdrop{background:rgba(12,16,32,.55)}
 @media (prefers-reduced-motion:reduce){#holidayIntro,.hi-emoji{animation:none}}
 
 /* new-schedule notice (full-screen, once a day for 2 days) + latest badge */
-#ttNotice,#labNotice,#chgNotice{position:fixed;inset:0;z-index:82;display:flex;flex-direction:column;align-items:center;justify-content:center;
+#labNotice,#chgNotice{position:fixed;inset:0;z-index:82;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:0;text-align:center;padding:24px;background:var(--surface);color:var(--ink);
   animation:hiIn .4s ease-out;transition:opacity .4s ease,transform .4s ease}
-#ttNotice.out,#labNotice.out,#chgNotice.out{opacity:0;transform:scale(1.04);pointer-events:none}
+#labNotice.out,#chgNotice.out{opacity:0;transform:scale(1.04);pointer-events:none}
 #labNotice{z-index:83}
 #labNotice[hidden]{display:none}
 #chgNotice{z-index:84}
@@ -430,7 +430,7 @@ dialog#teacherDetail::backdrop{background:rgba(12,16,32,.55)}
 .tn-btn .tn-bar{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ink);opacity:.18;z-index:-1}
 .tn-btn.wait .tn-bar{animation:tnFill 2s linear forwards}
 @keyframes tnFill{from{width:0}to{width:100%}}
-@media (prefers-reduced-motion:reduce){#ttNotice,#labNotice,#chgNotice,.tn-emoji{animation:none}}
+@media (prefers-reduced-motion:reduce){#labNotice,#chgNotice,.tn-emoji{animation:none}}
 #rollWarn{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55)}
 #rollWarn[hidden]{display:none}
 .rw-card{width:100%;max-width:400px;display:flex;flex-direction:column;gap:10px;padding:22px 20px 18px;border-radius:16px;background:var(--surface);color:var(--ink);box-shadow:0 12px 40px rgba(0,0,0,.35);text-align:center}
@@ -919,13 +919,6 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
     <p class="ls-brand">VIT Pune &middot; FY Timetable</p>
     <button type="button" class="chg ls-about" data-act="about-open"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="5.3" r="2.6"/><path d="M2.6 13.2c.9-3 3-4.4 5.4-4.4s4.5 1.4 5.4 4.4"/></svg>About Me</button>
   </div>
-  <div id="ttNotice" hidden role="dialog" aria-modal="true" aria-labelledby="ttnTitle">
-    <div class="tn-card">
-      <p class="tn-title" id="ttnTitle">Notice</p>
-      <p class="tn-body" id="ttnBody">The timetable has been updated. <b>Most branches have the same schedule as earlier</b>, so not much has changed for them.<br><br><b>Please double-check on VIERP</b> to make sure the latest schedule is correct for your division.<br><br>With <b>62 divisions and 186 batches</b> (62 &times; 3), updating every week is difficult for me as I&rsquo;m a student too, but I&rsquo;ll try my best to keep this updated.</p>
-      <button type="button" class="tn-btn" id="ttNoticeOk" disabled><span class="tn-bar" aria-hidden="true"></span><span class="tn-lbl">Check it out</span></button>
-    </div>
-  </div>
   <div id="labNotice" hidden role="alertdialog" aria-modal="true" aria-labelledby="labTitle">
     <div class="tn-card">
       <div class="tn-emoji" aria-hidden="true">&#129514;</div>
@@ -939,8 +932,8 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
     <div class="tn-card">
       <div class="tn-emoji" aria-hidden="true">&#128226;</div>
       <p class="tn-kicker">Schedule change &middot; today only</p>
-      <p class="tn-title" id="chgTitle">Basics of Engineering is cancelled</p>
-      <p class="tn-body">Today&rsquo;s <b>Basics of Engineering</b> lecture is <b>cancelled</b>.<br><br>This applies to <b>13/10/2026</b> and <b>CSSE-C</b> only.</p>
+      <p class="tn-title" id="chgTitle">Human Values is cancelled</p>
+      <p class="tn-body">Today&rsquo;s <b>Human Values</b> lecture is <b>cancelled</b>.<br><br>This applies to <b>15/10/2026</b> and <b>CSSE-C</b> only.</p>
       <button type="button" class="tn-btn" id="chgNoticeOk">Got it</button>
     </div>
   </div>
@@ -1473,10 +1466,10 @@ function dur(ms){
   var m=Math.round(ms/60000),h=Math.floor(m/60),r=m%60;
   return h?(r?h+' h '+r+' min':h+' h'):m+' min';
 }
-/* One-day change (13 Oct 2026, CSSE-C only): Basics of Engg. lecture cancelled */
+/* One-day change (15 Oct 2026, CSSE-C only): Human Values lecture cancelled */
 function dayOverride(list,date){
-  if(!date||st.branch!=='CSSE'||st.div!=='C'||ymd(date)!=='2026-10-13') return list;
-  return list.filter(function(x){return !(x.sub==='ES26105'&&x.s===960&&x.e===1020)});
+  if(!date||st.branch!=='CSSE'||st.div!=='C'||ymd(date)!=='2026-10-15') return list;
+  return list.filter(function(x){return !(x.sub==='ES26106'&&x.type==='Theory')});
 }
 function forDay(dow,b,date){
   var l=SESS.filter(function(x){return x.d===dow&&(!x.b||x.b===b)});
@@ -3265,34 +3258,6 @@ function maybeShowHolidayIntro(){
   }catch(e){}
 }
 
-/* ---------- New-schedule notice: shown on every visit ---------- */
-function hideTTNotice(instant){
-  var el=$('#ttNotice');if(!el||el.hidden) return;
-  if(instant){el.hidden=true;return;}
-  el.classList.add('out');
-  setTimeout(function(){el.hidden=true;},420);
-}
-var SCHED_NOTICE_UNTIL=new Date('2026-10-12T15:00:00+05:30').getTime();
-function maybeShowTTNotice(){
-  try{
-    var el=$('#ttNotice');if(!el) return;
-    // Until 12 Oct 2026, 3:00 PM IST show the "schedule updated" notice instead of the usual one
-    if(Date.now()<SCHED_NOTICE_UNTIL){
-      $('#ttnTitle').textContent='Schedule updated';
-      $('#ttnBody').innerHTML='The <b>latest schedule</b> that was dropped on the <b>community</b> yesterday has been <b>updated</b> here.<br><br><b>Please double-check on VIERP</b> to make sure it is correct for your division.';
-    }
-    el.classList.remove('out');
-    el.hidden=false;
-    var btn=$('#ttNoticeOk');
-    if(btn){
-      // 2-second cooldown so the notice gets read; the bar fills while it counts down
-      btn.disabled=true; btn.classList.remove('wait'); void btn.offsetWidth; btn.classList.add('wait');
-      setTimeout(function(){ btn.disabled=false; btn.classList.remove('wait'); },2000);
-      btn.addEventListener('click',function(){ if(btn.disabled) return; hideTTNotice(); },{once:false});
-    }
-  }catch(e){}
-}
-
 /* ---------- CSSE-C B1 lab notice (until 30 Sep 2026, 2:00 PM IST) ---------- */
 var LAB_UNTIL=new Date('2026-09-30T14:00:00+05:30').getTime();
 var LAB_DAY_START=new Date('2026-09-30T00:00:00+05:30').getTime();
@@ -3319,7 +3284,7 @@ function maybeShowChangeNotice(){
   try{
     if(chgShown) return;
     if(st.branch!=='CSSE'||st.div!=='C') return;
-    if(ymd(nowFloor())!=='2026-10-13') return;
+    if(ymd(nowFloor())!=='2026-10-15') return;
     var el=$('#chgNotice');if(!el) return;
     chgShown=true;
     el.classList.remove('out');el.hidden=false;
@@ -3336,7 +3301,7 @@ var SV={ans:{q1:null,qh:null,q2:0,q3:null,q4:null},shown:false,sending:false,tim
 function svForced(){ return /[?&]survey=1\b/.test(location.search); }   // ?survey=1 re-shows it for testing
 function svDone(){ return store.get('tt-survey-done','')==='1'; }
 function svBlocked(){   // wait while a notice, splash or dialog is on screen
-  var ids=['ttNotice','labNotice','chgNotice','holidayIntro','loadScreen'];
+  var ids=['labNotice','chgNotice','holidayIntro','loadScreen'];
   for(var i=0;i<ids.length;i++){ var el=document.getElementById(ids[i]); if(el&&!el.hidden) return true; }
   if(document.querySelector('dialog[open]')) return true;
   return !!$('#view').hidden;
@@ -3434,7 +3399,6 @@ document.addEventListener('keydown',function(e){
 
 function boot(){
   initForumTip();
-  maybeShowTTNotice();
   $('#view').hidden=true;$('#picker').hidden=true;$('#pkCancel').hidden=true;
   // saved choice: branch + division + batch. If we already know it, show the animated
   // loading screen instead of flashing the bare picker form while data is fetched.
