@@ -403,14 +403,16 @@ dialog#teacherDetail::backdrop{background:rgba(12,16,32,.55)}
 @media (prefers-reduced-motion:reduce){#holidayIntro,.hi-emoji{animation:none}}
 
 /* new-schedule notice (full-screen, once a day for 2 days) + latest badge */
-#labNotice,#chgNotice{position:fixed;inset:0;z-index:82;display:flex;flex-direction:column;align-items:center;justify-content:center;
+#labNotice,#chgNotice,#susNotice{position:fixed;inset:0;z-index:82;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:0;text-align:center;padding:24px;background:var(--surface);color:var(--ink);
   animation:hiIn .4s ease-out;transition:opacity .4s ease,transform .4s ease}
-#labNotice.out,#chgNotice.out{opacity:0;transform:scale(1.04);pointer-events:none}
+#labNotice.out,#chgNotice.out,#susNotice.out{opacity:0;transform:scale(1.04);pointer-events:none}
 #labNotice{z-index:83}
 #labNotice[hidden]{display:none}
 #chgNotice{z-index:84}
 #chgNotice[hidden]{display:none}
+#susNotice{z-index:81}
+#susNotice[hidden]{display:none}
 .tn-card{max-width:420px;display:flex;flex-direction:column;align-items:center;gap:10px}
 .tn-emoji{font-size:44px;line-height:1;animation:hiPop .6s ease-out}
 .tn-kicker{margin:4px 0 0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--danger)}
@@ -430,7 +432,7 @@ dialog#teacherDetail::backdrop{background:rgba(12,16,32,.55)}
 .tn-btn .tn-bar{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ink);opacity:.18;z-index:-1}
 .tn-btn.wait .tn-bar{animation:tnFill 2s linear forwards}
 @keyframes tnFill{from{width:0}to{width:100%}}
-@media (prefers-reduced-motion:reduce){#labNotice,#chgNotice,.tn-emoji{animation:none}}
+@media (prefers-reduced-motion:reduce){#labNotice,#chgNotice,#susNotice,.tn-emoji{animation:none}}
 #rollWarn{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55)}
 #rollWarn[hidden]{display:none}
 .rw-card{width:100%;max-width:400px;display:flex;flex-direction:column;gap:10px;padding:22px 20px 18px;border-radius:16px;background:var(--surface);color:var(--ink);box-shadow:0 12px 40px rgba(0,0,0,.35);text-align:center}
@@ -926,6 +928,15 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       <p class="tn-title" id="labTitle">Lab practical <span id="labDay">tomorrow</span></p>
       <p class="tn-body">There will be a <b>LAB practical period <span id="labDay2">tomorrow</span></b> for an hour, <b>12pm to 1pm</b>.<br>Please <b>come early at 12pm to D307</b>.</p>
       <button type="button" class="tn-btn" id="labNoticeOk">Got it</button>
+    </div>
+  </div>
+  <div id="susNotice" hidden role="alertdialog" aria-modal="true" aria-labelledby="susTitle">
+    <div class="tn-card">
+      <div class="tn-emoji" aria-hidden="true">&#128226;</div>
+      <p class="tn-kicker">Notice &middot; today only</p>
+      <p class="tn-title" id="susTitle">Academics suspended, 2 PM to 6 PM</p>
+      <p class="tn-body">All academic sessions are <b>suspended from 2 PM to 6 PM</b> today, <b>15/10/2026</b>, for <b>FY, SY, TY and BTech</b> on account of <b>Vishwakarandak 2026</b>.<br><br>Applies to the Bibwewadi and Kondhwa campuses.</p>
+      <button type="button" class="tn-btn" id="susNoticeOk">Got it</button>
     </div>
   </div>
   <div id="chgNotice" hidden role="alertdialog" aria-modal="true" aria-labelledby="chgTitle">
@@ -1466,10 +1477,12 @@ function dur(ms){
   var m=Math.round(ms/60000),h=Math.floor(m/60),r=m%60;
   return h?(r?h+' h '+r+' min':h+' h'):m+' min';
 }
-/* One-day change (15 Oct 2026, CSSE-C only): Human Values lecture cancelled */
+/* One-day changes (15 Oct 2026): all classes suspended 2 PM-6 PM (Vishwakarandak); CSSE-C Human Values lecture cancelled */
 function dayOverride(list,date){
-  if(!date||st.branch!=='CSSE'||st.div!=='C'||ymd(date)!=='2026-10-15') return list;
-  return list.filter(function(x){return !(x.sub==='ES26106'&&x.type==='Theory')});
+  if(!date||ymd(date)!=='2026-10-15') return list;
+  list=list.filter(function(x){return !(x.s<1080&&x.e>840)});
+  if(st.branch==='CSSE'&&st.div==='C') list=list.filter(function(x){return !(x.sub==='ES26106'&&x.type==='Theory')});
+  return list;
 }
 function forDay(dow,b,date){
   var l=SESS.filter(function(x){return x.d===dow&&(!x.b||x.b===b)});
@@ -1998,7 +2011,7 @@ function closePicker(fromBoot){
   if(fromBoot){
     stopLoadScreen();
     maybeShowHolidayIntro();
-    maybeShowLabNotice();maybeShowChangeNotice();
+    maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();
   }
   scheduleSurvey();
   var c=document.querySelector('.chg');
@@ -2018,7 +2031,7 @@ function submitPicker(){
     store.set('tt-roll',goRoll);store.set('tt-rollq','1');   // roll number: localStorage only
     closePicker();
     maybeShowHolidayIntro();
-    maybeShowLabNotice();maybeShowChangeNotice();
+    maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();
   });
 }
 function openRollWarn(){
@@ -2179,7 +2192,7 @@ document.addEventListener('click',function(e){
   if(a.indexOf('pk-')===0){pickerAct(a,b);return;}
   if(a==='open'){openDetail(+b.getAttribute('data-sid'),+b.getAttribute('data-date')||0,b.getAttribute('data-key'));return;}
   if(a==='close'){closeSheet();return;}
-  if(a==='batch'){st.batch=b.getAttribute('data-v');store.set('tt-batch',st.batch);maybeShowLabNotice();maybeShowChangeNotice();}
+  if(a==='batch'){st.batch=b.getAttribute('data-v');store.set('tt-batch',st.batch);maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();}
   else if(a==='fmt'){st.fmt=b.getAttribute('data-v');store.set('tt-fmt',st.fmt);}
   else if(a==='day'){st.dayMs=dayStart(nowFloor(),+b.getAttribute('data-off')).getTime();centerTab=true;}
   render();
@@ -3279,6 +3292,20 @@ function maybeShowLabNotice(){
   }catch(e){}
 }
 
+var susShown=false;
+function maybeShowSuspendNotice(){
+  try{
+    if(susShown) return;
+    if(ymd(nowFloor())!=='2026-10-15') return;
+    var el=$('#susNotice');if(!el) return;
+    susShown=true;
+    el.classList.remove('out');el.hidden=false;
+    $('#susNoticeOk').addEventListener('click',function(){
+      el.classList.add('out');setTimeout(function(){el.hidden=true;},420);
+    },{once:true});
+  }catch(e){}
+}
+
 var chgShown=false;
 function maybeShowChangeNotice(){
   try{
@@ -3301,7 +3328,7 @@ var SV={ans:{q1:null,qh:null,q2:0,q3:null,q4:null},shown:false,sending:false,tim
 function svForced(){ return /[?&]survey=1\b/.test(location.search); }   // ?survey=1 re-shows it for testing
 function svDone(){ return store.get('tt-survey-done','')==='1'; }
 function svBlocked(){   // wait while a notice, splash or dialog is on screen
-  var ids=['labNotice','chgNotice','holidayIntro','loadScreen'];
+  var ids=['labNotice','chgNotice','susNotice','holidayIntro','loadScreen'];
   for(var i=0;i<ids.length;i++){ var el=document.getElementById(ids[i]); if(el&&!el.hidden) return true; }
   if(document.querySelector('dialog[open]')) return true;
   return !!$('#view').hidden;
