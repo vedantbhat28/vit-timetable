@@ -353,6 +353,41 @@ dialog#teacherDetail::backdrop{background:rgba(12,16,32,.55)}
 .teacher-pick{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:var(--wash);color:var(--ink);text-align:left;font:600 14px var(--body);cursor:pointer}.teacher-pick:hover{border-color:var(--focus)}.teacher-campus{font-weight:700;color:var(--ink)!important}
 .feature-nudge{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin:10px 0 2px;padding:7px 10px;border:0;background:transparent;color:var(--focus);font:600 12.5px var(--body);cursor:pointer}.feature-nudge .arrow{font-size:17px;line-height:1;animation:featureBob 1.4s ease-in-out infinite}@keyframes featureBob{50%{transform:translateY(3px)}}
 
+/* ---- Empty classrooms ---- */
+dialog#roomApp{padding:0;border:0;margin:auto;background:var(--surface);color:var(--ink);width:min(640px,calc(100vw - 24px));max-width:none;max-height:none;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(8,12,30,.4)}
+dialog#roomApp[open]{animation:sheetIn .2s ease-out}
+dialog#roomApp::backdrop{background:rgba(12,16,32,.55)}
+@media (max-width:600px){dialog#roomApp{width:100%;margin:auto 0 0;border-radius:18px 18px 0 0}dialog#roomApp[open]{animation-name:sheetUp}dialog#roomApp .terms-body{padding-bottom:calc(18px + env(safe-area-inset-bottom,0px))}}
+@media (prefers-reduced-motion:reduce){dialog#roomApp[open]{animation:none}}
+.rm-lbl{display:block;margin:0 0 5px;color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+.rm-sec{margin:0 0 14px}
+.rm-fields{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);gap:8px}
+@media (max-width:440px){.rm-fields{grid-template-columns:1fr 1fr}.rm-fields>.rm-f:first-child{grid-column:1/-1}}
+.rm-in{width:100%;min-height:44px;padding:7px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--wash);color:var(--ink);font:600 14px var(--body);color-scheme:light dark}
+.rm-in:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.rm-camp.seg{display:flex;width:100%}
+.rm-camp.seg button{flex:1;min-height:42px}
+.rm-quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.rm-quick .tp-chip{min-height:36px;padding:3px 12px;font-size:12.5px}
+.terms-body p.rm-banner{margin:0 0 12px;padding:10px 12px;border:1px solid var(--line);border-left:4px solid #B8860B;border-radius:10px;background:var(--wash);color:var(--ink);font-size:13px}
+.terms-body p.rm-sum{margin:0 0 12px;color:var(--ink);font-weight:700;font-size:14px}
+.rm-h{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 10px;margin:16px 0 8px;padding-left:11px;border-left:5px solid #16a34a}
+.rm-h.part{border-left-color:#d98a00}
+.rm-h h4{margin:0;font-family:var(--display);font-weight:800;font-size:17px}
+.rm-h span{color:var(--muted);font-size:12.5px;font-weight:600}
+.rm-bld{margin:10px 0 4px;color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.rm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:0;padding:0;list-style:none}
+.rm-plate{padding:9px 11px;border:1.5px solid var(--line);border-left:5px solid #16a34a;border-radius:12px;background:var(--surface)}
+.rm-plate.part{border-left-color:#d98a00}
+.rm-plate b{display:block;font-family:var(--display);font-weight:800;font-size:17px;line-height:1.1}
+.rm-plate span{display:block;margin-top:3px;color:var(--muted);font-size:12px;font-weight:600;line-height:1.35}
+.rm-busy{margin:16px 0 0;border:1px solid var(--line);border-radius:12px;padding:0 12px}
+.rm-busy summary{min-height:44px;display:flex;align-items:center;font-weight:700;font-size:13.5px;cursor:pointer}
+.rm-busy-r{padding:8px 0;border-top:1px solid var(--line)}
+.rm-busy-r b{font-size:13px}
+.terms-body .rm-busy-r p{margin:2px 0 0;font-size:12.5px}
+.terms-body p.rm-note{margin-top:16px;font-size:12px}
+
 .foot{margin-top:18px;color:var(--muted);font-size:12px;max-width:70ch}
 .foot p{margin:0}
 
@@ -878,6 +913,11 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
     <section id="features" class="beta" aria-labelledby="featuresH">
       <div class="beta-head"><div><h2 class="beta-title" id="featuresH">Additional features <span class="bro-tag">Beta</span></h2><p class="beta-sub">Experimental tools powered by the current timetable.</p></div></div>
       <div class="beta-grid">
+        <article class="feature-card" id="roomCard">
+          <div class="feature-card-top"><p class="feature-name">Empty classrooms <span class="bro-tag">New</span></p></div>
+          <p class="feature-desc">Pick your campus, a date and a time window to see which rooms are free for events or group study.</p>
+          <button type="button" class="btn" data-act="room-open" aria-haspopup="dialog">Find empty rooms</button>
+        </article>
         <article class="feature-card">
           <div class="feature-card-top"><p class="feature-name">Bro connect</p><button type="button" class="ibtn" data-act="bro-info" aria-label="About Bro connect">i</button></div>
           <p class="feature-desc">Compare timetables of two or more people, with or without yours, find a time when everyone is free, and save them as a PDF.</p>
@@ -1150,6 +1190,24 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
         </div></aside>
       </div></div></div>
   </dialog>
+
+  <dialog id="roomApp" aria-labelledby="roomAppT">
+    <div class="terms"><div class="terms-head"><h3 id="roomAppT">Empty classrooms <span class="bro-tag">Beta</span></h3><button type="button" class="terms-x" data-act="room-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div>
+      <div class="terms-body">
+        <div class="rm-sec"><span class="rm-lbl" id="roomCampL">Campus</span><div class="seg rm-camp" id="roomCamp" role="group" aria-labelledby="roomCampL"><button type="button" data-act="room-campus" data-campus="Bibwewadi Campus" aria-pressed="false">Bibwewadi</button><button type="button" data-act="room-campus" data-campus="Kondhwa Campus" aria-pressed="false">Kondhwa</button></div></div>
+        <div class="rm-sec">
+          <div class="rm-fields">
+            <div class="rm-f"><label class="rm-lbl" for="roomDate">Date</label><input class="rm-in" type="date" id="roomDate"></div>
+            <div class="rm-f"><label class="rm-lbl" for="roomFrom">From</label><input class="rm-in" type="time" id="roomFrom" step="300"></div>
+            <div class="rm-f"><label class="rm-lbl" for="roomTo">To</label><input class="rm-in" type="time" id="roomTo" step="300"></div>
+          </div>
+          <div class="rm-quick" role="group" aria-label="Quick time options"><button type="button" class="tp-chip" data-act="room-now">Right now</button><button type="button" class="tp-chip" data-act="room-dur" data-min="60">1 hour</button><button type="button" class="tp-chip" data-act="room-dur" data-min="120">2 hours</button><button type="button" class="tp-chip" data-act="room-dur" data-min="180">3 hours</button></div>
+        </div>
+        <div class="tp-chips" id="roomBld" role="group" aria-label="Filter by building" hidden></div>
+        <div id="roomOut" role="status" aria-live="polite"><p class="tp-state tp-load">Loading rooms…</p></div>
+      </div></div>
+  </dialog>
+
   <dialog id="teacherDetail" aria-labelledby="teacherDetailName">
     <div class="terms"><div class="terms-head"><h3 id="teacherDetailName">Teacher</h3><button type="button" class="terms-x" data-act="teacher-detail-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div><div class="terms-body" id="teacherDetailBody"></div></div>
   </dialog>
@@ -2160,11 +2218,13 @@ document.addEventListener('click',function(e){
   if(e.target&&e.target.id==='teacherInfo'){teacherAct('teacher-info-close');return;}
   if(e.target&&e.target.id==='teacherDetail'){teacherAct('teacher-detail-close');return;}
   if(e.target&&e.target.id==='teacherApp'){teacherAct('teacher-close');return;}
+  if(e.target&&e.target.id==='roomApp'){roomAct('room-close');return;}
   if(e.target&&e.target.id==='admin'){ if(Date.now()-adminOpenedAt>500) closeAdmin(); return; }
   var b=e.target.closest('[data-act]');if(!b)return;
   var a=b.getAttribute('data-act');
   if(a.indexOf('bro-')===0){broAct(a);return;}
   if(a.indexOf('teacher-')===0){teacherAct(a);return;}
+  if(a.indexOf('room-')===0){roomAct(a,b);return;}
   if(a==='features-scroll'){var f=$('#features');if(f)f.scrollIntoView({behavior:'smooth',block:'start'});return;}
   if(a==='terms-open'){openTerms(b);return;}
   if(a==='terms-close'){closeTerms();return;}
@@ -3143,6 +3203,170 @@ document.addEventListener('click',function(e){
   if(b.getAttribute('data-act')==='teacher-chip'){TEACH.filter=b.getAttribute('data-code')||'';teacherRender();var nb=$('#teacherChips [aria-pressed="true"]');if(nb) nb.focus({preventScroll:true});return;}
   teacherOpenDetail(b.getAttribute('data-key'));
 });
+
+/* ---------- Empty classrooms (Beta): rooms with no timetabled class in a chosen window ---------- */
+var ROOM={loading:false,ok:false,err:false,camps:null,eff:{},campus:'',date:'',from:0,to:0,bld:''};
+var ROOM_CAMPS=['Bibwewadi Campus','Kondhwa Campus'];
+function roomSplit(raw){
+  var t=String(raw||'').toUpperCase().replace(/\s+/g,' ').trim();if(!t) return [];
+  var parts=t.split(/\s*[\/,&+]\s*/).filter(Boolean);if(parts.length<2) return [t];
+  var pre=(parts[0].match(/^[A-Z]+/)||[''])[0];
+  return parts.map(function(p){return (/^\d+[A-Z]?$/.test(p)&&pre)?pre+p:p;});
+}
+function roomBld(name){var m=name.match(/^([A-Z]+)[\s-]?\d/);return m?m[1]:'Other';}
+function roomNatural(a,b){return a.localeCompare(b,undefined,{numeric:true});}
+function roomTime(m){return (m>=1440)?'11:59 pm':fmtT(m);}
+function roomToVal(m){return pad(Math.floor(m/60))+':'+pad(m%60);}
+function roomFromVal(v){return /^\d{1,2}:\d{2}/.test(v||'')?toMin(v):null;}
+function roomFetchAll(){
+  var rows=[],off=0,pages=0;
+  function next(){
+    return fetchSupa('tt_sessions?select=weekday,start_time,end_time,subject_code,subject_name,session_type,batch,division,room&room=not.is.null&order=weekday.asc,start_time.asc,division.asc,room.asc,batch.asc&limit=1000&offset='+off)
+      .then(function(r){r=r||[];rows=rows.concat(r);off+=r.length;pages++;return (r.length&&pages<60)?next():rows;});
+  }
+  return next();
+}
+function roomBuild(rows){
+  var camps={};ROOM_CAMPS.forEach(function(c){camps[c]={rooms:{},slugs:{}};});
+  function addOcc(camp,name,d,s,e,sub,slug,batch){
+    var C=camps[camp],R=C.rooms[name];
+    if(!R) R=C.rooms[name]={name:name,bld:roomBld(name),occ:{}};
+    var k=d+'|'+s+'|'+e,o=R.occ[k];
+    if(!o) o=R.occ[k]={d:d,s:s,e:e,subs:[],divs:[],bs:[]};
+    if(sub&&o.subs.indexOf(sub)<0) o.subs.push(sub);
+    if(slug&&o.divs.indexOf(slug)<0) o.divs.push(slug);
+    if(batch&&o.bs.indexOf(batch)<0) o.bs.push(batch);
+  }
+  rows.forEach(function(r){
+    var camp=teacherCampus(r.division),sub=r.subject_code?getSubj(r.subject_code,r.subject_name||r.subject_code).short:'';
+    camps[camp].slugs[r.division]=true;
+    roomSplit(r.room).forEach(function(n){addOcc(camp,n,+r.weekday,toMin(r.start_time),toMin(r.end_time),sub,r.division,r.batch);});
+  });
+  /* the German (foreign language) slots are not in tt_sessions; they sit in fixed Kondhwa rooms */
+  Object.keys(GER_SLOTS).forEach(function(k){var g=GER_SLOTS[k];addOcc('Kondhwa Campus',String(g[3]).toUpperCase(),g[0],g[1],g[2],'German','',null);});
+  ROOM.camps=camps;
+  ROOM.eff={};
+  Object.keys(CLASSES).forEach(function(b){Object.keys(CLASSES[b].divs).forEach(function(d){var m=CLASSES[b].divs[d];ROOM.eff[m.slug]={f:m.effFrom||'',t:m.effTo||''};});});
+}
+function roomEffOk(slug,key){var e=ROOM.eff[slug];if(!e) return true;return (!e.f||key>=e.f)&&(!e.t||key<=e.t);}
+function roomActive(o,key){if(!o.divs.length) return true;for(var i=0;i<o.divs.length;i++) if(roomEffOk(o.divs[i],key)) return true;return false;}
+function roomCovered(camp,key){var sl=Object.keys(camp.slugs);if(!sl.length||!Object.keys(ROOM.eff).length) return true;return sl.some(function(x){return roomEffOk(x,key);});}
+
+function roomAct(a,b){
+  if(a==='room-open'){
+    markFeatureUsed();logVisit('rooms_open',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});
+    roomReset();roomSyncControls();teacherDialog('#roomApp',true);roomEnsure();
+  }
+  else if(a==='room-close') teacherDialog('#roomApp',false);
+  else if(a==='room-retry'){ROOM.err=false;roomEnsure();}
+  else if(a==='room-campus'){
+    ROOM.campus=b.getAttribute('data-campus');ROOM.bld='';store.set('tt-room-campus',ROOM.campus);
+    roomSyncControls();roomPaint();
+    logVisit('rooms_campus',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});
+  }
+  else if(a==='room-now'){roomReset(true);roomSyncControls();roomPaint();}
+  else if(a==='room-dur'){ROOM.to=Math.min(1439,ROOM.from+(+b.getAttribute('data-min')));roomSyncControls();roomPaint();}
+  else if(a==='room-bld'){ROOM.bld=b.getAttribute('data-b')||'';roomPaint();var nb=$('#roomBld [aria-pressed="true"]');if(nb) nb.focus({preventScroll:true});}
+}
+function roomReset(keepCampus){
+  var now=nowFloor(),m=mins(now);
+  ROOM.date=ymd(now);ROOM.from=m;ROOM.to=Math.min(1439,m+60);ROOM.bld='';
+  if(!keepCampus||!ROOM.campus){
+    var c=store.get('tt-room-campus','');
+    if(ROOM_CAMPS.indexOf(c)<0) c=(st.branch||store.get('tt-branch',''))?campusFor(st.branch||store.get('tt-branch','')):'Kondhwa Campus';
+    ROOM.campus=c;
+  }
+}
+function roomSyncControls(){
+  $('#roomDate').value=ROOM.date;$('#roomFrom').value=roomToVal(ROOM.from);$('#roomTo').value=roomToVal(ROOM.to);
+  Array.prototype.forEach.call(document.querySelectorAll('#roomCamp button'),function(x){x.setAttribute('aria-pressed',String(x.getAttribute('data-campus')===ROOM.campus));});
+}
+function roomEnsure(){
+  var out=$('#roomOut');if(!out) return;
+  if(ROOM.ok){roomPaint();return;}
+  if(ROOM.err){out.innerHTML='<div class="tp-state"><p>Could not load the room timetable. Check your connection and try again.</p><button type="button" class="btn" data-act="room-retry">Try again</button></div>';return;}
+  out.innerHTML='<p class="tp-state tp-load">Loading rooms…</p>';
+  if(ROOM.loading) return;
+  ROOM.loading=true;
+  roomFetchAll().then(function(rows){ROOM.loading=false;roomBuild(rows);ROOM.ok=true;if($('#roomApp').open) roomPaint();})
+    .catch(function(){ROOM.loading=false;ROOM.err=true;if($('#roomApp').open) roomEnsure();});
+}
+function roomOnInput(e){
+  var id=e.target&&e.target.id;if(id!=='roomDate'&&id!=='roomFrom'&&id!=='roomTo') return;
+  if(id==='roomDate'){if(e.target.value) ROOM.date=e.target.value;}
+  else{var m=roomFromVal(e.target.value);if(m!==null){if(id==='roomFrom') ROOM.from=m;else ROOM.to=m;}}
+  roomPaint();
+}
+document.addEventListener('change',roomOnInput);
+document.addEventListener('input',roomOnInput);
+
+function roomCompute(){
+  var camp=ROOM.camps[ROOM.campus],key=ROOM.date,dow=parseISODate(key).getDay(),a=ROOM.from,b=ROOM.to;
+  var free=[],part=[],busy=[];
+  Object.keys(camp.rooms).sort(roomNatural).forEach(function(n){
+    var R=camp.rooms[n];
+    var act=Object.keys(R.occ).map(function(k){return R.occ[k];}).filter(function(o){return o.d===dow&&roomActive(o,key);}).sort(function(x,y){return x.s-y.s;});
+    var hit=act.filter(function(o){return o.s<b&&o.e>a;});
+    if(!hit.length){var nx=act.filter(function(o){return o.s>=b;})[0];free.push({r:R,until:nx?nx.s:null,any:!!act.length});return;}
+    var cur=a,gaps=[];
+    hit.forEach(function(o){if(o.s>cur) gaps.push([cur,Math.min(o.s,b)]);cur=Math.max(cur,o.e);});
+    if(cur<b) gaps.push([cur,b]);
+    gaps=gaps.filter(function(g){return g[1]-g[0]>=10;});
+    (gaps.length?part:busy).push({r:R,gaps:gaps,hit:hit});
+  });
+  return {free:free,part:part,busy:busy,total:Object.keys(camp.rooms).length};
+}
+function roomWhat(o){return (o.subs.join(', ')||'Class')+(o.divs.length?' · '+o.divs.map(teacherDivLabel).join(', '):'')+(o.bs.length?' (batch '+o.bs.join(', ')+')':'');}
+function roomGroup(list,cls,fn){
+  var by={},order=[];
+  list.forEach(function(x){var b=x.r.bld;if(!by[b]){by[b]=[];order.push(b);}by[b].push(x);});
+  order.sort(function(p,q){return p==='Other'?1:q==='Other'?-1:roomNatural(p,q);});
+  return order.map(function(b){
+    return '<p class="rm-bld">'+(b==='Other'?'Other rooms':'Building '+esc(b))+'</p><ul class="rm-grid">'+by[b].map(function(x){return '<li class="rm-plate'+cls+'"><b>'+esc(x.r.name)+'</b><span>'+fn(x)+'</span></li>';}).join('')+'</ul>';
+  }).join('');
+}
+function roomPaint(){
+  var out=$('#roomOut'),chips=$('#roomBld');if(!out||!ROOM.ok) return;
+  var camp=ROOM.camps[ROOM.campus],names=Object.keys(camp.rooms);
+  if(!names.length){chips.hidden=true;out.innerHTML='<p class="tp-state">No rooms are listed in the timetable for this campus yet.</p>';return;}
+  if(!ROOM.date||ROOM.date.length<10){out.innerHTML='<p class="tp-state">Choose a date.</p>';return;}
+  if(ROOM.to<=ROOM.from){chips.hidden=true;out.innerHTML='<p class="tp-state">The end time must be after the start time.</p>';return;}
+  var d=parseISODate(ROOM.date),R=roomCompute();
+  /* building filter chips */
+  var blds={};names.forEach(function(n){blds[camp.rooms[n].bld]=true;});
+  var bl=Object.keys(blds).sort(function(p,q){return p==='Other'?1:q==='Other'?-1:roomNatural(p,q);});
+  if(ROOM.bld&&!blds[ROOM.bld]) ROOM.bld='';
+  chips.hidden=bl.length<2;
+  chips.innerHTML=bl.length<2?'':'<button type="button" class="tp-chip" data-act="room-bld" data-b="" aria-pressed="'+(!ROOM.bld)+'">All buildings</button>'+
+    bl.map(function(b){return '<button type="button" class="tp-chip" data-act="room-bld" data-b="'+esc(b)+'" aria-pressed="'+(ROOM.bld===b)+'">'+(b==='Other'?'Other':'Building '+esc(b))+'</button>';}).join('');
+  function f(x){return !ROOM.bld||x.r.bld===ROOM.bld;}
+  var free=R.free.filter(f),part=R.part.filter(f),busy=R.busy.filter(f);
+  var html='',hol=holidayFor(d),ex=examFor(d);
+  if(hol) html+='<p class="rm-banner"><b>Holiday: '+esc(hol)+'.</b> No classes are scheduled, so rooms below show as free.</p>';
+  else if(d.getDay()===0) html+='<p class="rm-banner"><b>Sunday.</b> No classes are scheduled.</p>';
+  if(ex) html+='<p class="rm-banner"><b>'+esc(ex)+'.</b> Exam halls are not part of the timetable, so check before booking.</p>';
+  if(!roomCovered(camp,ROOM.date)) html+='<p class="rm-banner"><b>No timetable covers this date</b> for this campus yet, so every room shows as free.</p>';
+  var win=fmtRange(ROOM.from,ROOM.to)+' · '+shortDate(d)+' ('+DAYS[d.getDay()].slice(0,3)+')';
+  html+='<p class="rm-sum">'+free.length+(free.length===1?' room is':' rooms are')+' free for all of '+esc(win)+'</p>';
+  if(free.length){
+    html+='<div class="rm-h"><h4>Free the whole time</h4><span>'+free.length+(free.length===1?' room':' rooms')+'</span></div>'+
+      roomGroup(free,'',function(x){return x.until===null?(x.any?'Free for the rest of the day':'No classes this day'):'Free until '+esc(roomTime(x.until));});
+  }else{
+    html+='<p class="tp-state">No room is free for that entire window. Try a shorter slot or check the partly free rooms below.</p>';
+  }
+  if(part.length){
+    html+='<div class="rm-h part"><h4>Free for part of it</h4><span>'+part.length+(part.length===1?' room':' rooms')+'</span></div>'+
+      roomGroup(part,' part',function(x){return 'Free '+esc(x.gaps.map(function(g){return fmtRange(g[0],g[1]);}).join(', '));});
+  }
+  if(busy.length){
+    html+='<details class="rm-busy"><summary>Busy rooms ('+busy.length+')</summary>'+busy.map(function(x){
+      return '<div class="rm-busy-r"><b>'+esc(x.r.name)+'</b>'+x.hit.map(function(o){return '<p>'+esc(fmtRange(o.s,o.e))+' · '+esc(roomWhat(o))+'</p>';}).join('')+'</div>';
+    }).join('')+'</details>';
+  }
+  html+='<p class="rm-note">Based on the published FY timetable for the '+esc(ROOM.campus)+'. Only rooms that appear in it are listed. SY, TY and BTech classes, club or event bookings, exams, makeup lectures and one-off changes are not included, so confirm with the department before you rely on a room. Campus is inferred from the branch (CS, CS-AIML, CS-AI and IT are at Bibwewadi, the rest at Kondhwa).</p>';
+  out.innerHTML=html;
+}
+
 /* A light-touch onboarding prompt: random on each landing, never more than 2–3 views,
    and permanently gone once either beta feature is opened. */
 var featureNudgeAllowed=(function(){
