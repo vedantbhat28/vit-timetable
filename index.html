@@ -2,6 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<style id="antiframe">html{display:none!important}</style>
+<script>
+/* Anti-framing: only reveal the page if it is the top-level window */
+(function(){
+  try{
+    if(window.self===window.top){
+      var a=document.getElementById('antiframe');
+      if(a)a.parentNode.removeChild(a);
+    }else{
+      window.top.location=window.self.location;
+    }
+  }catch(e){ /* cross-origin parent: stay hidden, page remains blank */ }
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <title>VIT Pune - FY Timetable</title>
