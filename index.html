@@ -1266,8 +1266,57 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
 </div>
 
 <script>
+/* ---------- Maintenance window: blocks the site + all database calls until 1:00 PM IST, 18 Oct 2026 ---------- */
+(function(){
+  var END=new Date('2026-10-18T13:00:00+05:30').getTime();
+  if(Date.now()>=END) return;            // after 1 PM: site behaves normally
+  window.__MAINT__=true;
+  var realFetch=window.fetch;
+  window.fetch=function(u){
+    var url=(typeof u==='string')?u:(u&&u.url)||'';
+    if(url.indexOf('supabase.co')>-1) return Promise.reject(new Error('Site under maintenance'));
+    return realFetch.apply(this,arguments);
+  };
+  /* Count this visit for the admin panel (the only DB call allowed during maintenance: one anonymous insert, once per session) */
+  try{
+    if(location.protocol!=='file:' && !sessionStorage.getItem('tt-maint-logged')){
+      sessionStorage.setItem('tt-maint-logged','1');
+      var rnd=function(){ try{ var a=new Uint8Array(12); crypto.getRandomValues(a); return Array.prototype.map.call(a,function(b){return ('0'+b.toString(16)).slice(-2)}).join(''); }catch(e){ return Date.now().toString(36)+Math.random().toString(36).slice(2,12); } };
+      var vid,sid;
+      try{ vid=localStorage.getItem('tt-vid'); if(!vid){ vid=rnd(); localStorage.setItem('tt-vid',vid); } }catch(e){ vid=rnd(); }
+      try{ sid=sessionStorage.getItem('tt-sid'); if(!sid){ sid=rnd(); sessionStorage.setItem('tt-sid',sid); } }catch(e){ sid=rnd(); }
+      realFetch('https://fqfzygubyjqkimsphmdn.supabase.co/rest/v1/traffic',{
+        method:'POST',
+        headers:{apikey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxZnp5Z3VieWpxa2ltc3BobWRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NzQwMDYsImV4cCI6MjEwNTQ1MDAwNn0.k0T2HEH8cJlrQvxHWU4lcImLgtcXKGTAaowKyNDg1gI',Authorization:'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxZnp5Z3VieWpxa2ltc3BobWRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NzQwMDYsImV4cCI6MjEwNTQ1MDAwNn0.k0T2HEH8cJlrQvxHWU4lcImLgtcXKGTAaowKyNDg1gI','Content-Type':'application/json',Prefer:'return=minimal'},
+        body:JSON.stringify({visitor_id:vid,session_id:sid,event:'maintenance_view',path:location.pathname.slice(0,300),referrer:(document.referrer||'').slice(0,500)||null,user_agent:(navigator.userAgent||'').slice(0,400),screen:((screen.width||0)+'x'+(screen.height||0)).slice(0,20),language:(navigator.language||'').slice(0,20),timezone:((Intl.DateTimeFormat().resolvedOptions()||{}).timeZone||'').slice(0,64)}),
+        keepalive:true
+      }).catch(function(){});
+    }
+  }catch(e){}
+  var css=document.createElement('style');
+  css.textContent='html,body{overflow:hidden!important;height:100%}#maint{position:fixed;inset:0;z-index:2147483647;background:#0f1220;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}#maint .b{max-width:440px}#maint .i{font-size:64px;margin-bottom:12px}#maint h1{font-size:28px;margin:0 0 12px}#maint p{margin:0 0 10px;line-height:1.5;opacity:.85}#maint .t{display:inline-block;margin-top:8px;padding:8px 16px;border-radius:999px;background:rgba(255,255,255,.12);font-weight:600}';
+  document.documentElement.appendChild(css);
+  var o=document.createElement('div'); o.id='maint';
+  o.innerHTML='<div class="b"><div class="i">🛠️</div><h1>Under Maintenance</h1><p>We\'re making some improvements. The website is temporarily unavailable.</p><p>Please check back after <b>1:00 PM IST</b> today (18 Oct 2026).</p><div class="t" id="maintT"></div></div>';
+  function add(){ if(document.body){document.body.appendChild(o);} else document.documentElement.appendChild(o); }
+  add();
+  ['click','keydown','submit','touchstart','wheel'].forEach(function(ev){
+    window.addEventListener(ev,function(e){ if(!o.contains(e.target)){e.stopPropagation();e.preventDefault();} },true);
+  });
+  function tick(){
+    var ms=END-Date.now();
+    if(ms<=0){ location.reload(); return; }
+    var s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),c=s%60;
+    var el=document.getElementById('maintT');
+    if(el) el.textContent='Back in '+h+'h '+('0'+m).slice(-2)+'m '+('0'+c).slice(-2)+'s';
+  }
+  tick(); setInterval(tick,1000);
+})();
+</script>
+<script>
 (function(){
 'use strict';
+if(window.__MAINT__) return;
 
 /* Always open at the top: stop the browser restoring a mid-page scroll
    position when the app is relaunched/resumed after a while (common on
@@ -2499,6 +2548,20 @@ function renderAdmin(){
   ].map(function(k){
     return '<div class="adm-kpi"><span class="n">'+k.n+'</span><span class="u">'+k.u+'</span><span class="l">'+k.l+'</span></div>';
   }).join('')+'</div>';
+  var mt=d.maintenance;
+  if(mt){
+    html+='<p class="adm-h">Maintenance page views</p>';
+    html+='<div class="adm-kpis">'+[
+      {l:'Live now',n:mt.live_5m||0,u:'unique'},
+      {l:'1 hour',n:mt.v_1h||0,u:(mt.u_1h||0)+' uniq'},
+      {l:'24 hours',n:mt.v_24h||0,u:(mt.u_24h||0)+' uniq'},
+      {l:'7 days',n:mt.v_7d||0,u:(mt.u_7d||0)+' uniq'},
+      {l:'30 days',n:mt.v_30d||0,u:(mt.u_30d||0)+' uniq'},
+      {l:'All time',n:mt.v_all||0,u:(mt.u_all||0)+' uniq'}
+    ].map(function(k){
+      return '<div class="adm-kpi"><span class="n">'+k.n+'</span><span class="u">'+k.u+'</span><span class="l">'+k.l+'</span></div>';
+    }).join('')+'</div>';
+  }
   var bro=d.bro;
   if(bro){
     html+='<p class="adm-h">Bro connect <span style="font-weight:400;color:var(--muted)">(compares)</span></p>';
@@ -3557,7 +3620,9 @@ function svBlocked(){   // wait while a notice, splash or dialog is on screen
   if(document.querySelector('dialog[open]')) return true;
   return !!$('#view').hidden;
 }
+var SURVEY_ENABLED=false;   // survey stopped: set to true to bring it back
 function scheduleSurvey(){
+  if(!SURVEY_ENABLED) return;
   if(SV.shown||SV.timer) return;
   if(!svForced()&&svDone()) return;
   SV.timer=setTimeout(function wait(){
