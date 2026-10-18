@@ -78,6 +78,25 @@ a.card:hover{border-color:var(--muted)}
 .reply p{white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0}
 .h-sec{font-family:var(--display);font-weight:800;font-size:22px;margin:18px 2px 10px}
 
+/* votes */
+.vote-bar{display:inline-flex;gap:6px}
+.vote{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:2px 12px;border:1px solid var(--line);border-radius:999px;background:var(--wash);font-weight:700;font-size:12.5px;font-variant-numeric:tabular-nums}
+.vote:hover{border-color:var(--muted)}
+.vote[aria-pressed="true"].up{background:var(--ok);border-color:var(--ok);color:var(--badge-fg)}
+.vote[aria-pressed="true"].down{background:var(--danger);border-color:var(--danger);color:var(--badge-fg)}
+.vote[disabled]{opacity:.6;cursor:progress}
+.vcount{white-space:nowrap}
+
+/* threaded replies */
+.rnode{margin-top:12px}
+.rnode.top:first-child{margin-top:0}
+.rnode.top+.rnode.top{border-top:1px solid var(--line);padding-top:12px}
+.rnode p.rb{white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0 0}
+.thread{margin-left:8px;padding-left:12px;border-left:2px solid var(--line)}
+.thread.flat{margin-left:0;padding-left:8px}
+.rform{margin-top:10px}
+.rform textarea{min-height:72px}
+
 /* forms */
 label.f{display:block;font-size:12.5px;font-weight:700;margin:12px 0 4px}
 input[type=text],input[type=password],input[type=email],input[type=search],input[type=number],input[type=url],select,textarea{
@@ -287,6 +306,13 @@ async function rpc(name,args,authed){
   var bearer=KEY;
   if(authed){ bearer=await token(); if(!bearer){var e=new Error('forum:auth');throw e;} }
   return raw('/rest/v1/rpc/'+name,{method:'POST',body:args||{}},bearer);
+}
+/* Read RPCs: send the user's token when signed in (so my_vote is filled in), fall back to anon if it is rejected */
+async function rpcOpt(name,args){
+  var t=null; if(sess){ try{t=await token()}catch(e){} }
+  var path='/rest/v1/rpc/'+name;
+  try{ return await raw(path,{method:'POST',body:args||{}},t||KEY); }
+  catch(e){ if(t&&e.status===401) return raw(path,{method:'POST',body:args||{}},KEY); throw e; }
 }
 function friendly(e){
   var m=(e&&e.message)||'';
@@ -528,7 +554,7 @@ function postCard(p){
   if(p.pinned) kids.push(h('div',{class:'pin',text:'Pinned'}));
   kids.push(h('h2',{text:p.title}));
   kids.push(h('p',{class:'pv',text:p.body}));
-  kids.push(h('div',{class:'meta'},[whoLine(p.username,p.is_admin,p.branch,p.division),h('span',{text:'\u00b7'}),h('span',{text:ago(p.created_at)}),h('span',{text:'\u00b7'}),h('span',{class:'tag',text:p.category}),h('span',{text:'\u00b7'}),h('span',{text:p.reply_count+(Number(p.reply_count)===1?' reply':' replies')})]));
+  kids.push(h('div',{class:'meta'},[whoLine(p.username,p.is_admin,p.branch,p.division),h('span',{text:'\u00b7'}),h('span',{text:ago(p.created_at)}),h('span',{text:'\u00b7'}),h('span',{class:'tag',text:p.category}),h('span',{text:'\u00b7'}),h('span',{text:p.reply_count+(Number(p.reply_count)===1?' reply':' replies')}),h('span',{text:'\u00b7'}),voteCount(p)]));
   return h('a',{class:'card',href:'#/post/'+p.id},kids);
 }
 async function loadFeed(reset){
@@ -549,12 +575,94 @@ async function loadFeed(reset){
   }finally{ feed.loading=false; }
 }
 
+/* ---------- Votes ---------- */
+function voteCount(s){
+  var u=Number(s.upvotes)||0, d=Number(s.downvotes)||0;
+  return h('span',{class:'vcount'},[h('span',{'aria-hidden':'true',text:'\u25B2 '+u+'  \u25BC '+d}),h('span',{class:'sr',text:u+(u===1?' upvote, ':' upvotes, ')+d+(d===1?' downvote':' downvotes')})]);
+}
+/* kind: 'post' | 'reply'. Clicking your current vote again removes it. */
+function voteBar(kind,id,s){
+  var st={up:Number(s.upvotes)||0,down:Number(s.downvotes)||0,mine:Number(s.my_vote)||0}, busy=false;
+  var nu=h('span'), nd=h('span');
+  var bu=h('button',{type:'button',class:'vote up'},[h('span',{'aria-hidden':'true',text:'\u25B2'}),nu]);
+  var bd=h('button',{type:'button',class:'vote down'},[h('span',{'aria-hidden':'true',text:'\u25BC'}),nd]);
+  function paint(){
+    nu.textContent=st.up; nd.textContent=st.down;
+    bu.setAttribute('aria-pressed',String(st.mine===1)); bd.setAttribute('aria-pressed',String(st.mine===-1));
+    bu.setAttribute('aria-label','Upvote, '+st.up+' so far'); bd.setAttribute('aria-label','Downvote, '+st.down+' so far');
+    bu.disabled=bd.disabled=busy;
+  }
+  async function cast(v){
+    if(!me){ toast('Sign in to vote'); openAuth('in'); return }
+    if(busy) return; busy=true;
+    var prev={up:st.up,down:st.down,mine:st.mine}, next=st.mine===v?0:v;
+    if(st.mine===1) st.up--; if(st.mine===-1) st.down--;
+    if(next===1) st.up++; if(next===-1) st.down++;
+    st.mine=next; paint();
+    try{
+      var r=await rpc('forum_vote',{p_kind:kind,p_id:id,p_value:next},true); r=r&&r[0];
+      if(r){ st.up=Number(r.upvotes)||0; st.down=Number(r.downvotes)||0; st.mine=Number(r.my_vote)||0; }
+    }catch(e){ st.up=prev.up; st.down=prev.down; st.mine=prev.mine; toast(friendly(e),true); }
+    finally{ busy=false; paint(); }
+  }
+  bu.addEventListener('click',function(){cast(1)}); bd.addEventListener('click',function(){cast(-1)});
+  paint();
+  return h('div',{class:'vote-bar',role:'group','aria-label':'Votes'},[bu,bd]);
+}
+
+/* ---------- Threaded replies ---------- */
+function buildTree(rows){
+  var by={}, roots=[];
+  rows.forEach(function(r){ r.kids=[]; by[r.id]=r; });
+  rows.forEach(function(r){ var par=r.parent_id&&by[r.parent_id]; (par?par.kids:roots).push(r); });
+  return roots;
+}
+function countKids(r){ var n=0; r.kids.forEach(function(k){ n+=1+countKids(k); }); return n; }
+function toggleReplyForm(r,postId,slot){
+  var had=slot.querySelector('.rform');
+  document.querySelectorAll('.rform').forEach(function(f){ f.remove(); });
+  if(had) return;
+  var ta=h('textarea',{maxlength:'1500',placeholder:'Reply to @'+r.username+'...','aria-label':'Reply to @'+r.username});
+  var er=h('p',{class:'err',role:'alert'});
+  var go=h('button',{type:'submit',class:'btn primary sm',text:'Reply'});
+  var cancel=h('button',{type:'button',class:'btn sm',text:'Cancel',onclick:function(){ f.remove(); }});
+  var f=h('form',{class:'rform',novalidate:true},[ta,er,h('div',{class:'actions',style:'margin-top:0'},[go,cancel])]);
+  f.addEventListener('submit',async function(ev){
+    ev.preventDefault(); er.textContent=''; var body=ta.value.trim(); if(!body){er.textContent='Write something first.';return}
+    go.disabled=true;
+    try{ await rpc('forum_create_reply',{p_post_id:postId,p_body:body,p_parent_id:r.id},true); showPost(postId,true); }
+    catch(e){ er.textContent=friendly(e); go.disabled=false; }
+  });
+  slot.appendChild(f); ta.focus();
+}
+function renderReply(r,depth,postId){
+  var node=h('div',{class:'rnode'+(depth===0?' top':'')});
+  node.appendChild(h('div',{class:'meta',style:'margin:0'},[whoLine(r.username,r.is_admin,r.branch,r.division),h('span',{text:'\u00b7'}),h('span',{text:ago(r.created_at)})]));
+  node.appendChild(h('p',{class:'rb',text:r.body}));
+  var slot=h('div');
+  var act=h('div',{class:'actions',style:'margin-top:8px'},[voteBar('reply',r.id,r)]);
+  act.appendChild(h('button',{type:'button',class:'btn sm',text:'Reply',onclick:function(){ if(!me){openAuth('in');return} toggleReplyForm(r,postId,slot); }}));
+  if(me&&(me.is_admin||me.username===r.username)) act.appendChild(h('button',{type:'button',class:'btn sm danger',text:'Delete',onclick:async function(){
+    var n=countKids(r);
+    if(!confirm(n?('Delete this reply and the '+n+(n===1?' reply':' replies')+' under it?'):'Delete this reply?')) return;
+    try{ await rpc('forum_delete_reply',{p_id:r.id},true); showPost(postId,true); }catch(e){ toast(friendly(e),true); }
+  }}));
+  node.appendChild(act); node.appendChild(slot);
+  if(r.kids.length){
+    var th=h('div',{class:'thread'+(depth>=4?' flat':'')});
+    r.kids.forEach(function(k){ th.appendChild(renderReply(k,depth+1,postId)); });
+    node.appendChild(th);
+  }
+  return node;
+}
+
 /* ---------- Post view ---------- */
-async function showPost(id){
-  var main=$('#main'); clear(main); main.appendChild(h('p',{class:'empty',text:'Loading...'}));
+async function showPost(id,keep){
+  var main=$('#main'), keepY=window.scrollY;
+  if(!keep){ clear(main); main.appendChild(h('p',{class:'empty',text:'Loading...'})); }
   $('.bar').hidden=true;
   try{
-    var res=await Promise.all([rpc('forum_post_get',{p_id:id},false),rpc('forum_replies_list',{p_post_id:id},false)]);
+    var res=await Promise.all([rpcOpt('forum_post_get',{p_id:id}),rpcOpt('forum_replies_list',{p_post_id:id})]);
     var p=res[0][0], replies=res[1];
     clear(main);
     main.appendChild(h('a',{class:'back',href:'#/'},['\u2190 All posts']));
@@ -565,34 +673,27 @@ async function showPost(id){
     card.appendChild(h('h2',{text:p.title,style:'font-size:20px'}));
     card.appendChild(h('div',{class:'meta'},[whoLine(p.username,p.is_admin,p.branch,p.division),h('span',{text:'\u00b7'}),h('span',{text:ago(p.created_at)}),h('span',{text:'\u00b7'}),h('span',{class:'tag',text:p.category})]));
     card.appendChild(h('p',{class:'post-body',text:p.body}));
-    var act=h('div',{class:'actions'});
+    var act=h('div',{class:'actions'},[voteBar('post',p.id,p)]);
     if(own||adm) act.appendChild(h('button',{type:'button',class:'btn sm danger',text:'Delete post',onclick:async function(){
       if(!confirm('Delete this post and its replies?')) return;
       try{await rpc('forum_delete_post',{p_id:p.id},true);toast('Post deleted');location.hash='#/'}catch(e){toast(friendly(e),true)}
     }}));
     if(adm){
       act.appendChild(h('button',{type:'button',class:'btn sm',text:p.pinned?'Unpin':'Pin',onclick:async function(){
-        try{await rpc('forum_set_pin',{p_id:p.id,p_pinned:!p.pinned},true);showPost(id)}catch(e){toast(friendly(e),true)}
+        try{await rpc('forum_set_pin',{p_id:p.id,p_pinned:!p.pinned},true);showPost(id,true)}catch(e){toast(friendly(e),true)}
       }}));
       if(!p.is_admin) act.appendChild(h('button',{type:'button',class:'btn sm danger',text:'Ban user',onclick:async function(){
         if(!confirm('Ban @'+p.username+'?')) return;
         try{await rpc('forum_set_ban',{p_username:p.username,p_banned:true},true);toast('Banned @'+p.username)}catch(e){toast(friendly(e),true)}
       }}));
     }
-    if(act.firstChild) card.appendChild(act);
+    card.appendChild(act);
     main.appendChild(card);
 
     main.appendChild(h('h2',{class:'h-sec',text:replies.length?(replies.length+(replies.length===1?' reply':' replies')):'Replies'}));
     var rc=h('div',{class:'card'});
     if(!replies.length) rc.appendChild(h('p',{class:'hint',style:'margin:0',text:'No replies yet.'}));
-    replies.forEach(function(r,i){
-      var box=h('div',{class:i?'reply':''},[h('div',{class:'meta',style:'margin:0'},[whoLine(r.username,r.is_admin,r.branch,r.division),h('span',{text:'\u00b7'}),h('span',{text:ago(r.created_at)})]),h('p',{text:r.body})]);
-      if(me&&(me.is_admin||me.username===r.username)) box.appendChild(h('div',{class:'actions',style:'margin-top:6px'},[h('button',{type:'button',class:'btn sm danger',text:'Delete',onclick:async function(){
-        if(!confirm('Delete this reply?')) return;
-        try{await rpc('forum_delete_reply',{p_id:r.id},true);showPost(id)}catch(e){toast(friendly(e),true)}
-      }})]));
-      rc.appendChild(box);
-    });
+    buildTree(replies).forEach(function(r){ rc.appendChild(renderReply(r,0,id)); });
     main.appendChild(rc);
 
     var form=h('form',{class:'card',novalidate:true});
@@ -603,13 +704,14 @@ async function showPost(id){
       form.addEventListener('submit',async function(ev){
         ev.preventDefault(); er.textContent=''; var body=ta.value.trim(); if(!body){er.textContent='Write something first.';return}
         go.disabled=true;
-        try{await rpc('forum_create_reply',{p_post_id:id,p_body:body},true);showPost(id)}catch(e){er.textContent=friendly(e);go.disabled=false}
+        try{await rpc('forum_create_reply',{p_post_id:id,p_body:body},true);showPost(id,true)}catch(e){er.textContent=friendly(e);go.disabled=false}
       });
     } else {
       form.appendChild(h('p',{class:'hint',style:'margin:0 0 8px',text:'Sign in to reply.'}));
       form.appendChild(h('button',{type:'button',class:'btn primary',text:'Sign in or create account',onclick:function(){openAuth('in')}}));
     }
     main.appendChild(form);
+    if(keep) window.scrollTo(0,keepY);
   }catch(e){
     clear(main); main.appendChild(h('a',{class:'back',href:'#/'},['\u2190 All posts'])); main.appendChild(h('p',{class:'empty',text:friendly(e)}));
   }
