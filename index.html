@@ -459,7 +459,14 @@ dialog#roomApp::backdrop{background:rgba(12,16,32,.55)}
   .install-card{border:1px solid var(--line);border-top:1px solid var(--line);border-radius:16px 16px 0 0;margin:0}
   .install-actions{border:1px solid var(--line);border-top:0;border-radius:0 0 16px 16px;margin:0}
 }
-@media (prefers-reduced-motion:reduce){.install-card{animation:none}}
+.install-bar[hidden]{display:none}
+.install-card{border-top:3px solid var(--focus);box-shadow:0 -10px 30px rgba(8,12,30,.22),0 0 0 1px rgba(47,91,214,.25),0 0 22px rgba(47,91,214,.28)}
+.install-prog{display:none;height:5px;border-radius:99px;background:var(--wash);overflow:hidden;margin-top:9px}
+.install-prog i{display:block;height:100%;width:40%;border-radius:99px;background:linear-gradient(90deg,var(--focus),#6366F1);animation:installSlide 1.2s ease-in-out infinite}
+@keyframes installSlide{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
+.install-bar.busy .install-prog{display:block}
+.install-bar.done .install-card{border-top-color:#1F9D55}
+@media (prefers-reduced-motion:reduce){.install-card{animation:none}.install-prog i{animation:none;width:100%}}
 
 /* boot loading screen (shown briefly for returning visitors while data loads) */
 #loadScreen{position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -1297,17 +1304,19 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       </div>
     </div>
   </div>
-  <div id="installBar" class="install-bar" hidden role="dialog" aria-label="Install app" aria-describedby="installSub">
+  <div id="installBar" class="install-bar" hidden role="status" aria-live="polite" aria-label="Install app" aria-describedby="installSub">
     <div class="install-card">
       <div class="install-icon"><img src="icons/icon-192.png" width="44" height="44" alt=""></div>
       <div class="install-txt">
         <p class="install-title" id="installTitle">Install Timetable</p>
         <p class="install-sub" id="installSub">Add it to your home screen for a full-screen app, no browser bars.</p>
+        <div class="install-prog" aria-hidden="true"><i></i></div>
       </div>
     </div>
     <div class="install-actions">
       <button type="button" class="btn2" id="installNo" data-act="install-no">Not now</button>
       <button type="button" class="btn" id="installYes" data-act="install-yes">Install</button>
+      <button type="button" class="btn" id="installOk" data-act="install-ok" hidden>OK</button>
     </div>
   </div>
 
@@ -2171,6 +2180,7 @@ function closePicker(fromBoot){
     maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();
   }
   scheduleSurvey();
+  scheduleInstallToast();
   var c=document.querySelector('.chg');
   if(c) c.focus({preventScroll:true});
 }
@@ -2347,6 +2357,7 @@ document.addEventListener('click',function(e){
   if(a==='admin-range'){ADM.range=b.getAttribute('data-v');renderAdmin();return;}
   if(a==='install-yes'){installNow();return;}
   if(a==='install-no'){dismissInstall();return;}
+  if(a==='install-ok'){closeInstallToast();return;}
   if(a==='change'){openPicker(true);return;}
   if(a.indexOf('pk-')===0){pickerAct(a,b);return;}
   if(a==='open'){openDetail(+b.getAttribute('data-sid'),+b.getAttribute('data-date')||0,b.getAttribute('data-key'));return;}
@@ -2373,41 +2384,75 @@ function installDismissedRecently(){
   var t=+store.get('tt-install-dismissed','0');
   return t && (Date.now()-t) < DISMISS_DAYS*86400000;
 }
+var ttShownForInstall=false, installToastTimer=null, installHideTimer=null;
+function isAndroidDevice(){ return /android/i.test(navigator.userAgent); }
+function setInstallState(state,title,sub){
+  var bar=$('#installBar');
+  bar.classList.toggle('busy',state==='busy');
+  bar.classList.toggle('done',state==='done');
+  $('#installTitle').textContent=title;
+  $('#installSub').textContent=sub;
+  var idle=state==='idle';
+  $('#installNo').hidden=!idle;
+  $('#installYes').hidden=!idle || isIOSDevice();
+  $('#installOk').hidden=idle;
+  bar.hidden=false;
+}
 function showInstallBar(){
   if(isStandaloneApp()||installDismissedRecently()) return;
+  if(!ttShownForInstall) return;                      // only once the timetable is on screen
   var isIOS=isIOSDevice();
-  $('#installSub').textContent=isIOS
+  if(!isIOS && !deferredInstall) return;              // no install prompt available in this browser
+  setInstallState('idle','Install Timetable app',isIOS
     ? 'Tap the Share icon, then "Add to Home Screen" \u2014 opens full-screen next time, no browser bars.'
-    : 'Add it to your home screen for a full-screen app, no browser bars.';
-  $('#installYes').hidden=isIOS;              // iOS has no programmatic install; just show the steps
+    : 'Open your timetable in one tap from your app drawer. Faster, full-screen, no browser bars.');
   $('#installNo').textContent=isIOS?'Got it':'Not now';
-  $('#installBar').hidden=false;
+}
+/* called when the timetable becomes visible: show the toast a moment later, once */
+function scheduleInstallToast(){
+  if(ttShownForInstall||isStandaloneApp()) return;
+  ttShownForInstall=true;
+  installToastTimer=setTimeout(showInstallBar,2500);
+}
+function closeInstallToast(){
+  clearTimeout(installHideTimer);
+  $('#installBar').hidden=true;
 }
 function dismissInstall(){
   store.set('tt-install-dismissed',String(Date.now()));
-  $('#installBar').hidden=true;
+  closeInstallToast();
 }
 function installNow(){
-  if(!deferredInstall){ $('#installBar').hidden=true; return; }
+  if(!deferredInstall){ closeInstallToast(); return; }
   $('#installYes').disabled=true;
-  deferredInstall.prompt();
-  deferredInstall.userChoice.then(function(){
+  var ev=deferredInstall;
+  ev.prompt();
+  ev.userChoice.then(function(c){
     deferredInstall=null;
-    $('#installBar').hidden=true;
     $('#installYes').disabled=false;
+    if(c&&c.outcome==='accepted'){
+      setInstallState('busy','Installing Timetable\u2026',
+        'Installation is in progress and will finish in the background in about 2\u20133 minutes. You can keep using the timetable. Then open it directly from your '+(isAndroidDevice()?'app drawer':'apps list')+'.');
+      clearTimeout(installHideTimer);
+      installHideTimer=setTimeout(function(){ if($('#installBar').classList.contains('busy')) closeInstallToast(); },20000);
+    }else{
+      store.set('tt-install-dismissed',String(Date.now()));
+      closeInstallToast();
+    }
   });
 }
 window.addEventListener('beforeinstallprompt',function(e){
   e.preventDefault();
   deferredInstall=e;
-  showInstallBar();
+  if(ttShownForInstall) showInstallBar();             // timetable already visible: show now
 });
 window.addEventListener('appinstalled',function(){
   deferredInstall=null;
-  $('#installBar').hidden=true;
   store.set('tt-install-dismissed',String(Date.now()));
+  setInstallState('done','Timetable installed \u2713','Open it anytime from your '+(isAndroidDevice()?'app drawer':'apps list')+'.');
+  clearTimeout(installHideTimer);
+  installHideTimer=setTimeout(closeInstallToast,8000);
 });
-if(isIOSDevice()&&!isStandaloneApp()) setTimeout(showInstallBar,1200);   // no beforeinstallprompt on iOS, so trigger manually
 if('serviceWorker' in navigator){
   window.addEventListener('load',function(){
     navigator.serviceWorker.register('sw.js').catch(function(){});
