@@ -487,6 +487,36 @@ dialog#roomApp::backdrop{background:rgba(12,16,32,.55)}
 .hi-sub{margin:4px 0 0;font-size:13.5px;opacity:.9}
 @media (prefers-reduced-motion:reduce){#holidayIntro,.hi-emoji{animation:none}}
 
+.hi-btn{margin-top:18px;min-height:44px;padding:9px 22px;border:0;border-radius:11px;background:#fff;color:#a5352f;font-weight:700;font-size:14px;cursor:pointer}
+
+/* Diwali: full-screen greeting, string lights, fireworks canvas */
+#diwaliScreen{position:fixed;inset:0;z-index:81;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:24px;color:#fff;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 0%,#6b2c91 0%,#2c1552 48%,#120a2b 100%);animation:hiIn .4s ease-out;transition:opacity .4s ease,transform .4s ease}
+#diwaliScreen[hidden]{display:none!important}
+#diwaliScreen.out{opacity:0;transform:scale(1.04);pointer-events:none}
+.dv-diyas{font-size:40px;line-height:1;letter-spacing:6px;animation:hiPop .7s ease-out}
+.dv-kicker{margin:10px 0 0;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#ffd24a}
+.dv-title{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(40px,12vw,64px);line-height:1;background:linear-gradient(90deg,#ffd24a,#ff9a3c,#ff6b9a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.dv-sub{margin:6px 0 0;font-size:15px;line-height:1.5;max-width:34ch;opacity:.95}
+.dv-sub b{color:#ffd24a}
+.dv-btns{display:flex;flex-direction:column;gap:10px;margin-top:22px;width:min(300px,100%)}
+.dv-btn{min-height:46px;padding:10px 22px;border:0;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer}
+.dv-btn.pri{background:linear-gradient(90deg,#ffb020,#ff6b2c);color:#2a1004}
+.dv-btn.sec{background:rgba(255,255,255,.14);color:#fff;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.4)}
+#fxCanvas{position:fixed;inset:0;width:100%;height:100%;z-index:90;pointer-events:none}
+#diwaliLights{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);height:26px;z-index:60;pointer-events:none;display:none}
+#diwaliLights::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:#4a3418;opacity:.7}
+#diwaliLights i{position:absolute;top:2px;width:8px;height:13px;margin-left:-4px;border-radius:50% 50% 50% 50%/45% 45% 55% 55%;background:var(--bc);box-shadow:0 0 9px 3px var(--bc);animation:dvTw 1.5s ease-in-out infinite}
+#diwaliLights i::before{content:"";position:absolute;left:1px;top:-3px;width:6px;height:4px;border-radius:1px;background:#4a3418}
+@keyframes dvTw{0%,100%{opacity:1}50%{opacity:.35}}
+body.diwali #diwaliLights{display:block}
+body.diwali .app{padding-top:38px}
+body.diwali h1::after{content:" \1FA94";font-size:.6em}
+body.diwali .hero{box-shadow:0 0 0 2px #ffb020,0 8px 28px rgba(255,160,32,.38)}
+#diwaliFab{position:fixed;left:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:70;width:48px;height:48px;border:0;border-radius:50%;font-size:24px;line-height:1;cursor:pointer;background:linear-gradient(135deg,#ffb020,#ff6b2c);box-shadow:0 4px 16px rgba(255,107,44,.5)}
+#diwaliFab[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){#diwaliScreen,.dv-diyas,#diwaliLights i{animation:none}}
+
 /* new-schedule notice (full-screen, once a day for 2 days) + latest badge */
 #labNotice,#chgNotice,#susNotice{position:fixed;inset:0;z-index:82;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:0;text-align:center;padding:24px;background:var(--surface);color:var(--ink);
@@ -603,8 +633,8 @@ dialog#roomApp::backdrop{background:rgba(12,16,32,.55)}
 .ibtn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .priv-list{margin:0;padding:0 0 0 20px;color:var(--muted);font-size:13.5px;line-height:1.55}
 .priv-list li{margin:0 0 6px}
-.blk.dim,.blk.dim[data-state="past"]{opacity:.18}
-.blk.dim:hover,.blk.dim:focus-within{opacity:.5}
+.blk.dim,.blk.dim[data-state="past"]{opacity:.07}
+.blk.dim:hover,.blk.dim:focus-within{opacity:.35}
 .lang-box{margin:0;padding:10px 12px;border:1px solid var(--line);border-left:4px solid #C2410C;border-radius:10px;background:var(--wash);font-size:13px;line-height:1.5}
 
 /* six-day weeks (Saturday classes) on phones */
@@ -1041,9 +1071,23 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
   <div id="holidayIntro" hidden>
     <div class="hi-emoji" id="hiEmoji" aria-hidden="true">&#127881;</div>
     <p class="hi-kicker">Holiday today</p>
-    <p class="hi-title" id="hiTitle">Enjoy!</p>
-    <p class="hi-sub">No classes &mdash; have a great day off.</p>
+    <p class="hi-title" id="hiTitle">No classes today</p>
+    <p class="hi-sub" id="hiSub">Have a great day off.</p>
+    <button type="button" class="hi-btn" id="hiOk">Continue to timetable</button>
   </div>
+  <div id="diwaliScreen" hidden role="dialog" aria-modal="true" aria-labelledby="dvTitle">
+    <div class="dv-diyas" aria-hidden="true">&#129684; &#129684; &#129684;</div>
+    <p class="dv-kicker">Shubh Deepavali</p>
+    <h2 class="dv-title" id="dvTitle">Happy Diwali!</h2>
+    <p class="dv-sub">Wishing you light, joy and sweets. We have <b>Diwali holidays from 6 to 12 November</b>, so there are no classes on those days.</p>
+    <div class="dv-btns">
+      <button type="button" class="dv-btn pri" id="dvCrack">&#127878; Burst crackers</button>
+      <button type="button" class="dv-btn sec" id="dvGo">Go to timetable</button>
+    </div>
+  </div>
+  <div id="diwaliLights" aria-hidden="true"></div>
+  <button type="button" id="diwaliFab" hidden aria-label="Burst crackers">&#127878;</button>
+  <canvas id="fxCanvas" aria-hidden="true"></canvas>
   <div id="rollWarn" hidden role="alertdialog" aria-modal="true" aria-labelledby="rwTitle" aria-describedby="rwBody">
     <div class="rw-card">
       <div class="rw-emoji" aria-hidden="true">&#9888;&#65039;</div>
@@ -1942,8 +1986,9 @@ function render(){
 
   var now=nowFloor(),today=dayStart(now,0);
   var occ=occurrences(now,21);
-  var cur=occ.find(function(o){return o.start<=now&&now<o.end})||null;
-  var nxt=occ.find(function(o){return o.start>now})||null;
+  var heroOcc=occ.filter(function(o){return !isEng(o)});   // top card skips English for students who take German
+  var cur=heroOcc.find(function(o){return o.start<=now&&now<o.end})||null;
+  var nxt=heroOcc.find(function(o){return o.start>now})||null;
   var focus=cur||nxt;
 
   var sel=null;
@@ -1965,7 +2010,7 @@ function render(){
   document.querySelectorAll('[data-act="batch"]').forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-v')===st.batch))});
   document.querySelectorAll('[data-act="fmt"]').forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-v')===st.fmt))});
 
-  var hm=heroModel(now,occ,cur,nxt);
+  var hm=heroModel(now,heroOcc,cur,nxt);
   var hero=$('#hero');
   hero.style.setProperty('--c',hm.color);
   hero.setAttribute('data-state',hm.state);
@@ -2345,6 +2390,7 @@ document.addEventListener('click',function(e){
   if(a==='planner-open'){markFeatureUsed();try{store.set('tt-planner-used','1');}catch(e){}hidePlannerNudge();logVisit('open_study_planner',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});return;}
   if(a==='forum-open'){logVisit('open_forum',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});return;}
   if(a==='ext-link'){logVisit('click_link',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch,link:b.getAttribute('data-label')});return;}
+  if(a==='admin-diwali'){toggleDiwaliPreview();return;}
   if(a==='admin-close'){closeAdmin();return;}
   if(a==='admin-lock'){lockAdmin();return;}
   if(a==='admin-refresh'){loadAdmin();return;}
@@ -2471,6 +2517,7 @@ function escHtml(s){
 var adminOpenedAt=0;
 function openAdmin(){
   adminOpenedAt=Date.now();
+  clearHolidaySeen();   // opening the admin panel resets the 'holiday message already shown' memory
   /* Reset the Study Planner nudge so it can be re-tested: it shows again and the first-click intro replays. */
   try{localStorage.removeItem('tt-planner-used');localStorage.removeItem('tt-planner-intro');}catch(e){}
   plannerNudgeDismissed=false;
@@ -2716,7 +2763,8 @@ function renderAdmin(){
         ' \u00b7 '+escHtml(r.ref||'direct')+(r.app?' \u00b7 app':'')+' \u00b7 '+escHtml(r.vid||'');
       return '<div class="adm-row"><span class="t">'+escHtml(fmtAdmTime(r.created_at))+'</span><span class="d">'+line+'</span></div>';
     }).join('')+'</div>' : '<p class="adm-empty">No visits logged yet.</p>';
-  html+='<div class="adm-actions"><button type="button" class="btn2" data-act="admin-refresh">Refresh</button><button type="button" class="btn2" data-act="admin-lock">Lock</button></div>';
+  html+='<p class="adm-h">Diwali mode</p><p class="adm-empty">'+(diwaliPreview()?'Preview is ON':'Preview is off')+' on this device only (not public). It switches on for everyone by itself from 6 to 12 Nov.</p>';
+  html+='<div class="adm-actions"><button type="button" class="btn2" data-act="admin-diwali">'+(diwaliPreview()?'Disable Diwali mode':'Enable Diwali mode')+'</button><button type="button" class="btn2" data-act="admin-refresh">Refresh</button><button type="button" class="btn2" data-act="admin-lock">Lock</button></div>';
   $('#admBody').innerHTML=html;
 }
 document.addEventListener('submit',function(e){
@@ -3628,24 +3676,144 @@ function stopLoadScreen(){
 }
 
 /* ---------- Holiday intro splash ---------- */
-var HOLIDAY_EMOJI={holiday:'\uD83C\uDF89'};
+/* Normal holidays: one full-screen message per day per device (opening the admin panel clears this memory so it can be re-tested). */
 function maybeShowHolidayIntro(){
   try{
-    var now=new Date();
+    applyDiwaliTheme();
+    if(diwaliOn()){ showDiwaliScreen(); return; }   // Diwali: shown on every open
+    var now=nowFloor();
     var sp=typeof specialFor==='function'?specialFor(now):null;
     if(!sp||sp.kind!=='holiday') return;
     var key='tt-hol-seen-'+ymd(now);
     if(store.get(key,'')) return;   // already shown once today on this device
     store.set(key,'1');
     var el=$('#holidayIntro');if(!el) return;
-    $('#hiTitle').textContent=sp.label;
-    el.hidden=false;
-    setTimeout(function(){
+    $('#hiTitle').textContent='No classes today';
+    $('#hiSub').textContent='Due to '+sp.label+', today is a holiday. Have a great day off.';
+    el.classList.remove('out');el.hidden=false;
+    $('#hiOk').onclick=function(){
       el.classList.add('out');
       setTimeout(function(){el.hidden=true;},420);
-    },2000);
+    };
   }catch(e){}
 }
+function clearHolidaySeen(){
+  try{
+    var del=[];
+    for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf('tt-hol-seen-')===0) del.push(k);}
+    del.forEach(function(k){localStorage.removeItem(k);});
+  }catch(e){}
+}
+
+/* ---------- Diwali mode (6-12 Nov 2026, or the private preview switch in the admin panel) ---------- */
+var DIWALI_FROM='2026-11-06',DIWALI_TO='2026-11-12';
+function diwaliPreview(){return store.get('tt-diwali-preview','')==='1';}
+function diwaliOn(){var k=ymd(nowFloor());return diwaliPreview()||(k>=DIWALI_FROM&&k<=DIWALI_TO);}
+var DV_COLORS=['#ffd24a','#ff5a36','#ff4d9a','#4dd2ff','#7dff8a'];
+function buildLights(){
+  var el=$('#diwaliLights');if(!el) return;
+  var n=Math.ceil(innerWidth/26),h='';
+  for(var i=0;i<n;i++) h+='<i style="left:'+(i*26+13)+'px;--bc:'+DV_COLORS[i%DV_COLORS.length]+';animation-delay:'+((i%5)*0.3).toFixed(1)+'s"></i>';
+  el.innerHTML=h;
+}
+var dvResize=0;
+function applyDiwaliTheme(){
+  var on=diwaliOn();
+  document.body.classList.toggle('diwali',on);
+  var fab=$('#diwaliFab');if(fab) fab.hidden=!on;
+  if(on) buildLights();
+}
+addEventListener('resize',function(){ if(!document.body.classList.contains('diwali')) return; clearTimeout(dvResize); dvResize=setTimeout(buildLights,200); });
+
+function showDiwaliScreen(){
+  var el=$('#diwaliScreen');if(!el) return;
+  el.classList.remove('out');el.hidden=false;
+  setTimeout(fxSalvo,350);
+}
+function hideDiwaliScreen(){
+  var el=$('#diwaliScreen');if(!el) return;
+  el.classList.add('out');
+  setTimeout(function(){el.hidden=true;},420);
+}
+function toggleDiwaliPreview(){
+  if(diwaliPreview()){
+    try{localStorage.removeItem('tt-diwali-preview');}catch(e){}
+    applyDiwaliTheme();renderAdmin();return;
+  }
+  store.set('tt-diwali-preview','1');
+  applyDiwaliTheme();
+  closeAdmin();
+  showDiwaliScreen();
+}
+
+/* crackers: rockets rise, then burst into sparks (canvas only runs while something is flying) */
+var FX={cv:null,cx:null,parts:[],rockets:[],raf:0,dpr:1};
+var FX_COLORS=['#ffd24a','#ff7a1a','#ff4d6d','#7dd3fc','#a78bfa','#86efac','#ffffff'];
+function fxSize(){
+  if(!FX.cv) return;
+  FX.dpr=Math.min(window.devicePixelRatio||1,2);
+  FX.cv.width=Math.round(innerWidth*FX.dpr);FX.cv.height=Math.round(innerHeight*FX.dpr);
+}
+function fxInit(){
+  if(FX.cv) return true;
+  FX.cv=$('#fxCanvas');if(!FX.cv||!FX.cv.getContext) return false;
+  FX.cx=FX.cv.getContext('2d');fxSize();addEventListener('resize',fxSize);return true;
+}
+var fxReduced=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches);
+function fxBurst(x,y){
+  var c1=FX_COLORS[Math.floor(Math.random()*FX_COLORS.length)],c2=FX_COLORS[Math.floor(Math.random()*FX_COLORS.length)];
+  var n=fxReduced?16:48;
+  for(var i=0;i<n;i++){
+    var a=Math.PI*2*i/n+Math.random()*.15,sp=1.4+Math.random()*3.4;
+    FX.parts.push({x:x,y:y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,dec:.011+Math.random()*.01,col:i%3?c1:c2,sz:1.6+Math.random()*1.4});
+  }
+  fxRun();
+}
+function fxRocket(tx,ty){
+  FX.rockets.push({x:tx+(Math.random()*40-20),y:innerHeight+10,tx:tx,ty:ty,sp:9+Math.random()*3});
+  fxRun();
+}
+function fxSalvo(x,y){
+  if(!fxInit()) return;
+  if(typeof x==='number'){ fxBurst(x,y); }
+  for(var i=0;i<4;i++) setTimeout(function(){
+    fxRocket(innerWidth*(.12+Math.random()*.76),innerHeight*(.12+Math.random()*.38));
+  },i*280);
+}
+function fxRun(){ if(!FX.raf) FX.raf=requestAnimationFrame(fxFrame); }
+function fxFrame(){
+  var cx=FX.cx,d=FX.dpr;
+  cx.setTransform(1,0,0,1,0,0);
+  cx.clearRect(0,0,FX.cv.width,FX.cv.height);
+  cx.setTransform(d,0,0,d,0,0);
+  cx.globalCompositeOperation='lighter';
+  FX.rockets=FX.rockets.filter(function(r){
+    r.y-=r.sp;r.x+=(r.tx-r.x)*.05;
+    FX.parts.push({x:r.x,y:r.y,vx:0,vy:.4,life:.5,dec:.06,col:'#ffd24a',sz:1.4});
+    if(r.y<=r.ty){ fxBurst(r.x,r.y); return false; }
+    return true;
+  });
+  FX.parts=FX.parts.filter(function(p){
+    p.x+=p.vx;p.y+=p.vy;p.vx*=.985;p.vy=p.vy*.985+.045;p.life-=p.dec;
+    if(p.life<=0) return false;
+    cx.globalAlpha=Math.max(p.life,0);cx.fillStyle=p.col;
+    cx.beginPath();cx.arc(p.x,p.y,p.sz,0,6.2832);cx.fill();
+    return true;
+  });
+  if(FX.parts.length||FX.rockets.length) FX.raf=requestAnimationFrame(fxFrame);
+  else{ FX.raf=0; cx.setTransform(1,0,0,1,0,0); cx.clearRect(0,0,FX.cv.width,FX.cv.height); }
+}
+(function(){
+  var go=$('#dvGo'),cr=$('#dvCrack'),fab=$('#diwaliFab'),scr=$('#diwaliScreen');
+  if(go) go.addEventListener('click',hideDiwaliScreen);
+  if(cr) cr.addEventListener('click',function(){fxSalvo();});
+  if(fab) fab.addEventListener('click',function(){fxSalvo();});
+  if(scr) scr.addEventListener('pointerdown',function(e){   // tap on empty space sets off a cracker right there
+    if(e.target.closest&&e.target.closest('button')) return;
+    fxSalvo(e.clientX,e.clientY);
+  });
+  applyDiwaliTheme();
+})();
 
 /* ---------- CSSE-C B1 lab notice (until 30 Sep 2026, 2:00 PM IST) ---------- */
 var LAB_UNTIL=new Date('2026-09-30T14:00:00+05:30').getTime();
