@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Copied Content Notice</title>
+<style>
+:root{
+  --ground:#F4EEEE; --surface:#FFFFFF; --ink:#2A1416; --muted:#6B5558; --line:#E6D3D5; --wash:#FAF3F3; --alert:#C62F3B;
+}
+@media (prefers-color-scheme:dark){
+  :root{ --ground:#160A0C; --surface:#22121500; --surface:#221215; --ink:#F7E9EA; --muted:#C9A9AD; --line:#3F2428; --wash:#2B181C; --alert:#FF6B76; }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;background:var(--ground);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5;display:flex;align-items:center;justify-content:center;padding:20px}
+.card{width:100%;max-width:520px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:28px 24px;box-shadow:0 20px 60px rgba(40,10,15,.18)}
+.icon{font-size:56px;line-height:1;margin-bottom:8px}
+h1{margin:0 0 10px;font-size:26px;line-height:1.15;color:var(--alert)}
+p{margin:0 0 12px;color:var(--muted);font-size:15px}
+p b{color:var(--ink)}
+.author{display:flex;align-items:center;gap:14px;margin:20px 0 14px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--wash)}
+.avatar{flex:none;width:54px;height:54px;border-radius:14px;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-weight:800;font-size:19px;letter-spacing:.02em}
+.name{margin:0;font-weight:700;font-size:17px;color:var(--ink)}
+.meta{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.links a{display:inline-flex;align-items:center;min-height:40px;padding:4px 14px;border:1px solid var(--line);border-radius:10px;background:var(--wash);color:var(--ink);font-weight:600;font-size:13px;text-decoration:none}
+.links a:hover{background:var(--line)}
+.links a:focus-visible,.cta:focus-visible{outline:3px solid var(--alert);outline-offset:2px}
+.cta{display:block;text-align:center;padding:13px 16px;border-radius:12px;background:var(--ink);color:var(--surface);font-weight:700;font-size:15px;text-decoration:none}
+.cta:hover{opacity:.9}
+.fine{margin:14px 0 0;font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+<main class="card">
+  <div class="icon" aria-hidden="true">&#9888;&#65039;</div>
+  <h1>You're using a copied timetable</h1>
+  <p>You were sent here from a site that is using this timetable <b>without the author's permission</b>.</p>
+  <p>This dashboard was <b>not made by them</b>. It was created by a fellow VIT Pune student, and no data has been loaded for you on this page.</p>
+
+  <div class="author">
+    <div class="avatar" aria-hidden="true">VB</div>
+    <div>
+      <p class="name">Vedant Bhat</p>
+      <p class="meta">Original author &middot; VIT Pune &rsquo;30 &middot; FY, CSE(SE)-C</p>
+    </div>
+  </div>
+
+  <div class="links">
+    <a href="https://www.linkedin.com/in/vedant-bhat28" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://github.com/vedantbhat28" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://www.instagram.com/vedant_bhat28" target="_blank" rel="noopener">Instagram</a>
+  </div>
+
+  <a class="cta" href="./index.html" rel="noreferrer">Open the original timetable</a>
+  <p class="fine">Unofficial, student-made tool &mdash; not affiliated with or endorsed by VIT Pune.</p>
+</main>
+</body>
+</html>

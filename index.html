@@ -17,7 +17,7 @@
 })();
 </script>
 <script>
-/* Referral block: opened from an unofficial source -> full-screen block, zero network/database calls */
+/* Referral check: opened from the copycat site -> send to rouge.html before anything loads (no network/database calls) */
 (function(){
   var BAD='vit-pune-campus-connect.vercel.app';
   var ref=''; try{ ref=document.referrer||''; }catch(e){}
@@ -33,22 +33,16 @@
   var deny=function(){ return Promise.reject(new Error('Blocked: unofficial source')); };
   try{ window.fetch=deny; }catch(e){}
   try{ navigator.sendBeacon=function(){ return false; }; }catch(e){}
-  try{
-    window.XMLHttpRequest=function(){ throw new Error('Blocked: unofficial source'); };
-  }catch(e){}
+  try{ window.XMLHttpRequest=function(){ throw new Error('Blocked: unofficial source'); }; }catch(e){}
   try{ window.WebSocket=function(){ throw new Error('Blocked: unofficial source'); }; }catch(e){}
   try{ window.EventSource=function(){ throw new Error('Blocked: unofficial source'); }; }catch(e){}
 
-  /* hide the whole app, show the warning */
+  /* hide the app and redirect (replace = no back-button loop) */
   var css=document.createElement('style');
-  css.textContent='html,body{overflow:hidden!important;height:100%;margin:0}body>*:not(#refblock){display:none!important}#refblock{position:fixed;inset:0;z-index:2147483647;background:#1a0b0d;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}#refblock .b{max-width:460px}#refblock .i{font-size:72px;margin-bottom:12px}#refblock h1{font-size:28px;margin:0 0 12px;color:#ff6b6b}#refblock p{margin:0 0 10px;line-height:1.5;color:#f1d9db;font-size:16px}';
+  css.textContent='html{display:none!important}';
   document.documentElement.appendChild(css);
-  var o=document.createElement('div'); o.id='refblock';
-  o.innerHTML='<div class="b"><div class="i">\u26D4</div><h1>Access Blocked</h1><p>You have opened this timetable dashboard from an <b>unofficial source</b>, which is dangerous for security reasons.</p><p>Everything has been blocked and no data was loaded. Please close this page and open the official timetable link directly.</p></div>';
-  document.documentElement.appendChild(o);
-  ['click','keydown','submit','touchstart','wheel','contextmenu'].forEach(function(ev){
-    window.addEventListener(ev,function(e){ e.stopPropagation(); e.preventDefault(); },true);
-  });
+  try{ window.stop(); }catch(e){}
+  window.location.replace('rouge.html');
 })();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
