@@ -124,6 +124,17 @@ input:-webkit-autofill,input:-webkit-autofill:focus{-webkit-text-fill-color:var(
 .err{color:var(--danger);font-size:13px;margin:10px 0 0;min-height:1em}
 .note{background:var(--wash);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:12px;color:var(--muted);margin-top:12px}
 
+/* notifications */
+.bell{position:relative;min-width:40px;padding:4px 12px}
+.nbadge{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--now);color:#fff;font-size:11px;font-weight:800;line-height:18px;text-align:center;font-variant-numeric:tabular-nums}
+.nbar{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;margin:0 0 12px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);font-size:13px}
+.nbar span{flex:1 1 220px;color:var(--muted)}
+.nitem{display:block;width:100%;text-align:left;border:1px solid var(--line);border-left-width:4px;background:var(--surface);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.nitem:hover{border-color:var(--muted)}
+.nitem.unread{background:var(--wash);border-left-color:var(--focus)}
+.nitem b{display:block;font-size:13.5px;overflow-wrap:anywhere}
+.nitem .sn{margin-top:2px;color:var(--muted);font-size:13px;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
 /* dialogs */
 dialog{border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--ink);padding:18px;width:min(460px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto}
 dialog::backdrop{background:rgba(10,14,28,.55)}
@@ -152,6 +163,7 @@ dialog h2{font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4
     <button type="button" class="btn primary" id="newBtn">+ New post</button>
   </div>
 
+  <div class="nbar" id="notifBar" hidden></div>
   <main id="main" aria-live="polite"></main>
 </div>
 
@@ -235,7 +247,23 @@ dialog h2{font-family:var(--display);font-weight:800;font-size:26px;margin:0 0 4
     <h3 style="margin:18px 0 4px;font-size:14px">Admin: manage a user</h3>
     <div class="row2"><input type="text" id="banUser" placeholder="username" autocapitalize="none" spellcheck="false"><div class="row2"><button type="button" class="btn danger" id="banBtn">Ban</button><button type="button" class="btn" id="unbanBtn">Unban</button></div></div>
   </div>
-  <button type="button" class="btn" id="logoutBtn" style="width:100%;margin-top:14px">Log out</button>
+  <button type="button" class="btn" id="pushToggle" style="width:100%;margin-top:14px" hidden></button>
+  <button type="button" class="btn" id="logoutBtn" style="width:100%;margin-top:10px">Log out</button>
+</dialog>
+
+<!-- Enable notifications prompt (first signed-in visit) -->
+<dialog id="notifDlg" aria-labelledby="nTitle">
+  <div class="dlg-head"><h2 id="nTitle">Stay in the loop</h2><button type="button" class="x" data-close aria-label="Close">&times;</button></div>
+  <p style="margin:10px 0 0">Get a notification when someone replies to your post or reply, or when your posts get upvotes. You can switch this off any time from your profile.</p>
+  <div class="actions" style="margin-top:16px"><button type="button" class="btn primary" id="nEnable" style="flex:1">Enable notifications</button><button type="button" class="btn" id="nLater" data-close style="flex:1">Not now</button></div>
+</dialog>
+
+<!-- In-app notifications -->
+<dialog id="bellDlg" aria-labelledby="bellH">
+  <div class="dlg-head"><h2 id="bellH">Notifications</h2><button type="button" class="x" data-close aria-label="Close">&times;</button></div>
+  <p class="note" id="bellHint" hidden>Push alerts are not available in this browser. On iPhone or iPad, add this site to your Home Screen and open it from there to turn them on.</p>
+  <div style="margin:10px 0"><button type="button" class="btn sm" id="bellAll">Mark all as read</button></div>
+  <div id="bellList" aria-live="polite"></div>
 </dialog>
 
 <div id="toast" hidden></div>
@@ -389,6 +417,7 @@ function renderAcct(){
   var a=$('#acct'); clear(a);
   if(me){
     a.appendChild(h('span',{class:'chip-me'},[whoLine(me.username,me.is_admin,null,null)]));
+    a.appendChild(bellBtn());
     a.appendChild(h('button',{type:'button',class:'btn',onclick:openSettings,text:'Profile'}));
   } else {
     a.appendChild(h('button',{type:'button',class:'btn',onclick:function(){openAuth('in')},text:'Sign in'}));
@@ -397,7 +426,7 @@ function renderAcct(){
 async function loadMe(){
   if(!sess){me=null;renderAcct();return}
   try{ var r=await rpc('forum_me',{},true); me=(r&&r[0])||null; if(!me) clearSess(); }catch(e){ if(e.status===401||/forum:auth/.test(e.message)){clearSess();} }
-  renderAcct();
+  renderAcct(); notifOnMe();
 }
 
 /* Auth dialog */
@@ -521,6 +550,7 @@ async function openSettings(){
   $('#sWho').textContent='@'+me.username; $('#setErr').textContent='';
   setPicker=makePicker($('#sPicker'),{slug:me.div_slug,showBranch:me.show_branch,showDiv:me.show_division,username:me.username});
   $('#adminBox').hidden=!me.is_admin; $('#banUser').value='';
+  paintPushToggle();
   $('#setDlg').showModal();
 }
 async function saveSettings(){
@@ -531,8 +561,9 @@ async function saveSettings(){
   }catch(e){ $('#setErr').textContent=friendly(e); } finally{ b.disabled=false; }
 }
 async function logout(){
+  try{ await pushUnsub(); }catch(e){}
   try{ if(sess) await raw('/auth/v1/logout',{method:'POST'},sess.at); }catch(e){}
-  clearSess(); renderAcct(); $('#setDlg').close(); toast('Logged out'); route();
+  clearSess(); renderAcct(); notifOnMe(); $('#setDlg').close(); toast('Logged out'); route();
 }
 async function banAct(ban){
   var u=$('#banUser').value.trim().toLowerCase(); if(!u) return;
@@ -735,6 +766,184 @@ async function submitCompose(ev){
     location.hash='#/post/'+id;
   }catch(e){er.textContent=friendly(e)}finally{go.disabled=false}
 }
+
+/* ---------- Notifications: in-app bell + Web Push ---------- */
+var VAPID_PUBLIC='BPhPyuji9YsDdxGSqwqCv1FQQOMNC0AOGH90pC3esvTWF_oY6qsatwT2vmjJSsM2jH3RkfhXhZlnGQwqKPGVHVA'; // public key, safe to ship
+var SW_URL='forum-sw.js', SW_SCOPE='./forum-notify/';   // own scope so it never clashes with another service worker
+var PUSH_OK=('serviceWorker' in navigator)&&('PushManager' in window)&&('Notification' in window);
+var notif={unread:0,timer:null,asked:false,synced:false};
+
+/* Per-user answer to the first-visit prompt: 'yes' | 'no' (closing the prompt counts as 'no') */
+function nKey(){ return me?('vit-forum-push-choice:'+me.username):null }
+function nChoice(){ var k=nKey(); return k?lsGet(k):null }
+function nSetChoice(v){ var k=nKey(); if(k) lsSet(k,v) }
+function b64u8(str){
+  var pad='='.repeat((4-str.length%4)%4), b=(str+pad).replace(/-/g,'+').replace(/_/g,'/'), raw=atob(b), out=new Uint8Array(raw.length);
+  for(var i=0;i<raw.length;i++) out[i]=raw.charCodeAt(i);
+  return out;
+}
+function waitActive(reg){
+  return new Promise(function(res,rej){
+    var w=reg.installing||reg.waiting||reg.active;
+    if(!w) return rej(new Error('no worker'));
+    if(w.state==='activated') return res(reg);
+    var t=setTimeout(function(){rej(new Error('worker timeout'))},15000);
+    w.addEventListener('statechange',function(){
+      if(w.state==='activated'){clearTimeout(t);res(reg)}
+      else if(w.state==='redundant'){clearTimeout(t);rej(new Error('worker failed'))}
+    });
+  });
+}
+async function getReg(create){
+  var reg=await navigator.serviceWorker.getRegistration(SW_SCOPE);
+  if(reg&&reg.scope.indexOf('forum-notify')<0) reg=null;   // ignore any other site-wide worker
+  if(!reg&&create) reg=await navigator.serviceWorker.register(SW_URL,{scope:SW_SCOPE});
+  return reg?waitActive(reg):null;
+}
+async function curSub(){
+  if(!PUSH_OK) return null;
+  try{ var r=await getReg(false); return r?await r.pushManager.getSubscription():null }catch(e){ return null }
+}
+async function pushOn(){
+  var reg=await getReg(true);
+  var sub=await reg.pushManager.getSubscription();
+  if(!sub) sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u8(VAPID_PUBLIC)});
+  var j=sub.toJSON();
+  await rpc('forum_push_subscribe',{p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth},true);
+  return sub;
+}
+async function pushUnsub(){
+  var sub=await curSub(); if(!sub) return;
+  try{ await rpc('forum_push_unsubscribe',{p_endpoint:sub.endpoint},true) }catch(e){}
+  try{ await sub.unsubscribe() }catch(e){}
+}
+async function enablePush(){
+  if(!me) return false;
+  if(!PUSH_OK){ toast('Push alerts are not supported in this browser. You will still see updates under the bell.',true); return false }
+  if(Notification.permission==='denied'){ toast('Notifications are blocked. Allow them in your browser settings for this site, then try again.',true); renderNotifBar(); return false }
+  try{
+    var perm=await Notification.requestPermission();
+    if(perm!=='granted'){ nSetChoice('no'); return false }
+    await pushOn(); nSetChoice('yes'); toast('Notifications enabled'); return true;
+  }catch(e){ toast('Could not turn on notifications. Please try again.',true); return false }
+  finally{ renderNotifBar() }
+}
+
+/* Banner above all posts: shown after "Not now" (or whenever push is not active for a user who answered) */
+var barSeq=0;
+async function renderNotifBar(){
+  var bar=$('#notifBar'); if(!bar) return; var my=++barSeq;
+  var choice=me?nChoice():null, sub=null;
+  if(me&&PUSH_OK&&choice) sub=await curSub();
+  if(my!==barSeq) return;
+  clear(bar);
+  if(!me||!PUSH_OK||!choice||(sub&&Notification.permission==='granted')){ bar.hidden=true; return }
+  bar.hidden=false;
+  if(Notification.permission==='denied'){
+    bar.appendChild(h('span',{text:'Notifications are blocked for this site. Allow them in your browser settings to get alerts.'}));
+  } else {
+    bar.appendChild(h('span',{text:'Get alerted when someone replies to you or upvotes your posts.'}));
+    bar.appendChild(h('button',{type:'button',class:'btn primary sm',text:'Enable notifications',onclick:function(){enablePush()}}));
+  }
+}
+function askNotif(tries){
+  tries=tries||0;
+  if(!me||!PUSH_OK||nChoice()||Notification.permission==='denied') return;
+  if(document.querySelector('dialog[open]')){ if(tries<8) setTimeout(function(){askNotif(tries+1)},700); return }
+  $('#notifDlg').showModal();
+}
+async function paintPushToggle(){
+  var b=$('#pushToggle'); if(!b) return;
+  b.hidden=!(me&&PUSH_OK); if(b.hidden) return;
+  var on=!!(await curSub())&&Notification.permission==='granted';
+  b.dataset.on=on?'1':''; b.textContent=on?'Turn off push notifications':'Turn on push notifications';
+}
+
+/* In-app bell */
+function bellBtn(){
+  var NS='http://www.w3.org/2000/svg', svg=document.createElementNS(NS,'svg');
+  [['width','16'],['height','16'],['viewBox','0 0 24 24'],['fill','none'],['stroke','currentColor'],['stroke-width','2'],['stroke-linecap','round'],['stroke-linejoin','round'],['aria-hidden','true']].forEach(function(a){svg.setAttribute(a[0],a[1])});
+  ['M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9','M13.7 21a2 2 0 0 1-3.4 0'].forEach(function(d){var p=document.createElementNS(NS,'path');p.setAttribute('d',d);svg.appendChild(p)});
+  var b=h('button',{type:'button',class:'btn bell',id:'bellBtn','aria-label':'Notifications',onclick:openBell},[svg,h('span',{class:'nbadge',id:'bellN',hidden:true})]);
+  setTimeout(paintBadge,0);
+  return b;
+}
+function paintBadge(){
+  var n=$('#bellN'), b=$('#bellBtn'); if(!n||!b) return;
+  n.hidden=!notif.unread; n.textContent=notif.unread>99?'99+':String(notif.unread);
+  b.setAttribute('aria-label',notif.unread?('Notifications, '+notif.unread+' unread'):'Notifications');
+}
+async function refreshUnread(){
+  if(!me||!sess) return;
+  try{ notif.unread=Number(await rpc('forum_notifs_unread',{},true))||0; paintBadge(); }catch(e){}
+}
+var N_TXT={
+  reply_post:function(n){return '@'+(n.actor_username||'someone')+' replied to your post'},
+  reply_reply:function(n){return '@'+(n.actor_username||'someone')+' replied to your reply'},
+  upvotes_post:function(n){return 'Your post got '+n.cnt+(n.cnt===1?' upvote':' upvotes')},
+  upvotes_reply:function(n){return 'Your reply got '+n.cnt+(n.cnt===1?' upvote':' upvotes')}
+};
+function goPost(id){ var t='#/post/'+id; if(location.hash===t) route(); else location.hash=t; }
+function nItem(n){
+  var line=(N_TXT[n.kind]||function(){return 'New activity'})(n);
+  var sn=n.snippet||(n.kind==='upvotes_post'?n.post_title:'')||'';
+  var meta=ago(n.ts)+((n.kind!=='upvotes_post'&&n.post_title)?' \u00b7 '+n.post_title:'');
+  var kids=[h('b',{text:line})];
+  if(sn) kids.push(h('div',{class:'sn',text:sn}));
+  kids.push(h('div',{class:'meta',style:'margin-top:6px'},[h('span',{text:meta})]));
+  return h('button',{type:'button',class:'nitem'+(n.is_read?'':' unread'),onclick:async function(){
+    if(!n.is_read){ try{ await rpc('forum_notifs_mark_read',{p_id:n.id},true) }catch(e){} }
+    $('#bellDlg').close(); goPost(n.post_id); refreshUnread();
+  }},kids);
+}
+async function loadBell(){
+  var box=$('#bellList'); clear(box); box.appendChild(h('p',{class:'hint',text:'Loading...'}));
+  try{
+    var rows=await rpc('forum_notifs_list',{p_limit:30},true); clear(box);
+    if(!rows.length){ box.appendChild(h('p',{class:'empty',text:'Nothing yet. Replies and upvotes will show up here.'})); return }
+    rows.forEach(function(n){ box.appendChild(nItem(n)) });
+  }catch(e){ clear(box); box.appendChild(h('p',{class:'empty',text:friendly(e)})) }
+  refreshUnread();
+}
+async function openBell(){
+  if(!me){ openAuth('in'); return }
+  $('#bellHint').hidden=PUSH_OK;
+  var d=$('#bellDlg'); if(!d.open) d.showModal();
+  await loadBell();
+}
+
+/* Called whenever the signed-in user changes (start-up, sign-in, sign-out, profile save) */
+function notifOnMe(){
+  clearInterval(notif.timer); notif.timer=null;
+  if(!me){ notif.unread=0; notif.asked=false; notif.synced=false; paintBadge(); renderNotifBar(); return }
+  refreshUnread(); renderNotifBar();
+  notif.timer=setInterval(function(){ if(document.visibilityState==='visible') refreshUnread() },60000);
+  if(PUSH_OK&&nChoice()==='yes'&&Notification.permission==='granted'&&!notif.synced){
+    notif.synced=true; pushOn().then(renderNotifBar,function(){});   // re-bind this device to the current account
+  }
+  if(!notif.asked){ notif.asked=true; setTimeout(function(){askNotif(0)},500); }
+}
+
+$('#nEnable').addEventListener('click',async function(){
+  var b=this; b.disabled=true; nSetChoice('no');   // provisional: becomes 'yes' only if it works
+  await enablePush(); b.disabled=false; $('#notifDlg').close();
+});
+$('#notifDlg').addEventListener('close',function(){ if(!nChoice()) nSetChoice('no'); renderNotifBar(); });
+$('#bellAll').addEventListener('click',async function(){
+  try{ await rpc('forum_notifs_mark_read',{},true); notif.unread=0; paintBadge(); await loadBell(); }catch(e){ toast(friendly(e),true) }
+});
+$('#pushToggle').addEventListener('click',async function(){
+  var on=this.dataset.on==='1'; this.disabled=true;
+  if(on){ await pushUnsub(); nSetChoice('no'); toast('Push notifications turned off'); }
+  else { await enablePush(); }
+  this.disabled=false; paintPushToggle(); renderNotifBar();
+});
+document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='visible') refreshUnread() });
+if('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message',function(e){
+  var d=e.data||{};
+  if(d.type==='forum-open'&&d.postId){ var bd=$('#bellDlg'); if(bd.open) bd.close(); goPost(d.postId); refreshUnread(); }
+  else if(d.type==='forum-push'){ refreshUnread(); if($('#bellDlg').open) loadBell(); }
+});
 
 /* ---------- Router + wiring ---------- */
 function route(){
