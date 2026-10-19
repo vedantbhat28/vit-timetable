@@ -3735,6 +3735,16 @@ function hideDiwaliScreen(){
   el.classList.add('out');
   setTimeout(function(){el.hidden=true;},420);
 }
+/* "Go to timetable": if the greeting was opened while the class picker was showing (e.g. from the admin preview), load the saved class instead of leaving the picker behind */
+function diwaliGo(){
+  hideDiwaliScreen();
+  if(!$('#view').hidden) return;               // timetable already on screen
+  if(CUR){ closePicker(); return; }            // a class is loaded, just show it
+  var br=store.get('tt-branch',''),dv=store.get('tt-div',''),bt=store.get('tt-batch','');
+  if(!br&&!dv&&bt){br='CSSE';dv='C';}
+  if(!br||!dv||BATCHES.indexOf(bt)<0) return;  // nothing saved on this device: the picker is the only option
+  setClass(br,dv).then(function(ok){ if(ok){ st.batch=bt; closePicker(); } });
+}
 function toggleDiwaliPreview(){
   if(diwaliPreview()){
     try{localStorage.removeItem('tt-diwali-preview');}catch(e){}
@@ -3805,7 +3815,7 @@ function fxFrame(){
 }
 (function(){
   var go=$('#dvGo'),cr=$('#dvCrack'),fab=$('#diwaliFab'),scr=$('#diwaliScreen');
-  if(go) go.addEventListener('click',hideDiwaliScreen);
+  if(go) go.addEventListener('click',diwaliGo);
   if(cr) cr.addEventListener('click',function(){fxSalvo();});
   if(fab) fab.addEventListener('click',function(){fxSalvo();});
   if(scr) scr.addEventListener('pointerdown',function(e){   // tap on empty space sets off a cracker right there
