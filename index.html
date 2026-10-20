@@ -236,28 +236,6 @@ h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,4.4vw,26px);l
 .has-chip.sm .blk-name{padding-right:0}
 .week-note{margin:8px 2px 0;color:var(--muted);font-size:12.5px}
 
-/* ---- week grid: tilt motion (tiles slide with phone tilt, lean with speed, glint as they move) ---- */
-.weekp-head .tilt-btn{margin-left:auto;display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:4px 12px;border:1px solid var(--line);border-radius:99px;background:var(--wash);color:var(--ink);font-size:12px;font-weight:600;cursor:pointer;transition:background-color .2s ease,color .2s ease}
-.tilt-btn[hidden]{display:none}
-.tilt-btn[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
-.tilt-btn svg{flex:none;transform-origin:50% 90%}
-.tilt-btn[aria-pressed="true"] svg{animation:tiltRock 2.6s ease-in-out infinite}
-@keyframes tiltRock{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(12deg)}}
-#week.tilt-live .wk-scroll{overflow-x:hidden;margin:0 -6px;padding:0 6px}
-#week.tilt-live .blk{will-change:transform;box-shadow:calc(var(--sx,0)*1px) 3px 8px -4px color-mix(in srgb,var(--c) 55%,transparent)}
-#week .blk::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;opacity:0;
-  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.55) 50%,transparent 60%),linear-gradient(105deg,transparent 30%,color-mix(in srgb,var(--c) 22%,transparent) 50%,transparent 70%);
-  background-size:260% 100%;background-position:calc(50% - var(--tt,0)*38%) 0}
-#week.tilt-live .blk::after{opacity:min(1,calc(var(--tt,0)*var(--tt,0)*3))}
-#week .blk-btn{transition:transform .16s ease}
-#week .blk-btn:active{transform:scale(.93)}
-#week .blk[data-state="live"]{animation:liveRing 2.8s ease-in-out infinite}
-@keyframes liveRing{0%,100%{outline-offset:1px}50%{outline-offset:3px}}
-#week.wk-pre .blk{opacity:0}
-#week.wk-intro .blk{animation:tileIn .66s cubic-bezier(.2,.85,.25,1.15) var(--d,0ms) backwards}
-@keyframes tileIn{from{opacity:0;translate:0 16px;scale:.9}}
-@media (prefers-reduced-motion:reduce){#week .blk,#week .tilt-btn svg{animation:none!important}#week.wk-pre .blk{opacity:1}#week .blk-btn:active{transform:none}}
-
 
 /* ---- Bro connect (beta) ---- */
 .bro{margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 12px}
@@ -579,6 +557,22 @@ body.diwali .hero{box-shadow:0 0 0 2px #ffb020,0 8px 28px rgba(255,160,32,.38)}
 .rw-body b{color:var(--ink)}
 .rw-actions{display:flex;flex-direction:column;gap:8px;margin-top:8px}
 .rw-actions .btn,.rw-actions .btn2{margin:0;width:100%}
+.rw-actions .btn:disabled{opacity:.45;cursor:not-allowed}
+/* ---- Japanese list popup ---- */
+#jpAsk{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55)}
+#jpAsk[hidden]{display:none}
+.jp-card{width:100%;max-width:420px;max-height:calc(100dvh - 40px);overflow:auto;padding:22px 20px 18px;border-radius:16px;background:var(--surface);color:var(--ink);box-shadow:0 12px 40px rgba(0,0,0,.35);text-align:center;outline:0}
+.jp-panel{display:flex;flex-direction:column;gap:10px}
+.jp-panel[hidden]{display:none}
+.jp-priv{font-size:13px}
+.jp-file{position:relative;display:flex;align-items:center;justify-content:center;min-height:54px;padding:8px 14px;border:1.5px dashed var(--line);border-radius:12px;font-weight:600;font-size:14.5px;cursor:pointer;overflow:hidden;overflow-wrap:anywhere}
+.jp-file input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.jp-file:focus-within{outline:2px solid var(--ink);outline-offset:2px}
+.jp-file.has{border-style:solid;border-color:var(--ink)}
+.jp-err{margin:0;color:#C0392B;font-size:13px;line-height:1.4}
+.jp-err:empty{display:none}
+.adm-jp{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.adm-jp .btn2{margin:0;min-height:30px;padding:3px 12px;font-size:12px}
 
 /* phones: compact chrome, week grid fits the screen (no sideways scroll) */
 @media (max-width:600px){
@@ -1118,6 +1112,39 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       <div class="rw-actions">
         <button type="button" class="btn" id="rwSelect">Select roll no</button>
         <button type="button" class="btn2" id="rwContinue">Continue anyway</button>
+      </div>
+    </div>
+  </div>
+  <div id="jpAsk" hidden role="dialog" aria-modal="true" aria-labelledby="jpT1">
+    <div class="jp-card" id="jpCard" tabindex="-1">
+      <div class="jp-panel" id="jpP1">
+        <div class="rw-emoji" aria-hidden="true">&#127471;&#127477;</div>
+        <p class="rw-title" id="jpT1">Have you chosen Japanese as your language?</p>
+        <p class="rw-body">Your timetable currently shows <b>English</b>. If you picked <b>Japanese</b>, tell us so we can add your Japanese classes.</p>
+        <div class="sv-yn" role="group" aria-labelledby="jpT1">
+          <button type="button" data-jp="choice" data-v="1" aria-pressed="false">Yes</button>
+          <button type="button" data-jp="choice" data-v="0" aria-pressed="false">No</button>
+        </div>
+        <div class="rw-actions"><button type="button" class="btn" id="jpSubmit" data-jp="submit1" disabled>Submit</button></div>
+      </div>
+      <div class="jp-panel" id="jpP2" hidden>
+        <div class="rw-emoji" aria-hidden="true">&#128196;</div>
+        <p class="rw-title" id="jpT2">Upload the Japanese student list</p>
+        <p class="rw-body">Please submit the <b>PDF that has the list of students who chose Japanese</b>. It helps us update the timetable for Japanese students.</p>
+        <p class="rw-body jp-priv">&#128274; Student data in this PDF is <b>private</b>. It is stored securely, never made public and <b>never shared with anyone</b>.</p>
+        <label class="jp-file" id="jpFileBox" for="jpFile"><span id="jpFileLbl">Choose PDF</span><input id="jpFile" type="file" accept="application/pdf,.pdf"></label>
+        <p class="jp-err" id="jpErr" role="alert"></p>
+        <div class="rw-actions">
+          <button type="button" class="btn" id="jpUpload" data-jp="upload" disabled>Upload &amp; continue</button>
+          <button type="button" class="btn2" id="jpBack" data-jp="back">Back</button>
+          <button type="button" class="btn2" id="jpSkip" data-jp="skip">Skip for now</button>
+        </div>
+      </div>
+      <div class="jp-panel" id="jpP3" hidden>
+        <div class="rw-emoji" aria-hidden="true">&#9989;</div>
+        <p class="rw-title" id="jpT3">Thank you!</p>
+        <p class="rw-body">We received your list. It will be used only to update the timetable for Japanese students.</p>
+        <div class="rw-actions"><button type="button" class="btn" id="jpDone" data-jp="done">Go to timetable</button></div>
       </div>
     </div>
   </div>
@@ -1972,7 +1999,7 @@ function weekHTML(now){
   var gut='';
   for(var g=0;g<=rows;g++) gut+='<span style="top:'+y((h0+g)*60)+'">'+fmtH(h0+g)+'</span>';
   var head='<div></div>',body='',hasToday=false;
-  cols.forEach(function(c,ci){
+  cols.forEach(function(c){
     var isT=sameDay(c.d,now);if(isT)hasToday=true;
     head+='<div class="wk-h"'+(isT?' aria-current="date"':'')+'><span>'+(isT?'<i class="tdot"></i>':'')+DAYS[c.d.getDay()].slice(0,3)+'</span><small>'+shortDate(c.d)+'</small></div>';
     var sp=specialFor(c.d);
@@ -1984,7 +2011,7 @@ function weekHTML(now){
     }).join('');
     var colCls='wk-col'+(isT?' today':'')+(sp?sp.kind==='holiday'?' hol':' exam-day':'');
     var label=sp?'<div class="wk-hol-label">'+(sp.kind==='holiday'?'Holiday':'Exams')+'</div>':'';
-    body+='<div class="'+colCls+'" data-ci="'+ci+'">'+label+'<ol class="blks">'+(sp&&sp.kind==='holiday'?'':blks)+'</ol></div>';
+    body+='<div class="'+colCls+'">'+label+'<ol class="blks">'+(sp&&sp.kind==='holiday'?'':blks)+'</ol></div>';
   });
   var line='';
   if(hasToday&&nowM>=h0*60&&nowM<=h1*60){
@@ -1994,7 +2021,7 @@ function weekHTML(now){
   for(var w=0;w<wd.length;w++) forDay(wd[w],st.batch).forEach(function(x){if(tot[x.type]!==undefined) tot[x.type]+=(x.e-x.s)/60});
   var title=(dow===0||dow>last||rolled)?'Next week':'This week';
   var offDays=forDay(6,st.batch).length?'Sunday has':'Saturday and Sunday have';
-  return '<div class="weekp-head"><h2>'+title+'</h2><p>'+shortDate(cols[0].d)+' to '+shortDate(cols[cols.length-1].d)+', batch '+st.batch+'</p>'+TILT_BTN+'</div>'+
+  return '<div class="weekp-head"><h2>'+title+'</h2><p>'+shortDate(cols[0].d)+' to '+shortDate(cols[cols.length-1].d)+', batch '+st.batch+'</p></div>'+
     '<div class="wk-scroll"><div class="wk'+(wd.length>5?' six':'')+'" style="--rows:'+rows+';--nc:'+wd.length+'">'+head+
     '<div class="wk-gut" aria-hidden="true">'+gut+'</div>'+body+line+'</div></div>'+
     '<p class="week-note">Each week for batch '+st.batch+': '+tot.Theory+' h of theory, '+tot.Lab+' h of labs and '+tot.Tutorial+' h of tutorials. '+offDays+' no classes.</p>';
@@ -2039,7 +2066,6 @@ function render(){
   hero.innerHTML=hm.html;
   $('#panel').innerHTML=panelHTML(now,occ,sel);
   $('#week').innerHTML=weekHTML(now);
-  tiltBind();
   broRefresh();
 
   Object.keys(sc).forEach(function(c){var el=$('.'+c);if(el)el.scrollLeft=sc[c]});
@@ -2248,6 +2274,12 @@ function closePicker(fromBoot){
 }
 function submitPicker(){
   if(!(pk.branch&&pk.div&&pk.batch)) return;
+  var typedRoll=$('#pkRoll').value.replace(/\D/g,'').slice(0,4);
+  // English (no foreign language found): ask once whether they actually chose Japanese
+  jpGate(pk.branch,pk.div,pk.batch,typedRoll,submitPickerNow);
+}
+function submitPickerNow(){
+  if(!(pk.branch&&pk.div&&pk.batch)) return;
   var goBranch=pk.branch,goDiv=pk.div,goBatch=pk.batch;
   var goRoll=$('#pkRoll').value.replace(/\D/g,'').slice(0,4),prevRoll=st.roll;
   st.roll=goRoll;   // used on this device only, never sent anywhere
@@ -2280,6 +2312,112 @@ $('#rwContinue').addEventListener('click',function(){
 });
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'&&!$('#rollWarn').hidden) closeRollWarn();
+});
+/* ---------- Japanese list popup ----------
+   Shown once per device to anyone who ends up on English (no foreign language found in the German list).
+   No  -> straight to the timetable.  Yes -> asks for the PDF student list; the PDF goes to the japanese-pdf
+   edge function, which stores it on ImageKit as a private file. The admin panel opens it via a signed link. */
+var JP={step:1,choice:null,file:null,busy:false,cb:null,ctx:null,opener:null,timer:null};
+var JP_MAX=10*1024*1024;
+function jpForced(){ return /[?&]jp=1\b/.test(location.search); }   // ?jp=1 re-shows it for testing
+function jpAnswered(){
+  var v=store.get('tt-jp','');
+  if(!v) return false;
+  if(v.indexOf('skip:')===0){ var t=+v.slice(5); return !!t&&Date.now()-t<3*864e5; }   // skipped: ask again after 3 days
+  return true;
+}
+function jpGate(branch,div,batch,roll,proceed){
+  if(!jpForced()&&(jpAnswered()||germanFor(branch,div,roll))){ proceed(); return; }
+  JP.cb=proceed; JP.ctx={branch:branch,div:div,batch:batch};
+  JP.step=1; JP.choice=null; JP.file=null; JP.busy=false;
+  $('#jpFile').value=''; $('#jpErr').textContent='';
+  jpRender();
+  JP.opener=document.activeElement;
+  $('#jpAsk').hidden=false; document.documentElement.classList.add('lock');
+  $('#jpCard').scrollTop=0;
+  var f=document.querySelector('#jpP1 [data-jp="choice"]'); if(f) f.focus({preventScroll:true});
+}
+function jpClose(){
+  if(JP.timer){ clearTimeout(JP.timer); JP.timer=null; }
+  $('#jpAsk').hidden=true; document.documentElement.classList.remove('lock');
+  try{ if(JP.opener&&JP.opener.focus) JP.opener.focus({preventScroll:true}); }catch(e){}
+  var cb=JP.cb; JP.cb=null;
+  if(cb) cb();
+}
+function jpFmtSize(n){ return n>=1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB'; }
+function jpRender(){
+  $('#jpP1').hidden=JP.step!==1; $('#jpP2').hidden=JP.step!==2; $('#jpP3').hidden=JP.step!==3;
+  $('#jpAsk').setAttribute('aria-labelledby','jpT'+JP.step);
+  document.querySelectorAll('#jpP1 [data-jp="choice"]').forEach(function(b){
+    b.setAttribute('aria-pressed',String(JP.choice!==null&&JP.choice===+b.getAttribute('data-v')));
+  });
+  $('#jpSubmit').disabled=JP.choice===null;
+  var has=!!JP.file;
+  $('#jpFileBox').classList.toggle('has',has);
+  $('#jpFileLbl').textContent=has?(JP.file.name+' ('+jpFmtSize(JP.file.size)+')'):'Choose PDF';
+  $('#jpUpload').disabled=!has||JP.busy; $('#jpUpload').textContent=JP.busy?'Uploading\u2026':'Upload & continue';
+  $('#jpBack').disabled=JP.busy; $('#jpSkip').disabled=JP.busy; $('#jpFile').disabled=JP.busy;
+}
+function jpCheckFile(f){
+  if(!f) return 'Choose a PDF file.';
+  if(!(f.type==='application/pdf'||/\.pdf$/i.test(f.name))) return 'That is not a PDF. Please choose the PDF file.';
+  if(f.size>JP_MAX) return 'That file is too large (max 10 MB).';
+  if(f.size<100) return 'That file looks empty.';
+  return '';
+}
+function jpUpload(){
+  if(JP.busy||!JP.file) return;
+  var err=jpCheckFile(JP.file); if(err){ $('#jpErr').textContent=err; return; }
+  JP.busy=true; $('#jpErr').textContent=''; jpRender();
+  var c=JP.ctx||{},fd=new FormData();
+  fd.append('file',JP.file,JP.file.name);
+  fd.append('visitor_id',visitorId);
+  fd.append('branch',c.branch||''); fd.append('division',c.div||''); fd.append('batch',c.batch||'');
+  fetch(SUPA_URL+'/functions/v1/japanese-pdf',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY},body:fd})
+    .then(function(res){ return res.json().catch(function(){return {};}).then(function(j){return {ok:res.ok,j:j||{}};}); })
+    .then(function(r){
+      JP.busy=false;
+      if(!r.ok||!r.j.ok){
+        var m={not_pdf:'That file is not a valid PDF.',too_large:'That file is too large (max 10 MB).',rate_limited:'You have uploaded a few files already today. Please try again tomorrow.',busy:'Too many uploads right now. Please try again in a little while.'};
+        $('#jpErr').textContent=m[r.j.error]||'Could not upload. Please try again.';
+        jpRender(); return;
+      }
+      store.set('tt-jp','yes');
+      JP.step=3; jpRender();
+      var d=$('#jpDone'); if(d) d.focus({preventScroll:true});
+      JP.timer=setTimeout(jpClose,2600);
+    })
+    .catch(function(){ JP.busy=false; $('#jpErr').textContent='Could not upload. Check your connection and try again.'; jpRender(); });
+}
+$('#jpFile').addEventListener('change',function(){
+  var f=this.files&&this.files[0]; JP.file=null; $('#jpErr').textContent='';
+  if(f){ var e=jpCheckFile(f); if(e){ $('#jpErr').textContent=e; this.value=''; } else JP.file=f; }
+  jpRender();
+});
+$('#jpAsk').addEventListener('click',function(e){
+  var b=e.target.closest&&e.target.closest('[data-jp]'); if(!b||b.disabled) return;
+  var a=b.getAttribute('data-jp');
+  if(a==='choice'){ JP.choice=+b.getAttribute('data-v'); jpRender(); }
+  else if(a==='submit1'){
+    if(JP.choice===null) return;
+    if(JP.choice===0){ store.set('tt-jp','no'); jpClose(); return; }
+    JP.step=2; jpRender(); $('#jpCard').scrollTop=0;
+    var f=$('#jpFile'); if(f) f.focus({preventScroll:true});
+  }
+  else if(a==='upload'){ jpUpload(); }
+  else if(a==='back'){ JP.step=1; $('#jpErr').textContent=''; jpRender(); }
+  else if(a==='skip'){ store.set('tt-jp','skip:'+Date.now()); jpClose(); }
+  else if(a==='done'){ jpClose(); }
+});
+document.addEventListener('keydown',function(e){
+  var el=$('#jpAsk'); if(!el||el.hidden) return;
+  if(e.key==='Escape'){ if(!JP.busy){ e.preventDefault(); jpClose(); } return; }   // Esc: carry on to the timetable, nothing saved
+  if(e.key!=='Tab') return;
+  var f=[].slice.call(el.querySelectorAll('button:not([disabled]),input:not([disabled])')).filter(function(x){return x.offsetParent!==null||x.id==='jpFile';});
+  if(!f.length) return;
+  var first=f[0],last=f[f.length-1],ae=document.activeElement;
+  if(e.shiftKey&&(ae===first||ae===$('#jpCard'))){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey&&ae===last){ e.preventDefault(); first.focus(); }
 });
 function pickerAct(a,b){
   var v=b.getAttribute('data-v');
@@ -2393,7 +2531,6 @@ document.addEventListener('click',function(e){
   if(e.target&&e.target.id==='admin'){ if(Date.now()-adminOpenedAt>500) closeAdmin(); return; }
   var b=e.target.closest('[data-act]');if(!b)return;
   var a=b.getAttribute('data-act');
-  if(a==='tilt'){tiltToggle();return;}
   if(a.indexOf('bro-')===0){broAct(a);return;}
   if(a.indexOf('teacher-')===0){teacherAct(a);return;}
   if(a.indexOf('room-')===0){roomAct(a,b);return;}
@@ -2418,6 +2555,7 @@ document.addEventListener('click',function(e){
   if(a==='admin-close'){closeAdmin();return;}
   if(a==='admin-lock'){lockAdmin();return;}
   if(a==='admin-refresh'){loadAdmin();return;}
+  if(a==='admin-jp-view'){openJpPdf(b);return;}
   if(a==='admin-range'){ADM.range=b.getAttribute('data-v');renderAdmin();return;}
   if(a==='install-yes'){installNow();return;}
   if(a==='install-no'){dismissInstall();return;}
@@ -2534,7 +2672,7 @@ document.addEventListener('click',function(e){
   if(taps.length>TAP_NEEDED){ taps=[]; openAdmin(); }
 },true);
 
-var ADM={pin:'',data:null,busy:false,range:'24h',survey:null,surveyErr:false};
+var ADM={pin:'',data:null,busy:false,range:'24h',survey:null,surveyErr:false,jp:null,jpErr:false};
 function escHtml(s){
   return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
 }
@@ -2553,7 +2691,7 @@ function closeAdmin(){
   var dlg=$('#admin');
   if(typeof dlg.close==='function') dlg.close(); else dlg.removeAttribute('open');
 }
-function lockAdmin(){ ADM.pin='';ADM.data=null;ADM.survey=null;ADM.surveyErr=false;renderPinForm(); }
+function lockAdmin(){ ADM.pin='';ADM.data=null;ADM.survey=null;ADM.surveyErr=false;ADM.jp=null;ADM.jpErr=false;renderPinForm(); }
 function renderPinForm(msg){
   $('#admBody').innerHTML=
     '<form id="admPinForm" class="adm-pinform" autocomplete="off">'+
@@ -2584,10 +2722,53 @@ function loadAdmin(){
         renderPinForm('Could not load traffic.');
         return;
       }
-      ADM.data=r.j;ADM.survey=null;ADM.surveyErr=false;
+      ADM.data=r.j;ADM.survey=null;ADM.surveyErr=false;ADM.jp=null;ADM.jpErr=false;
       renderAdmin();
       loadSurveyAdmin();
+      loadJpAdmin();
     }).catch(function(){ ADM.busy=false; ADM.pin=''; renderPinForm('Could not reach the server.'); });
+}
+/* ---------- Japanese student lists in the admin panel (PIN-checked RPC; PDFs open through a short-lived signed ImageKit link) ---------- */
+function loadJpAdmin(){
+  var pin=ADM.pin; if(!pin) return;
+  fetch(SUPA_URL+'/rest/v1/rpc/admin_japanese_uploads',{
+    method:'POST',
+    headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({p_pin:pin})
+  }).then(function(res){ if(!res.ok) throw new Error('jp '+res.status); return res.json(); })
+    .then(function(j){ if(!ADM.pin||!ADM.data) return; ADM.jp=j;ADM.jpErr=false;renderAdmin(); })
+    .catch(function(){ if(!ADM.pin||!ADM.data) return; ADM.jpErr=true;renderAdmin(); });
+}
+function jpAdminHTML(){
+  var h='<p class="adm-h">Japanese student lists <span style="font-weight:400;color:var(--muted)">(private PDFs)</span></p>';
+  if(ADM.jpErr) return h+'<p class="adm-empty">Could not load the uploaded lists.</p>';
+  if(!ADM.jp) return h+'<p class="adm-empty">Loading\u2026</p>';
+  var items=ADM.jp.items||[];
+  if(!items.length) return h+'<p class="adm-empty">No Japanese lists uploaded yet.</p>';
+  return h+'<div class="adm-recent">'+items.map(function(r){
+    var cls=[r.branch,r.division,r.batch].filter(Boolean).join(' ');
+    return '<div class="adm-row"><span class="t">'+escHtml(fmtAdmTime(r.created_at))+'</span><span class="d adm-jp">'+
+      '<span>'+(cls?'<b>'+escHtml(cls)+'</b> \u00b7 ':'')+escHtml(r.file_name||'list.pdf')+' \u00b7 '+escHtml(jpFmtSize(r.file_size||0))+'</span>'+
+      '<button type="button" class="btn2" data-act="admin-jp-view" data-id="'+escHtml(r.id)+'">View PDF</button></span></div>';
+  }).join('')+'</div>';
+}
+function openJpPdf(btn){
+  var id=btn.getAttribute('data-id'); if(!id||!ADM.pin) return;
+  var w=window.open('about:blank','_blank');   // opened straight from the click so pop-up blockers allow it
+  if(!w){ btn.textContent='Allow pop-ups'; return; }
+  try{ w.opener=null; }catch(e){}
+  var label='View PDF'; btn.disabled=true; btn.textContent='Opening\u2026';
+  var fail=function(msg){ try{w.close();}catch(e){} btn.disabled=false; btn.textContent=msg; setTimeout(function(){btn.textContent=label;},2500); };
+  fetch(SUPA_URL+'/functions/v1/japanese-pdf',{
+    method:'POST',
+    headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({action:'view',pin:ADM.pin,id:id})
+  }).then(function(res){ return res.json().catch(function(){return {};}).then(function(j){return {ok:res.ok,j:j||{}};}); })
+    .then(function(r){
+      if(!r.ok||!r.j.url){ fail(r.j.error==='denied'||r.j.error==='locked'?'PIN rejected':'Failed'); return; }
+      w.location.href=r.j.url; btn.disabled=false; btn.textContent=label;
+    })
+    .catch(function(){ fail('Failed'); });
 }
 function fmtAdmTime(iso){
   var d=new Date(iso);
@@ -2778,6 +2959,7 @@ function renderAdmin(){
   '</div>';
   html+='<p class="adm-h">Classes</p>'+rankList(d.classes,'k','n');
   html+='<p class="adm-h">Link clicks <span style="font-weight:400;color:var(--muted)">(30d)</span></p>'+rankList(d.link_clicks,'k','n');
+  html+=jpAdminHTML();
   html+=surveyAdminHTML();
   html+='<p class="adm-h">Latest visits</p>';
   var recent=d.recent||[];
@@ -4004,148 +4186,6 @@ document.addEventListener('keydown',function(e){
   else if(!e.shiftKey&&ae===last){ e.preventDefault(); first.focus(); }
 });
 
-/* ---------- Tilt: week-grid tiles slide, lean and glint when the phone is tilted left or right ----------
-   Reads the phone's motion sensors through the deviceorientation event (the browser fuses accelerometer + gyroscope into a
-   left/right roll angle, "gamma"; raw accelerometer axes have opposite signs on iOS and Android, gamma does not).
-   Every tile is its own damped spring (different stiffness/damping/depth), so tiles lag, overshoot and settle like jelly.
-   iOS needs one tap to grant motion access. Desktop: the mouse position over the grid stands in for tilt. */
-var TILT_BTN='<button type="button" class="tilt-btn" data-act="tilt" aria-pressed="false" hidden>'+
-  '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="1.8" width="6" height="10.4" rx="1.4"/><path d="M2.5 14.4h11"/></svg>'+
-  '<span class="tilt-s">Tilt off</span></button>';
-var TILT={
-  has:typeof DeviceOrientationEvent!=='undefined',
-  need:typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function',
-  coarse:!!(window.matchMedia&&matchMedia('(pointer:coarse)').matches),
-  reduce:!!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches),
-  on:false,attached:false,granted:false,denied:false,pending:false,sensor:false,
-  base:null,lastT:0,target:0,tiles:[],raf:0,rafT:0,revealed:false,io:null
-};
-function tiltClamp(v,a,b){return v<a?a:v>b?b:v;}
-function tiltOri(e){
-  if(e.gamma==null) return;
-  TILT.sensor=true;
-  var ang=(screen.orientation&&typeof screen.orientation.angle==='number')?screen.orientation.angle:(window.orientation||0),raw=0;
-  if(ang===90||ang===270||ang===-90){ TILT.base=null; }          // landscape: tiles rest
-  else{
-    var g=ang===180?-e.gamma:e.gamma,t=performance.now(),dt=TILT.lastT?t-TILT.lastT:16;
-    TILT.lastT=t;
-    if(TILT.base===null) TILT.base=g;
-    TILT.base+=(g-TILT.base)*Math.min(1,dt/12000);               // slowly re-centres on how you hold the phone
-    var rel=g-TILT.base; rel=Math.abs(rel)<2?0:rel-(rel>0?2:-2);   // 2 degree dead zone
-    raw=tiltClamp(rel/20,-1,1);                                  // 20 degrees = full slide
-  }
-  TILT.target+=(raw-TILT.target)*.4;
-  tiltRun();
-}
-function tiltRun(){ if(!TILT.raf) TILT.raf=requestAnimationFrame(tiltFrame); }
-function tiltFrame(t){
-  TILT.raf=0;
-  var dt=TILT.rafT?Math.min(.033,(t-TILT.rafT)/1000):.016; TILT.rafT=t;
-  var tg=TILT.on?TILT.target:0,moving=false,T=TILT.tiles,i,o,want,a,sk;
-  for(i=0;i<T.length;i++){
-    o=T[i]; if(!o.el.isConnected) continue;
-    want=tg*o.amp; a=o.k*(want-o.x)-o.c*o.v;
-    o.v+=a*dt; o.x+=o.v*dt;
-    if(Math.abs(want-o.x)>.02||Math.abs(o.v)>.08) moving=true;
-    sk=TILT.reduce?0:tiltClamp(o.v*.05,-7,7);
-    o.el.style.transform='translate3d('+o.x.toFixed(2)+'px,0,0) skewX('+sk.toFixed(2)+'deg)';
-    o.el.style.setProperty('--tt',(o.x/o.amp).toFixed(3));
-    o.el.style.setProperty('--sx',(-o.x*.7).toFixed(2));
-  }
-  if(moving){ TILT.raf=requestAnimationFrame(tiltFrame); return; }
-  TILT.rafT=0;
-  if(!TILT.on){   // switched off and settled: hand the tiles back untouched
-    for(i=0;i<T.length;i++){ o=T[i]; o.x=0;o.v=0; o.el.style.transform='';o.el.style.removeProperty('--tt');o.el.style.removeProperty('--sx'); }
-    var wk=$('#week'); if(wk) wk.classList.remove('tilt-live');
-  }
-}
-function tiltSet(on){
-  TILT.on=on; TILT.pending=false;
-  var wk=$('#week');
-  if(on){
-    if(TILT.has&&!TILT.attached){ addEventListener('deviceorientation',tiltOri); TILT.attached=true; }
-    TILT.base=null; if(wk) wk.classList.add('tilt-live');
-  }else{
-    if(TILT.attached){ removeEventListener('deviceorientation',tiltOri); TILT.attached=false; }
-    TILT.target=0;
-  }
-  tiltBind(); tiltRun();
-}
-function tiltEnable(gesture){
-  if(TILT.on||TILT.pending) return;
-  if(TILT.need&&!TILT.granted){
-    if(!gesture) return;                                         // iOS only allows the permission prompt from a tap
-    TILT.pending=true;
-    DeviceOrientationEvent.requestPermission().then(function(r){
-      if(r==='granted'){ TILT.granted=true; TILT.denied=false; store.set('tt-tilt','1'); tiltSet(true); }
-      else{ TILT.denied=true; tiltSet(false); }
-    }).catch(function(){ TILT.denied=true; tiltSet(false); });
-    return;
-  }
-  store.set('tt-tilt','1'); tiltSet(true);
-}
-function tiltToggle(){
-  if(TILT.on){ store.set('tt-tilt','0'); tiltSet(false); }
-  else{ TILT.denied=false; tiltEnable(true); }
-}
-function tiltReveal(wk){
-  if(TILT.revealed) return; TILT.revealed=true;
-  if(TILT.io){ TILT.io.disconnect(); TILT.io=null; }
-  wk.classList.remove('wk-pre'); wk.classList.add('wk-intro');
-  setTimeout(function(){ wk.classList.remove('wk-intro'); },1800);
-}
-function tiltBind(){
-  var wk=$('#week'); if(!wk) return;
-  var btn=wk.querySelector('.tilt-btn');
-  if(btn){
-    btn.hidden=!(TILT.has||!TILT.coarse);
-    btn.setAttribute('aria-pressed',String(TILT.on));
-    btn.querySelector('.tilt-s').textContent=TILT.denied?'Tilt blocked':TILT.on?'Tilt on':'Tilt off';
-    btn.title=TILT.denied?'Allow motion access: Settings, Safari, Motion & Orientation Access':(TILT.coarse?'Tilt your phone left or right to slide the classes':'Move the mouse across the grid to slide the classes');
-  }
-  var els=wk.querySelectorAll('.wk .blk'),small=window.innerWidth<600;
-  TILT.tiles=[].map.call(els,function(el,i){
-    var col=el.closest('.wk-col'),ci=col?(+col.getAttribute('data-ci')||0):0;
-    var ri=col?[].indexOf.call(col.querySelector('.blks').children,el):0;
-    var depth=.8+((ci*5+i*3)%5)*.1,k=TILT.reduce?170:120+((ci*3+i*7)%6)*28,zeta=TILT.reduce?1:.38+((i*5)%4)*.07;
-    var amp=(small?5:7)*depth;
-    el.style.setProperty('--d',(ci*80+ri*45)+'ms');
-    return {el:el,amp:amp,k:k,c:2*zeta*Math.sqrt(k),x:TILT.on?TILT.target*amp:0,v:0};
-  });
-  if(!TILT.revealed&&els.length&&!TILT.reduce){      // one orchestrated moment: tiles drop in column by column when the grid scrolls into view
-    wk.classList.add('wk-pre');
-    if('IntersectionObserver' in window){
-      if(!TILT.io){
-        TILT.io=new IntersectionObserver(function(en){ if(en[0]&&en[0].isIntersecting) tiltReveal(wk); },{threshold:.15});
-        TILT.io.observe(wk);
-        setTimeout(function(){ tiltReveal(wk); },6000);
-      }
-    }else tiltReveal(wk);
-  }else if(!TILT.revealed&&els.length){ TILT.revealed=true; }
-  if(TILT.on) tiltRun();
-}
-(function tiltInit(){
-  var wk=$('#week'); if(!wk) return;
-  // desktop stand-in for tilt: mouse position across the grid
-  wk.addEventListener('pointermove',function(e){
-    if(!TILT.on||TILT.sensor||e.pointerType!=='mouse') return;
-    var r=wk.getBoundingClientRect();
-    TILT.target=tiltClamp(((e.clientX-r.left)/r.width-.5)*2,-1,1); tiltRun();
-  });
-  wk.addEventListener('pointerleave',function(e){ if(e.pointerType==='mouse'){ TILT.target=0; tiltRun(); } });
-  var pref=store.get('tt-tilt','');
-  var want=pref==='1'||(pref===''&&TILT.coarse&&!TILT.reduce);
-  if(!want) return;
-  if(!TILT.need){ tiltEnable(false); return; }
-  if(pref==='1'){   // iOS: motion access needs a tap, so ask on the first tap anywhere
-    document.addEventListener('click',function once(e){
-      document.removeEventListener('click',once,true);
-      if(e.target.closest&&e.target.closest('[data-act="tilt"]')) return;
-      tiltEnable(true);
-    },true);
-  }
-})();
-
 function boot(){
   initForumTip();
   $('#view').hidden=true;$('#picker').hidden=true;$('#pkCancel').hidden=true;
@@ -4163,7 +4203,7 @@ function boot(){
     if(BATCHES.indexOf(rawBatch)<0) rawBatch='';
     if(rawBatch&&rollAsked){
       return setClass(sBr,sDv).then(function(ok){
-        if(ok){ st.batch=rawBatch; closePicker(true); }
+        if(ok){ st.batch=rawBatch; jpGate(sBr,sDv,rawBatch,st.roll,function(){ closePicker(true); }); }
         else { stopLoadScreen(); $('#picker').hidden=false; openPicker(false); }
       });
     }
