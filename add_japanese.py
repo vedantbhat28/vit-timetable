@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+"""Adds the Japanese (roll-number based) timetable to index.html. Usage: python add_japanese.py [path/to/index.html]"""
+import sys
+path = sys.argv[1] if len(sys.argv) > 1 else "index.html"
+with open(path, encoding="utf-8", newline="") as f:
+    s = f.read()
+if "japaneseFor" in s:
+    sys.exit("Already patched - nothing to do.")
+EDITS = [('function germanFor(branch,div,roll){', 'var JAP_SUBJ=\'LANG-JA\';\nvar JAP_ROLLS={"AIDS":{"A":{"J-D3":[105,117,126,129,138,140,141,153,156]},"B":{"J-D3":[210,230,239,257]},"C":{"J-D3":[302,305,307,310,316,317,318,319,348]},"D":{"J-D3":[404,456,461]},"E":{"J-D3":[524,528,533,540,544,550,558]},"F":{"J-D4":[616,633,648,662]}},"CSDS":{"B":{"J-D3":[214,232,251]},"C":{"J-D3":[317,320,332,337]},"A":{"J-D4":[112,123,138,139,149,160]}},"CSSE":{"A":{"J-D3":[109,156]},"B":{"J-D3":[205,213,217,238],"J-D4":[249,262,267]}},"CSCBI":{"C":{"J-D3":[308,313,324,327,353]},"A":{"J-D4":[136,142,158,167]},"B":{"J-D4":[241,259,261,266]}},"ET":{"B":{"J-D3":[217,230]},"C":{"J-D3":[320,349,353,355,365]},"E":{"J-D3":[507,550,553,559]},"A":{"J-D4":[115,116,125,129,141,144,153]},"F":{"J-D4":[607,622,624,628,636,639,641,653,656]},"D":{"J-D4":[409,444,449]}},"IC":{"C":{"J-D3":[316,318,327,339,344,345,356]},"A":{"J-D4":[111,114,118,131,148,149]},"B":{"J-D4":[201,204,207,220,223,250,253,259,263]}},"CV":{"A":{"J-D3":[103]},"B":{"J-D4":[210,232,240]}},"ME":{"C":{"J-D4":[319,332]},"A":{"J-D4":[113,158,169]},"B":{"J-D4":[238]},"D":{"J-D4":[427,432,442]},"E":{"J-D4":[519,536,562]},"F":{"J-D4":[634]}}};\nvar JAP_SLOTS={"J-D3":[6,660,780,"E310"],"J-D4":[6,660,780,"E311"]};   // language division -> [weekday, start min, end min, room]\nfunction japaneseFor(branch,div,roll){\n  var b=JAP_ROLLS[branch],d=b&&b[div],n=parseInt(roll,10);\n  if(!d||!n) return null;\n  for(var k in d) if(d[k].indexOf(n)>-1) return k;\n  return null;\n}\nfunction germanFor(branch,div,roll){'), ("'LANG-DE':{short:'German'", "'LANG-JA':{short:'Japanese',color:'#BE123C'},\n  'LANG-DE':{short:'German'"), ('st.lang=germanFor(st.branch,st.div,st.roll);', 'st.lang=germanFor(st.branch,st.div,st.roll);\n  st.jp=st.lang?null:japaneseFor(st.branch,st.div,st.roll);'), ('if(!st.lang) return;', 'if(!st.lang&&!st.jp) return;'), ('var g=GER_SLOTS[st.lang];', 'var g=st.lang?GER_SLOTS[st.lang]:JAP_SLOTS[st.jp],lc=st.lang?GER_SUBJ:JAP_SUBJ;'), ("getSubj(GER_SUBJ,'German');", "getSubj(lc,st.lang?'German':'Japanese');"), ("sub:GER_SUBJ,type:'Foreign Language',b:undefined,fac:'',room:g[3],ger:true,langDiv:st.lang}", "sub:lc,type:'Foreign Language',b:undefined,fac:'',room:g[3],ger:true,langDiv:st.lang||st.jp}"), ('return !!st.lang&&!x.ger&&', 'return !!(st.lang||st.jp)&&!x.ger&&'), ("(st.lang?' German ('+st.lang+') is added from the foreign language list.':'')", "(st.lang?' German ('+st.lang+') is added from the foreign language list.':st.jp?' Japanese ('+st.jp+') is added from the foreign language list.':'')"), ('From the Kondhwa campus German list. It repeats every week.', 'From the official foreign language list. It repeats every week.')]
+for i, (old, new) in enumerate(EDITS, 1):
+    n = s.count(old)
+    if n != 1:
+        sys.exit("Edit %d: expected 1 match but found %d for: %s\nNothing was written." % (i, n, old[:70]))
+    s = s.replace(old, new)
+with open(path, "w", encoding="utf-8", newline="") as f:
+    f.write(s)
+print("Done: Japanese timetable added to " + path)

@@ -1506,6 +1506,7 @@ var SUBJ_META={
   ES26107:{short:'Indian Know.',   color:'#3F7D1E'},
   ES26108A:{short:'English',       color:'#B8357C'},
   ES26109:{short:'Activity',       color:'#5B6478'},
+  'LANG-JA':{short:'Japanese',color:'#BE123C'},
   'LANG-DE':{short:'German',       color:'#C2410C'},
   ES26201:{short:'Calculus',       color:'#2F5BD6'},
   ES26205:{short:'Robotics',       color:'#B84E0F'},
@@ -1517,6 +1518,15 @@ var SUBJ_META={
 var GER_SUBJ='LANG-DE';
 var GER_ROLLS={"AIDS":{"B":{"D8":[201,203,207,213,215,224,227,233,234,235,251,253,254,261]},"E":{"D9":[504,506,511,517,520,523,537,559]},"C":{"D10":[315,321,327,333,341,343,347,358,359,361,364,366]},"A":{"D11":[106,111,112,122,135,142,145,146,148,164,168]},"F":{"D11":[604,605,628,629,630,631,636,638,664,666]},"D":{"D14":[409,410,421,440,441,443,447,459,464]}},"CSCBI":{"B":{"D8":[208,212,226,227,230,232,235,242,256,265]},"C":{"D8":[301,302,321,329,341,348,354]},"A":{"D11":[104,105,106,116,119,124,126,127,128,130,134,135,145,152,155,160]}},"ET":{"A":{"D8":[104,105,108,120,123,126,127,135,136,142,150,151,152,155,160,162,163,165]},"B":{"D9":[203,204,206,209,212,216,221,224,226,232,235,236,240,244,246,248,249,253,267]},"C":{"D9":[301,303,304,305,308,314,332,335,336,339,345,346,347,352,362,366]},"D":{"D9":[416,419,423,432,434,445,447,448,451,455,457,464,468]},"E":{"D10":[505,518,521,530,537,546,551,558,562,565,568]},"F":{"D10":[601,603,608,609,611,621,627,630,633,634,635,637,642,649,650,651,652,657,665,666,667]}},"CSSE":{"C":{"D8":[312,321,322,324,333,335,340,342,351,352,354,363]},"A":{"D12":[104,105,115,120,121,133,136,137,138,144,152,155,157]},"B":{"D12":[202,208,209,212,215,224,230,231,240,251,253,259,264,265,266]}},"CV":{"A":{"D9":[122,126,129,131,154,161,162,163,166]},"B":{"D9":[211,219,236,237,241,265]}},"IC":{"C":{"D10":[308,310,313,321,326,327,332,335,337,338,343,349,364]},"B":{"D12":[213,214,218,224,228,232,233,236,245,247]},"A":{"D14":[105,115,130,133,137,143,151,152,160,161,163]}},"ME":{"F":{"D10":[603,604,605,608,609,611,613,614,622,626,629,635,640,643,646,658,660,662]},"B":{"D12":[206,207,215,217,218,221,223,228,229,230,232,237,248,250,255,257,258,262,263,264,266,267,269,270]},"A":{"D13":[102,104,106,116,125,127,135,136,137,139,142,144,150,154,155,159,161,170]},"C":{"D13":[302,304,305,306,308,309,310,323,324,326,337,338,340,344,346,349,350,351,354,355,357,364,368,369,370]},"D":{"D14":[414,415,416,422,424,428,437,439,441,444,452,457,465,467,469]},"E":{"D14":[501,502,503,506,507,509,513,514,517,518,523,526,527,530,543,552,553,560,561]}},"CSDS":{"A":{"D11":[26,63,103,104,115,119,122,129,130,136,146,161,168]},"B":{"D11":[201,207,209,217,222,225,238,240,242,248,250,252]},"C":{"D13":[303,306,309,314,324,333,340,344,350,352,353,354,359]}}};
 var GER_SLOTS={"D8":[2,480,600,"E312"],"D9":[3,480,600,"E215"],"D10":[4,480,600,"E303"],"D11":[2,960,1080,"E305"],"D12":[3,960,1080,"E304"],"D13":[4,960,1080,"E305"],"D14":[5,960,1080,"E312"]};   // language division -> [weekday, start min, end min, room]
+var JAP_SUBJ='LANG-JA';
+var JAP_ROLLS={"AIDS":{"A":{"J-D3":[105,117,126,129,138,140,141,153,156]},"B":{"J-D3":[210,230,239,257]},"C":{"J-D3":[302,305,307,310,316,317,318,319,348]},"D":{"J-D3":[404,456,461]},"E":{"J-D3":[524,528,533,540,544,550,558]},"F":{"J-D4":[616,633,648,662]}},"CSDS":{"B":{"J-D3":[214,232,251]},"C":{"J-D3":[317,320,332,337]},"A":{"J-D4":[112,123,138,139,149,160]}},"CSSE":{"A":{"J-D3":[109,156]},"B":{"J-D3":[205,213,217,238],"J-D4":[249,262,267]}},"CSCBI":{"C":{"J-D3":[308,313,324,327,353]},"A":{"J-D4":[136,142,158,167]},"B":{"J-D4":[241,259,261,266]}},"ET":{"B":{"J-D3":[217,230]},"C":{"J-D3":[320,349,353,355,365]},"E":{"J-D3":[507,550,553,559]},"A":{"J-D4":[115,116,125,129,141,144,153]},"F":{"J-D4":[607,622,624,628,636,639,641,653,656]},"D":{"J-D4":[409,444,449]}},"IC":{"C":{"J-D3":[316,318,327,339,344,345,356]},"A":{"J-D4":[111,114,118,131,148,149]},"B":{"J-D4":[201,204,207,220,223,250,253,259,263]}},"CV":{"A":{"J-D3":[103]},"B":{"J-D4":[210,232,240]}},"ME":{"C":{"J-D4":[319,332]},"A":{"J-D4":[113,158,169]},"B":{"J-D4":[238]},"D":{"J-D4":[427,432,442]},"E":{"J-D4":[519,536,562]},"F":{"J-D4":[634]}}};
+var JAP_SLOTS={"J-D3":[6,660,780,"E310"],"J-D4":[6,660,780,"E311"]};   // language division -> [weekday, start min, end min, room]
+function japaneseFor(branch,div,roll){
+  var b=JAP_ROLLS[branch],d=b&&b[div],n=parseInt(roll,10);
+  if(!d||!n) return null;
+  for(var k in d) if(d[k].indexOf(n)>-1) return k;
+  return null;
+}
 function germanFor(branch,div,roll){
   var b=GER_ROLLS[branch],d=b&&b[div],n=parseInt(roll,10);
   if(!d||!n) return null;
@@ -1712,15 +1722,16 @@ function setClass(b,d){
 // Works on a copy so the cached timetable for the division is never changed.
 function applyGerman(){
   st.lang=germanFor(st.branch,st.div,st.roll);
-  if(!st.lang) return;
+  st.jp=st.lang?null:japaneseFor(st.branch,st.div,st.roll);
+  if(!st.lang&&!st.jp) return;
   // anonymous count only: no roll number, class or language is sent; once per browser session
   try{ if(!sessionStorage.getItem('tt-fl')){ sessionStorage.setItem('tt-fl','1'); logVisit('foreign_lang',{}); } }catch(e){ logVisit('foreign_lang',{}); }
-  var g=GER_SLOTS[st.lang];
-  getSubj(GER_SUBJ,'German');
-  SESS=SESS.concat([{id:SESS.length,d:g[0],s:g[1],e:g[2],sub:GER_SUBJ,type:'Foreign Language',b:undefined,fac:'',room:g[3],ger:true,langDiv:st.lang}]);
+  var g=st.lang?GER_SLOTS[st.lang]:JAP_SLOTS[st.jp],lc=st.lang?GER_SUBJ:JAP_SUBJ;
+  getSubj(lc,st.lang?'German':'Japanese');
+  SESS=SESS.concat([{id:SESS.length,d:g[0],s:g[1],e:g[1]+60,sub:lc,type:'Foreign Language',b:undefined,fac:'',room:g[3],ger:true,langDiv:st.lang||st.jp},{id:SESS.length+1,d:g[0],s:g[1]+60,e:g[2],sub:lc,type:'Foreign Language',b:undefined,fac:'',room:g[3],ger:true,langDiv:st.lang||st.jp}]);
   if(WEEK.indexOf(g[0])<0) WEEK=WEEK.concat([g[0]]).sort(function(a,b){return a-b});
 }
-function isEng(x){ return !!st.lang&&!x.ger&&(x.sub==='ES26108A'||/english/i.test((SUBJ[x.sub]||{}).name||'')); }
+function isEng(x){ return !!(st.lang||st.jp)&&!x.ger&&(x.sub==='ES26108A'||/english/i.test((SUBJ[x.sub]||{}).name||'')); }
 var ENG_NOTE='Due to your foreign language selection, you might not have English in this slot.';
 // side-by-side columns for sessions that overlap in time (list sorted by start)
 function layoutCols(list){
@@ -2003,7 +2014,7 @@ function render(){
   document.title=headTitle+' timetable';
   $('#campusLine').innerHTML='<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 14.5S13 10.2 13 6.5a5 5 0 10-10 0C3 10.2 8 14.5 8 14.5z"/><circle cx="8" cy="6.5" r="1.8"/></svg><span>'+campusFor(st.branch)+'</span>';
   var lb=$('#latestBadge');if(lb){$('#latestTxt').textContent='Latest schedule \u00b7 '+CUR.version+' \u00b7 from '+fmtDateLong(CUR.effFrom);lb.hidden=false;}
-  $('#subLine').textContent='First year, semester 1. Timetable version '+CUR.version+', valid '+fmtDateLong(CUR.effFrom)+' to '+fmtDateLong(CUR.effTo)+'.'+(st.lang?' German ('+st.lang+') is added from the foreign language list.':'');
+  $('#subLine').textContent='First year, semester 1. Timetable version '+CUR.version+', valid '+fmtDateLong(CUR.effFrom)+' to '+fmtDateLong(CUR.effTo)+'.'+(st.lang?' German ('+st.lang+') is added from the foreign language list.':st.jp?' Japanese ('+st.jp+') is added from the foreign language list.':'');
   $('#footTxt').textContent="Built from timetable Form FF957 for First Year "+CUR.pdf+", version "+CUR.version+", effective "+fmtDateLong(CUR.effFrom)+" to "+fmtDateLong(CUR.effTo)+". Class blocks show faculty initials; tap a class for full names from the faculty list on page 2 of the PDF, pulled live from the TimeTable_VIT database. Holidays and exam windows follow the FY Academic Calendar 2026-27, Sem I.";
   $('#clockTime').textContent=fmtT(mins(now));
   $('#clockDate').textContent=DAYS[now.getDay()]+', '+now.getDate()+' '+MONS[now.getMonth()]+' '+now.getFullYear();
@@ -2064,7 +2075,7 @@ function detailHTML(x,dateMs,now){
       '<dt>Time</dt><dd>'+fmtRange(x.s,x.e)+' ('+dur((x.e-x.s)*60000)+')</dd>'+
       '<dt>Room</dt><dd>'+x.room+'</dd>'+
       '<dt>Type</dt><dd>Foreign language, language division '+x.langDiv+'</dd></dl></section>'+
-      '<section class="sec"><p class="sh-note">From the Kondhwa campus German list. It repeats every week.</p></section></div>';
+      '<section class="sec"><p class="sh-note">From the official foreign language list. It repeats every week.</p></section></div>';
   }
   var engBox=isEng(x)?'<section class="sec"><p class="lang-box">'+ENG_NOTE+'</p></section>':'';
   // 1. this class
