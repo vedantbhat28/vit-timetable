@@ -236,6 +236,28 @@ h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,4.4vw,26px);l
 .has-chip.sm .blk-name{padding-right:0}
 .week-note{margin:8px 2px 0;color:var(--muted);font-size:12.5px}
 
+/* ---- week grid: tilt motion (tiles slide with phone tilt, lean with speed, glint as they move) ---- */
+.weekp-head .tilt-btn{margin-left:auto;display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:4px 12px;border:1px solid var(--line);border-radius:99px;background:var(--wash);color:var(--ink);font-size:12px;font-weight:600;cursor:pointer;transition:background-color .2s ease,color .2s ease}
+.tilt-btn[hidden]{display:none}
+.tilt-btn[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.tilt-btn svg{flex:none;transform-origin:50% 90%}
+.tilt-btn[aria-pressed="true"] svg{animation:tiltRock 2.6s ease-in-out infinite}
+@keyframes tiltRock{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(12deg)}}
+#week.tilt-live .wk-scroll{overflow-x:hidden;margin:0 -6px;padding:0 6px}
+#week.tilt-live .blk{will-change:transform;box-shadow:calc(var(--sx,0)*1px) 3px 8px -4px color-mix(in srgb,var(--c) 55%,transparent)}
+#week .blk::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;opacity:0;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.55) 50%,transparent 60%),linear-gradient(105deg,transparent 30%,color-mix(in srgb,var(--c) 22%,transparent) 50%,transparent 70%);
+  background-size:260% 100%;background-position:calc(50% - var(--tt,0)*38%) 0}
+#week.tilt-live .blk::after{opacity:min(1,calc(var(--tt,0)*var(--tt,0)*3))}
+#week .blk-btn{transition:transform .16s ease}
+#week .blk-btn:active{transform:scale(.93)}
+#week .blk[data-state="live"]{animation:liveRing 2.8s ease-in-out infinite}
+@keyframes liveRing{0%,100%{outline-offset:1px}50%{outline-offset:3px}}
+#week.wk-pre .blk{opacity:0}
+#week.wk-intro .blk{animation:tileIn .66s cubic-bezier(.2,.85,.25,1.15) var(--d,0ms) backwards}
+@keyframes tileIn{from{opacity:0;translate:0 16px;scale:.9}}
+@media (prefers-reduced-motion:reduce){#week .blk,#week .tilt-btn svg{animation:none!important}#week.wk-pre .blk{opacity:1}#week .blk-btn:active{transform:none}}
+
 
 /* ---- Bro connect (beta) ---- */
 .bro{margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 12px}
@@ -1961,7 +1983,7 @@ function weekHTML(now){
   var gut='';
   for(var g=0;g<=rows;g++) gut+='<span style="top:'+y((h0+g)*60)+'">'+fmtH(h0+g)+'</span>';
   var head='<div></div>',body='',hasToday=false;
-  cols.forEach(function(c){
+  cols.forEach(function(c,ci){
     var isT=sameDay(c.d,now);if(isT)hasToday=true;
     head+='<div class="wk-h"'+(isT?' aria-current="date"':'')+'><span>'+(isT?'<i class="tdot"></i>':'')+DAYS[c.d.getDay()].slice(0,3)+'</span><small>'+shortDate(c.d)+'</small></div>';
     var sp=specialFor(c.d);
@@ -1973,7 +1995,7 @@ function weekHTML(now){
     }).join('');
     var colCls='wk-col'+(isT?' today':'')+(sp?sp.kind==='holiday'?' hol':' exam-day':'');
     var label=sp?'<div class="wk-hol-label">'+(sp.kind==='holiday'?'Holiday':'Exams')+'</div>':'';
-    body+='<div class="'+colCls+'">'+label+'<ol class="blks">'+(sp&&sp.kind==='holiday'?'':blks)+'</ol></div>';
+    body+='<div class="'+colCls+'" data-ci="'+ci+'">'+label+'<ol class="blks">'+(sp&&sp.kind==='holiday'?'':blks)+'</ol></div>';
   });
   var line='';
   if(hasToday&&nowM>=h0*60&&nowM<=h1*60){
@@ -1983,7 +2005,7 @@ function weekHTML(now){
   for(var w=0;w<wd.length;w++) forDay(wd[w],st.batch).forEach(function(x){if(tot[x.type]!==undefined) tot[x.type]+=(x.e-x.s)/60});
   var title=(dow===0||dow>last||rolled)?'Next week':'This week';
   var offDays=forDay(6,st.batch).length?'Sunday has':'Saturday and Sunday have';
-  return '<div class="weekp-head"><h2>'+title+'</h2><p>'+shortDate(cols[0].d)+' to '+shortDate(cols[cols.length-1].d)+', batch '+st.batch+'</p></div>'+
+  return '<div class="weekp-head"><h2>'+title+'</h2><p>'+shortDate(cols[0].d)+' to '+shortDate(cols[cols.length-1].d)+', batch '+st.batch+'</p>'+TILT_BTN+'</div>'+
     '<div class="wk-scroll"><div class="wk'+(wd.length>5?' six':'')+'" style="--rows:'+rows+';--nc:'+wd.length+'">'+head+
     '<div class="wk-gut" aria-hidden="true">'+gut+'</div>'+body+line+'</div></div>'+
     '<p class="week-note">Each week for batch '+st.batch+': '+tot.Theory+' h of theory, '+tot.Lab+' h of labs and '+tot.Tutorial+' h of tutorials. '+offDays+' no classes.</p>';
@@ -2028,6 +2050,7 @@ function render(){
   hero.innerHTML=hm.html;
   $('#panel').innerHTML=panelHTML(now,occ,sel);
   $('#week').innerHTML=weekHTML(now);
+  tiltBind();
   broRefresh();
 
   Object.keys(sc).forEach(function(c){var el=$('.'+c);if(el)el.scrollLeft=sc[c]});
@@ -2381,6 +2404,7 @@ document.addEventListener('click',function(e){
   if(e.target&&e.target.id==='admin'){ if(Date.now()-adminOpenedAt>500) closeAdmin(); return; }
   var b=e.target.closest('[data-act]');if(!b)return;
   var a=b.getAttribute('data-act');
+  if(a==='tilt'){tiltToggle();return;}
   if(a.indexOf('bro-')===0){broAct(a);return;}
   if(a.indexOf('teacher-')===0){teacherAct(a);return;}
   if(a.indexOf('room-')===0){roomAct(a,b);return;}
@@ -3990,6 +4014,148 @@ document.addEventListener('keydown',function(e){
   if(e.shiftKey&&(ae===first||ae===$('#svCard'))){ e.preventDefault(); last.focus(); }
   else if(!e.shiftKey&&ae===last){ e.preventDefault(); first.focus(); }
 });
+
+/* ---------- Tilt: week-grid tiles slide, lean and glint when the phone is tilted left or right ----------
+   Reads the phone's motion sensors through the deviceorientation event (the browser fuses accelerometer + gyroscope into a
+   left/right roll angle, "gamma"; raw accelerometer axes have opposite signs on iOS and Android, gamma does not).
+   Every tile is its own damped spring (different stiffness/damping/depth), so tiles lag, overshoot and settle like jelly.
+   iOS needs one tap to grant motion access. Desktop: the mouse position over the grid stands in for tilt. */
+var TILT_BTN='<button type="button" class="tilt-btn" data-act="tilt" aria-pressed="false" hidden>'+
+  '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="1.8" width="6" height="10.4" rx="1.4"/><path d="M2.5 14.4h11"/></svg>'+
+  '<span class="tilt-s">Tilt off</span></button>';
+var TILT={
+  has:typeof DeviceOrientationEvent!=='undefined',
+  need:typeof DeviceOrientationEvent!=='undefined'&&typeof DeviceOrientationEvent.requestPermission==='function',
+  coarse:!!(window.matchMedia&&matchMedia('(pointer:coarse)').matches),
+  reduce:!!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches),
+  on:false,attached:false,granted:false,denied:false,pending:false,sensor:false,
+  base:null,lastT:0,target:0,tiles:[],raf:0,rafT:0,revealed:false,io:null
+};
+function tiltClamp(v,a,b){return v<a?a:v>b?b:v;}
+function tiltOri(e){
+  if(e.gamma==null) return;
+  TILT.sensor=true;
+  var ang=(screen.orientation&&typeof screen.orientation.angle==='number')?screen.orientation.angle:(window.orientation||0),raw=0;
+  if(ang===90||ang===270||ang===-90){ TILT.base=null; }          // landscape: tiles rest
+  else{
+    var g=ang===180?-e.gamma:e.gamma,t=performance.now(),dt=TILT.lastT?t-TILT.lastT:16;
+    TILT.lastT=t;
+    if(TILT.base===null) TILT.base=g;
+    TILT.base+=(g-TILT.base)*Math.min(1,dt/12000);               // slowly re-centres on how you hold the phone
+    var rel=g-TILT.base; rel=Math.abs(rel)<2?0:rel-(rel>0?2:-2);   // 2 degree dead zone
+    raw=tiltClamp(rel/20,-1,1);                                  // 20 degrees = full slide
+  }
+  TILT.target+=(raw-TILT.target)*.4;
+  tiltRun();
+}
+function tiltRun(){ if(!TILT.raf) TILT.raf=requestAnimationFrame(tiltFrame); }
+function tiltFrame(t){
+  TILT.raf=0;
+  var dt=TILT.rafT?Math.min(.033,(t-TILT.rafT)/1000):.016; TILT.rafT=t;
+  var tg=TILT.on?TILT.target:0,moving=false,T=TILT.tiles,i,o,want,a,sk;
+  for(i=0;i<T.length;i++){
+    o=T[i]; if(!o.el.isConnected) continue;
+    want=tg*o.amp; a=o.k*(want-o.x)-o.c*o.v;
+    o.v+=a*dt; o.x+=o.v*dt;
+    if(Math.abs(want-o.x)>.02||Math.abs(o.v)>.08) moving=true;
+    sk=TILT.reduce?0:tiltClamp(o.v*.05,-7,7);
+    o.el.style.transform='translate3d('+o.x.toFixed(2)+'px,0,0) skewX('+sk.toFixed(2)+'deg)';
+    o.el.style.setProperty('--tt',(o.x/o.amp).toFixed(3));
+    o.el.style.setProperty('--sx',(-o.x*.7).toFixed(2));
+  }
+  if(moving){ TILT.raf=requestAnimationFrame(tiltFrame); return; }
+  TILT.rafT=0;
+  if(!TILT.on){   // switched off and settled: hand the tiles back untouched
+    for(i=0;i<T.length;i++){ o=T[i]; o.x=0;o.v=0; o.el.style.transform='';o.el.style.removeProperty('--tt');o.el.style.removeProperty('--sx'); }
+    var wk=$('#week'); if(wk) wk.classList.remove('tilt-live');
+  }
+}
+function tiltSet(on){
+  TILT.on=on; TILT.pending=false;
+  var wk=$('#week');
+  if(on){
+    if(TILT.has&&!TILT.attached){ addEventListener('deviceorientation',tiltOri); TILT.attached=true; }
+    TILT.base=null; if(wk) wk.classList.add('tilt-live');
+  }else{
+    if(TILT.attached){ removeEventListener('deviceorientation',tiltOri); TILT.attached=false; }
+    TILT.target=0;
+  }
+  tiltBind(); tiltRun();
+}
+function tiltEnable(gesture){
+  if(TILT.on||TILT.pending) return;
+  if(TILT.need&&!TILT.granted){
+    if(!gesture) return;                                         // iOS only allows the permission prompt from a tap
+    TILT.pending=true;
+    DeviceOrientationEvent.requestPermission().then(function(r){
+      if(r==='granted'){ TILT.granted=true; TILT.denied=false; store.set('tt-tilt','1'); tiltSet(true); }
+      else{ TILT.denied=true; tiltSet(false); }
+    }).catch(function(){ TILT.denied=true; tiltSet(false); });
+    return;
+  }
+  store.set('tt-tilt','1'); tiltSet(true);
+}
+function tiltToggle(){
+  if(TILT.on){ store.set('tt-tilt','0'); tiltSet(false); }
+  else{ TILT.denied=false; tiltEnable(true); }
+}
+function tiltReveal(wk){
+  if(TILT.revealed) return; TILT.revealed=true;
+  if(TILT.io){ TILT.io.disconnect(); TILT.io=null; }
+  wk.classList.remove('wk-pre'); wk.classList.add('wk-intro');
+  setTimeout(function(){ wk.classList.remove('wk-intro'); },1800);
+}
+function tiltBind(){
+  var wk=$('#week'); if(!wk) return;
+  var btn=wk.querySelector('.tilt-btn');
+  if(btn){
+    btn.hidden=!(TILT.has||!TILT.coarse);
+    btn.setAttribute('aria-pressed',String(TILT.on));
+    btn.querySelector('.tilt-s').textContent=TILT.denied?'Tilt blocked':TILT.on?'Tilt on':'Tilt off';
+    btn.title=TILT.denied?'Allow motion access: Settings, Safari, Motion & Orientation Access':(TILT.coarse?'Tilt your phone left or right to slide the classes':'Move the mouse across the grid to slide the classes');
+  }
+  var els=wk.querySelectorAll('.wk .blk'),small=window.innerWidth<600;
+  TILT.tiles=[].map.call(els,function(el,i){
+    var col=el.closest('.wk-col'),ci=col?(+col.getAttribute('data-ci')||0):0;
+    var ri=col?[].indexOf.call(col.querySelector('.blks').children,el):0;
+    var depth=.8+((ci*5+i*3)%5)*.1,k=TILT.reduce?170:120+((ci*3+i*7)%6)*28,zeta=TILT.reduce?1:.38+((i*5)%4)*.07;
+    var amp=(small?5:7)*depth;
+    el.style.setProperty('--d',(ci*80+ri*45)+'ms');
+    return {el:el,amp:amp,k:k,c:2*zeta*Math.sqrt(k),x:TILT.on?TILT.target*amp:0,v:0};
+  });
+  if(!TILT.revealed&&els.length&&!TILT.reduce){      // one orchestrated moment: tiles drop in column by column when the grid scrolls into view
+    wk.classList.add('wk-pre');
+    if('IntersectionObserver' in window){
+      if(!TILT.io){
+        TILT.io=new IntersectionObserver(function(en){ if(en[0]&&en[0].isIntersecting) tiltReveal(wk); },{threshold:.15});
+        TILT.io.observe(wk);
+        setTimeout(function(){ tiltReveal(wk); },6000);
+      }
+    }else tiltReveal(wk);
+  }else if(!TILT.revealed&&els.length){ TILT.revealed=true; }
+  if(TILT.on) tiltRun();
+}
+(function tiltInit(){
+  var wk=$('#week'); if(!wk) return;
+  // desktop stand-in for tilt: mouse position across the grid
+  wk.addEventListener('pointermove',function(e){
+    if(!TILT.on||TILT.sensor||e.pointerType!=='mouse') return;
+    var r=wk.getBoundingClientRect();
+    TILT.target=tiltClamp(((e.clientX-r.left)/r.width-.5)*2,-1,1); tiltRun();
+  });
+  wk.addEventListener('pointerleave',function(e){ if(e.pointerType==='mouse'){ TILT.target=0; tiltRun(); } });
+  var pref=store.get('tt-tilt','');
+  var want=pref==='1'||(pref===''&&TILT.coarse&&!TILT.reduce);
+  if(!want) return;
+  if(!TILT.need){ tiltEnable(false); return; }
+  if(pref==='1'){   // iOS: motion access needs a tap, so ask on the first tap anywhere
+    document.addEventListener('click',function once(e){
+      document.removeEventListener('click',once,true);
+      if(e.target.closest&&e.target.closest('[data-act="tilt"]')) return;
+      tiltEnable(true);
+    },true);
+  }
+})();
 
 function boot(){
   initForumTip();
