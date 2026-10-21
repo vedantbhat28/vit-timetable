@@ -19,7 +19,7 @@
 <script>
 /* Referral check: opened from the copycat site -> send to rouge.html before anything loads (no network/database calls) */
 (function(){
-  var BAD='';
+  var BAD='abc';
   var ref=''; try{ ref=document.referrer||''; }catch(e){}
   var host='';
   try{ host=new URL(ref).hostname.toLowerCase(); }catch(e){ host=ref.toLowerCase().replace(/^[a-z]+:\/\//,'').split(/[\/?#:]/)[0]; }
