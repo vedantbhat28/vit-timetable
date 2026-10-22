@@ -1200,6 +1200,7 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
         <div class="pk-g" role="group" aria-labelledby="pkLB"><p class="pk-l" id="pkLB">Branch</p><div class="pk-opts" id="pkBranch"></div></div>
         <div class="pk-g" role="group" aria-labelledby="pkLD"><p class="pk-l" id="pkLD">Division</p><div class="pk-opts" id="pkDiv"></div></div>
         <div class="pk-g" role="group" aria-labelledby="pkLT"><p class="pk-l" id="pkLT">Lab batch</p><div class="pk-opts" id="pkBatch"></div></div>
+        <div class="pk-g" id="pkGDbox" role="group" aria-labelledby="pkLGD" hidden><p class="pk-l" id="pkLGD">German group <span style="font-weight:400">(Bibwewadi, optional)</span></p><div class="pk-opts" id="pkGD"></div></div>
         <div class="pk-g" role="group" aria-labelledby="pkLR">
           <p class="pk-l" id="pkLR">Roll number <span style="font-weight:400">(optional)</span></p>
           <input id="pkRoll" class="pk-roll" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="e.g. 346" aria-describedby="pkPriv">
@@ -1610,6 +1611,18 @@ var SUBJ_META={
 var GER_SUBJ='LANG-DE';
 var GER_ROLLS={"AIDS":{"B":{"D8":[201,203,207,213,215,224,227,233,234,235,251,253,254,261]},"E":{"D9":[504,506,511,517,520,523,537,559]},"C":{"D10":[315,321,327,333,341,343,347,358,359,361,364,366]},"A":{"D11":[106,111,112,122,135,142,145,146,148,164,168]},"F":{"D11":[604,605,628,629,630,631,636,638,664,666]},"D":{"D14":[409,410,421,440,441,443,447,459,464]}},"CSCBI":{"B":{"D8":[208,212,226,227,230,232,235,242,256,265]},"C":{"D8":[301,302,321,329,341,348,354]},"A":{"D11":[104,105,106,116,119,124,126,127,128,130,134,135,145,152,155,160]}},"ET":{"A":{"D8":[104,105,108,120,123,126,127,135,136,142,150,151,152,155,160,162,163,165]},"B":{"D9":[203,204,206,209,212,216,221,224,226,232,235,236,240,244,246,248,249,253,267]},"C":{"D9":[301,303,304,305,308,314,332,335,336,339,345,346,347,352,362,366]},"D":{"D9":[416,419,423,432,434,445,447,448,451,455,457,464,468]},"E":{"D10":[505,518,521,530,537,546,551,558,562,565,568]},"F":{"D10":[601,603,608,609,611,621,627,630,633,634,635,637,642,649,650,651,652,657,665,666,667]}},"CSSE":{"C":{"D8":[312,321,322,324,333,335,340,342,351,352,354,363]},"A":{"D12":[104,105,115,120,121,133,136,137,138,144,152,155,157]},"B":{"D12":[202,208,209,212,215,224,230,231,240,251,253,259,264,265,266]}},"CV":{"A":{"D9":[122,126,129,131,154,161,162,163,166]},"B":{"D9":[211,219,236,237,241,265]}},"IC":{"C":{"D10":[308,310,313,321,326,327,332,335,337,338,343,349,364]},"B":{"D12":[213,214,218,224,228,232,233,236,245,247]},"A":{"D14":[105,115,130,133,137,143,151,152,160,161,163]}},"ME":{"F":{"D10":[603,604,605,608,609,611,613,614,622,626,629,635,640,643,646,658,660,662]},"B":{"D12":[206,207,215,217,218,221,223,228,229,230,232,237,248,250,255,257,258,262,263,264,266,267,269,270]},"A":{"D13":[102,104,106,116,125,127,135,136,137,139,142,144,150,154,155,159,161,170]},"C":{"D13":[302,304,305,306,308,309,310,323,324,326,337,338,340,344,346,349,350,351,354,355,357,364,368,369,370]},"D":{"D14":[414,415,416,422,424,428,437,439,441,444,452,457,465,467,469]},"E":{"D14":[501,502,503,506,507,509,513,514,517,518,523,526,527,530,543,552,553,560,561]}},"CSDS":{"A":{"D11":[26,63,103,104,115,119,122,129,130,136,146,161,168]},"B":{"D11":[201,207,209,217,222,225,238,240,242,248,250,252]},"C":{"D13":[303,306,309,314,324,333,340,344,350,352,353,354,359]}}};
 var GER_SLOTS={"D8":[2,480,600,"E312"],"D9":[3,480,600,"E215"],"D10":[4,480,600,"E303"],"D11":[2,960,1080,"E305"],"D12":[3,960,1080,"E304"],"D13":[4,960,1080,"E305"],"D14":[5,960,1080,"E312"]};   // language division -> [weekday, start min, end min, room]
+/* Bibwewadi campus German groups (official Bibwewadi TT, Sem I 2026-27). The PDF lists whole divisions, not roll numbers,
+   so the student picks their group on the home form. Choice stays on this device (tt-gd). Classes: 1125/1107/1124/1001. */
+var BIB_GER={'IT':{'E':['GD1'],'B':['GD1','GD3'],'C':['GD1','GD3'],'A':['GD2','GD4'],'F':['GD5'],'D':['GD5','GD7']},
+  'CSAI':{'C':['GD1'],'E':['GD1'],'B':['GD4'],'F':['GD5','GD7'],'A':['GD6'],'D':['GD6']},
+  'CSAIML':{'D':['GD1'],'F':['GD3'],'C':['GD3'],'B':['GD5'],'A':['GD7'],'E':['GD7']},
+  'CS':{'A':['GD2'],'D':['GD2'],'F':['GD2'],'G':['GD3'],'I':['GD4'],'L':['GD4'],'C':['GD5'],'E':['GD5'],'K':['GD5'],'J':['GD6'],'H':['GD6'],'B':['GD7']}};
+GER_SLOTS.GD1=[2,480,600,'1125'];GER_SLOTS.GD2=[3,480,600,'1107'];GER_SLOTS.GD3=[4,480,600,'1125'];GER_SLOTS.GD4=[5,480,600,'1107'];
+GER_SLOTS.GD5=[2,960,1080,'1124'];GER_SLOTS.GD6=[4,960,1080,'1107'];GER_SLOTS.GD7=[5,960,1080,'1001'];
+function isBibCode(c){ return /^GD\d$/.test(String(c||'')); }
+function bibGroups(branch,div){ var b=BIB_GER[branch]; return (b&&b[div])||[]; }
+function bibGd(branch,div){ var g=store.get('tt-gd',''); return (g&&bibGroups(branch,div).indexOf(g)>-1)?g:null; }
+function gdLabel(c){ var g=GER_SLOTS[c]; return c+' \u00B7 '+['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][g[0]]+' '+(g[1]<720?'8\u201310 am':'4\u20136 pm'); }
 function germanFor(branch,div,roll){
   var b=GER_ROLLS[branch],d=b&&b[div],n=parseInt(roll,10);
   if(!d||!n) return null;
@@ -1821,7 +1834,7 @@ function setClass(b,d){
 // adds the German or Japanese slot (and dims English) for a student found in the foreign-language list.
 // Works on a copy so the cached timetable for the division is never changed.
 function applyGerman(){
-  st.lang=langFor(st.branch,st.div,st.roll);
+  st.lang=langFor(st.branch,st.div,st.roll)||bibGd(st.branch,st.div);
   if(!st.lang) return;
   // anonymous count only: no roll number, class or language is sent; once per browser session
   try{ if(!sessionStorage.getItem('tt-fl')){ sessionStorage.setItem('tt-fl','1'); logVisit('foreign_lang',{}); } }catch(e){ logVisit('foreign_lang',{}); }
@@ -2175,7 +2188,7 @@ function detailHTML(x,dateMs,now){
       '<dt>Time</dt><dd>'+fmtRange(x.s,x.e)+' ('+dur((x.e-x.s)*60000)+')</dd>'+
       '<dt>Room</dt><dd>'+x.room+'</dd>'+
       '<dt>Type</dt><dd>Foreign language ('+(x.lk==='jp'?'Japanese':'German')+'), language division '+x.langDiv+'</dd></dl></section>'+
-      '<section class="sec"><p class="sh-note">From the Kondhwa campus '+(x.lk==='jp'?'Japanese':'German')+' list. It repeats every week.</p></section></div>';
+      '<section class="sec"><p class="sh-note">From the '+(isBibCode(x.langDiv)?'Bibwewadi':'Kondhwa')+' campus '+(x.lk==='jp'?'Japanese':'German')+' list. It repeats every week.</p></section></div>';
   }
   var engBox=isEng(x)?'<section class="sec"><p class="lang-box">'+ENG_NOTE+'</p></section>':'';
   // 1. this class
@@ -2283,7 +2296,7 @@ $('#sheet').addEventListener('cancel',function(){/* Esc closes natively */});
 
 
 /* ---------- Class picker ---------- */
-var pk={branch:'',div:'',batch:''},rawBatch='';
+var pk={branch:'',div:'',batch:'',gd:''},rawBatch='';
 function fixDiv(){                                   // a branch with a single division needs no extra tap
   var ds=pk.branch?Object.keys(CLASSES[pk.branch].divs):[];
   if(ds.indexOf(pk.div)<0) pk.div=ds.length===1?ds[0]:'';
@@ -2298,6 +2311,10 @@ function renderPicker(){
   var ds=pk.branch?Object.keys(CLASSES[pk.branch].divs):[];
   $('#pkDiv').innerHTML=ds.length?optBtns('pk-div',ds.map(function(k){return {v:k,t:k}}),pk.div):'<p class="pk-hint">Pick a branch first.</p>';
   $('#pkBatch').innerHTML=optBtns('pk-batch',BATCHES.map(function(k){return {v:k,t:k}}),pk.batch);
+  var gs=bibGroups(pk.branch,pk.div);
+  if(gs.indexOf(pk.gd)<0) pk.gd='';
+  $('#pkGDbox').hidden=!gs.length;
+  $('#pkGD').innerHTML=gs.length?optBtns('pk-gd',[{v:'',t:'No German'}].concat(gs.map(function(k){return {v:k,t:gdLabel(k)}})),pk.gd):'';
   $('#pkGo').disabled=!(pk.branch&&pk.div&&pk.batch);
 }
 // msg='' shows the form; a non-empty msg hides the form and shows msg instead (loading / error states)
@@ -2313,6 +2330,7 @@ function openPicker(cancelable){
   pk.div=CUR?st.div:(pk.branch&&CLASSES[pk.branch].divs[sd]?sd:'');
   pk.batch=CUR?st.batch:rawBatch;
   $('#pkRoll').value=st.roll||'';
+  pk.gd=store.get('tt-gd','');
   fixDiv();
   showPickerStatus('');
   $('#pkCancel').hidden=!cancelable;
@@ -2359,6 +2377,7 @@ $('#jpToastX').addEventListener('click',closeJpToast);
 function submitPicker(){
   if(!(pk.branch&&pk.div&&pk.batch)) return;
   var typedRoll=$('#pkRoll').value.replace(/\D/g,'').slice(0,4);
+  store.set('tt-gd',bibGroups(pk.branch,pk.div).indexOf(pk.gd)>-1?pk.gd:'');   // German group: this device only
   // English (no foreign language found): ask once whether they actually chose Japanese
   jpGate(pk.branch,pk.div,pk.batch,typedRoll,submitPickerNow);
 }
@@ -2411,7 +2430,8 @@ function jpAnswered(){
   return true;
 }
 function jpGate(branch,div,batch,roll,proceed){
-  if(!jpForced()&&(jpAnswered()||germanFor(branch,div,roll))){ proceed(); return; }   // German found: skip. Japanese found: still ask (once)
+  proceed(); return;   // Japanese PDF popup removed: Japanese is now found by roll number only
+  if(!jpForced()&&(jpAnswered()||germanFor(branch,div,roll)||bibGd(branch,div))){ proceed(); return; }   // German found: skip. Japanese found: still ask (once)
   JP.cb=proceed; JP.ctx={branch:branch,div:div,batch:batch};
   JP.step=1; JP.choice=null; JP.file=null; JP.busy=false;
   $('#jpFile').value=''; $('#jpErr').textContent='';
@@ -2509,13 +2529,14 @@ function pickerAct(a,b){
   if(a==='pk-go'){
     if(!(pk.branch&&pk.div&&pk.batch)) return;
     var typed=$('#pkRoll').value.replace(/\D/g,'').slice(0,4);
-    if(!typed){ openRollWarn(); return; }   // no roll number: warn first
+    if(!typed&&!pk.gd){ openRollWarn(); return; }   // no roll number: warn first
     submitPicker();
     return;
   }
   if(a==='pk-branch'){ if(pk.branch!==v){pk.branch=v;pk.div='';} fixDiv(); }
   else if(a==='pk-div') pk.div=v;
   else if(a==='pk-batch') pk.batch=v;
+  else if(a==='pk-gd') pk.gd=v;
   renderPicker();
   var again=document.querySelector('#picker [data-act="'+a+'"][data-v="'+v+'"]');   // keep keyboard focus after the redraw
   if(again) again.focus({preventScroll:true});
@@ -3733,7 +3754,7 @@ function roomBuild(rows){
     roomSplit(r.room).forEach(function(n){addOcc(camp,n,+r.weekday,toMin(r.start_time),toMin(r.end_time),sub,r.division,r.batch);});
   });
   /* the German (foreign language) slots are not in tt_sessions; they sit in fixed Kondhwa rooms */
-  Object.keys(GER_SLOTS).forEach(function(k){var g=GER_SLOTS[k];addOcc('Kondhwa Campus',String(g[3]).toUpperCase(),g[0],g[1],g[2],'German','',null);});
+  Object.keys(GER_SLOTS).forEach(function(k){var g=GER_SLOTS[k];addOcc(isBibCode(k)?'Bibwewadi Campus':'Kondhwa Campus',String(g[3]).toUpperCase(),g[0],g[1],g[2],'German','',null);});
   Object.keys(JP_SLOTS).forEach(function(k){var g=JP_SLOTS[k];addOcc('Kondhwa Campus',String(g[3]).toUpperCase(),g[0],g[1],g[2],'Japanese','',null);});
   ROOM.camps=camps;
   ROOM.eff={};
