@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>window.__bip=null;window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__bip=e;if(window.__bipCb)window.__bipCb(e);});</script>
 <meta charset="utf-8">
 <style id="antiframe">html{display:none!important}</style>
 <script>
@@ -492,6 +493,23 @@ dialog#roomApp::backdrop{background:rgba(12,16,32,.55)}
   .install-actions{border:1px solid var(--line);border-top:0;border-radius:0 0 16px 16px;margin:0}
 }
 .install-bar[hidden]{display:none}
+/* install nudge: top banner + small bottom button (website only, never in the installed app) */
+.inst-top{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:10px 10px 10px 12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-left:4px solid var(--focus);border-radius:12px;box-shadow:0 4px 14px rgba(8,12,30,.08)}
+.inst-top[hidden]{display:none}
+.inst-top-ic{flex:none;width:36px;height:36px;border-radius:10px;overflow:hidden}
+.inst-top-ic img{display:block;width:100%;height:100%}
+.inst-top-txt{min-width:0;flex:1}
+.inst-top-t{margin:0;font-weight:700;font-size:13.5px;line-height:1.25}
+.inst-top-s{margin:2px 0 0;font-size:12px;line-height:1.35;color:var(--muted)}
+.inst-top .btn{flex:none;margin:0;min-height:34px;padding:5px 14px;font-size:13px}
+.inst-top-x{flex:none;width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-size:21px;line-height:1;cursor:pointer}
+.inst-top-x:hover{background:rgba(127,127,127,.18)}
+.inst-fab{position:fixed;z-index:55;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 14px;border:0;border-radius:99px;background:var(--focus);color:#fff;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 6px 18px rgba(8,12,30,.3)}
+.inst-fab[hidden]{display:none}
+:root:not([data-theme="light"]) .inst-fab{color:#0F1320}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .inst-fab{color:#fff}}
+:root[data-theme="dark"] .inst-fab{color:#0F1320}
+:root[data-theme="light"] .inst-fab{color:#fff}
 .install-card{border-top:3px solid var(--focus);box-shadow:0 -10px 30px rgba(8,12,30,.22),0 0 0 1px rgba(47,91,214,.25),0 0 22px rgba(47,91,214,.28)}
 .install-prog{display:none;height:5px;border-radius:99px;background:var(--wash);overflow:hidden;margin-top:9px}
 .install-prog i{display:block;height:100%;width:40%;border-radius:99px;background:linear-gradient(90deg,var(--focus),#6366F1);animation:installSlide 1.2s ease-in-out infinite}
@@ -821,24 +839,6 @@ dialog#forumIntro::backdrop{background:rgba(12,16,32,.55)}
 .fi-actions .fi-later{background:var(--wash);color:var(--ink);border:1px solid var(--line)}
 
 /* ---- study planner bottom nudge + intro ---- */
-.planner-wrap{position:fixed;left:0;right:0;bottom:0;z-index:40;pointer-events:none;display:flex;justify-content:center;padding:0 12px calc(16px + env(safe-area-inset-bottom,0px))}
-.planner-wrap[hidden]{display:none}
-.pn-box{position:relative;display:inline-block;max-width:100%;pointer-events:auto;animation:pnIn .5s ease-out}
-.planner-nudge{display:inline-flex;align-items:center;gap:10px;max-width:100%;padding:11px 16px;border:0;border-radius:16px;color:#fff;text-align:left;cursor:pointer;
-  background:linear-gradient(120deg,#6d28d9,#2563eb,#0ea5e9,#c026d3,#6d28d9);background-size:300% 300%;
-  box-shadow:0 0 0 1px rgba(255,255,255,.25) inset,0 0 16px rgba(99,102,241,.7),0 0 36px rgba(14,165,233,.4),0 10px 28px rgba(8,12,30,.35);
-  animation:ftGrad 5s linear infinite,pnGlow 2.4s ease-in-out infinite}
-.planner-nudge:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
-.planner-nudge .pn-spark{font-size:18px;line-height:1;flex:none}
-.planner-nudge .pn-txt{display:flex;flex-direction:column;gap:1px;min-width:0}
-.planner-nudge .pn-txt b{font-size:13.5px;font-weight:800;line-height:1.2}
-.planner-nudge .pn-txt span{font-size:12px;font-weight:600;opacity:.92;line-height:1.25}
-.planner-nudge .pn-arrow{font-size:18px;line-height:1;flex:none;animation:featureBob 1.4s ease-in-out infinite}
-.pn-close{position:absolute;top:-8px;right:-8px;width:22px;height:22px;padding:0;border:0;border-radius:50%;background:var(--ink);color:var(--surface);font-size:14px;line-height:22px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.35)}
-@keyframes pnGlow{0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.25) inset,0 0 12px rgba(99,102,241,.55),0 0 26px rgba(14,165,233,.3),0 10px 28px rgba(8,12,30,.35)}
-  50%{box-shadow:0 0 0 1px rgba(255,255,255,.3) inset,0 0 22px rgba(139,92,246,.95),0 0 46px rgba(14,165,233,.6),0 10px 28px rgba(8,12,30,.35)}}
-@keyframes pnIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.pn-box,.planner-nudge,.planner-nudge .pn-arrow{animation:none}}
 dialog#plannerIntro{padding:0;border:0;margin:auto;background:var(--surface);color:var(--ink);width:min(440px,calc(100vw - 24px));max-width:none;max-height:none;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(8,12,30,.4)}
 dialog#plannerIntro[open]{animation:sheetIn .2s ease-out}
 dialog#plannerIntro::backdrop{background:rgba(12,16,32,.55)}
@@ -1002,6 +1002,15 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
 </head>
 <body>
 <div class="app">
+  <div id="installTop" class="inst-top" hidden role="region" aria-label="Install app">
+    <div class="inst-top-ic"><img src="icons/icon-192.png" width="36" height="36" alt=""></div>
+    <div class="inst-top-txt">
+      <p class="inst-top-t">Install the Timetable app</p>
+      <p class="inst-top-s">Opens faster, full-screen, straight from your home screen.</p>
+    </div>
+    <button type="button" class="btn" data-act="install-yes">Install</button>
+    <button type="button" class="inst-top-x" data-act="install-top-x" aria-label="Dismiss">&times;</button>
+  </div>
   <div id="view">
   <header class="top">
     <div>
@@ -1075,13 +1084,6 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       </div>
     </section>
   </main>
-
-  <div class="planner-wrap" id="plannerWrap" hidden>
-    <div class="pn-box">
-      <button type="button" class="planner-nudge" id="plannerNudge" data-act="planner-nudge"><span class="pn-spark" aria-hidden="true">&#10024;</span><span class="pn-txt"><b>Worried about Mid-Sem?</b><span>Make your study plan now</span></span><span class="pn-arrow" aria-hidden="true">&darr;</span></button>
-      <button type="button" class="pn-close" data-act="planner-nudge-close" aria-label="Dismiss">&times;</button>
-    </div>
-  </div>
 
   <footer class="foot">
     <p id="footTxt"></p>
@@ -1435,6 +1437,7 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
     <div class="jp-toast-txt"><p class="jp-toast-t">Japanese schedule has been updated</p><p class="jp-toast-s" id="jpToastSub"></p></div>
     <button type="button" class="jp-toast-x" id="jpToastX" aria-label="Dismiss">&times;</button>
   </div>
+  <button type="button" id="installFab" class="inst-fab" data-act="install-yes" hidden><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg>Install app</button>
   <div id="installBar" class="install-bar" hidden role="status" aria-live="polite" aria-label="Install app" aria-describedby="installSub">
     <div class="install-card">
       <div class="install-icon"><img src="icons/icon-192.png" width="44" height="44" alt=""></div>
@@ -2646,14 +2649,12 @@ document.addEventListener('click',function(e){
   if(a==='about-close'){closeAbout();return;}
   if(a==='priv-open'){openPriv(b);return;}
   if(a==='priv-close'){closePriv();return;}
-  if(a==='planner-nudge'){plannerNudgeClick(b);return;}
-  if(a==='planner-nudge-close'){dismissPlannerNudge();return;}
   if(a==='planner-intro-close'){closePlannerIntro();return;}
   if(a==='forum-tip'){openForumIntro(b);return;}
   if(a==='forum-intro-close'){closeForumIntro();return;}
   if(a==='forum-open-intro'){forumLog('open_forum');return;}
   if(a==='forum-open'&&!forumIntroSeen()){e.preventDefault();openForumIntro(b);return;}
-  if(a==='planner-open'){markFeatureUsed();try{store.set('tt-planner-used','1');}catch(e){}hidePlannerNudge();logVisit('open_study_planner',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});return;}
+  if(a==='planner-open'){markFeatureUsed();try{store.set('tt-planner-used','1');}catch(e){}logVisit('open_study_planner',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});return;}
   if(a==='forum-open'){logVisit('open_forum',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});return;}
   if(a==='ext-link'){logVisit('click_link',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch,link:b.getAttribute('data-label')});return;}
   if(a==='admin-diwali'){toggleDiwaliPreview();return;}
@@ -2664,6 +2665,7 @@ document.addEventListener('click',function(e){
   if(a==='admin-range'){ADM.range=b.getAttribute('data-v');renderAdmin();return;}
   if(a==='install-yes'){installNow();return;}
   if(a==='install-no'){dismissInstall();return;}
+  if(a==='install-top-x'){store.set('tt-install-dismissed',String(Date.now()));refreshInstallUI();return;}
   if(a==='install-ok'){closeInstallToast();return;}
   if(a==='change'){openPicker(true);return;}
   if(a.indexOf('pk-')===0){pickerAct(a,b);return;}
@@ -2679,8 +2681,9 @@ var lastK=minuteKey();
 function tick(){var k=minuteKey();if(k!==lastK){lastK=k;render();}}
 
 /* ---------- Install app (Android/desktop: native prompt; iOS: manual steps) ---------- */
-var deferredInstall=null;
-var DISMISS_DAYS=14;
+var deferredInstall=window.__bip||null;
+var installWaiting=false;
+var DISMISS_HOURS=12;
 function isStandaloneApp(){
   return window.matchMedia && window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true;
 }
@@ -2689,7 +2692,7 @@ function isIOSDevice(){
 }
 function installDismissedRecently(){
   var t=+store.get('tt-install-dismissed','0');
-  return t && (Date.now()-t) < DISMISS_DAYS*86400000;
+  return t && (Date.now()-t) < DISMISS_HOURS*3600000;
 }
 var ttShownForInstall=false, installToastTimer=null, installHideTimer=null;
 function isAndroidDevice(){ return /android/i.test(navigator.userAgent); }
@@ -2701,36 +2704,58 @@ function setInstallState(state,title,sub){
   $('#installSub').textContent=sub;
   var idle=state==='idle';
   $('#installNo').hidden=!idle;
-  $('#installYes').hidden=!idle || isIOSDevice();
+  $('#installYes').hidden=!idle || isIOSDevice() || !deferredInstall;
   $('#installOk').hidden=idle;
   bar.hidden=false;
+  refreshInstallUI();
 }
 function showInstallBar(){
-  if(isStandaloneApp()||installDismissedRecently()) return;
-  if(!ttShownForInstall) return;                      // only once the timetable is on screen
+  if(isStandaloneApp()) return;
   var isIOS=isIOSDevice();
-  if(!isIOS && !deferredInstall) return;              // no install prompt available in this browser
   setInstallState('idle','Install Timetable app',isIOS
     ? 'Tap the Share icon, then "Add to Home Screen" \u2014 opens full-screen next time, no browser bars.'
-    : 'Open your timetable in one tap from your app drawer. Faster, full-screen, no browser bars.');
-  $('#installNo').textContent=isIOS?'Got it':'Not now';
+    : (deferredInstall
+        ? 'Open your timetable in one tap from your app drawer. Faster, full-screen, no browser bars.'
+        : 'Open your browser menu (\u22EE or Share) and choose "Install app" or "Add to Home Screen".'));
+  $('#installNo').textContent=isIOS||!deferredInstall?'Got it':'Not now';
+}
+/* top banner + bottom button: website only, hidden inside the installed app */
+function appIsInstalled(){ return isStandaloneApp() || store.get('tt-installed','')==='1'; }
+function refreshInstallUI(){
+  var top=$('#installTop'), fab=$('#installFab'), bar=$('#installBar');
+  if(!top||!fab) return;
+  var on=ttShownForInstall && !appIsInstalled();
+  var sheetOpen=!bar.hidden;
+  top.hidden=!(on && !installDismissedRecently() && !sheetOpen);
+  fab.hidden=!(on && !sheetOpen);
 }
 /* called when the timetable becomes visible: show the toast a moment later, once */
 function scheduleInstallToast(){
   if(ttShownForInstall||isStandaloneApp()) return;
   ttShownForInstall=true;
-  installToastTimer=setTimeout(showInstallBar,2500);
+  installToastTimer=setTimeout(refreshInstallUI,1200);
+  if(navigator.getInstalledRelatedApps){navigator.getInstalledRelatedApps().then(function(l){if(l&&l.length){store.set('tt-installed','1');refreshInstallUI();}}).catch(function(){});}
 }
 function closeInstallToast(){
   clearTimeout(installHideTimer);
   $('#installBar').hidden=true;
+  refreshInstallUI();
 }
 function dismissInstall(){
   store.set('tt-install-dismissed',String(Date.now()));
   closeInstallToast();
 }
 function installNow(){
-  if(!deferredInstall){ closeInstallToast(); return; }
+  if(!deferredInstall && !isIOSDevice() && !installWaiting){
+    /* browser hasn't offered the install prompt yet: wait up to 3s for it, then fall back to manual steps */
+    installWaiting=true;
+    var done=false;
+    var finish=function(){ if(done) return; done=true; installWaiting=false; window.__bipCb=null; installNow(); };
+    window.__bipCb=function(e){ deferredInstall=e; finish(); };
+    setTimeout(function(){ if(!done){ done=true; installWaiting=false; window.__bipCb=null; showInstallBar(); } },3000);
+    return;
+  }
+  if(!deferredInstall){ showInstallBar(); return; }   // iOS / unsupported browser: show manual steps
   $('#installYes').disabled=true;
   var ev=deferredInstall;
   ev.prompt();
@@ -2738,6 +2763,7 @@ function installNow(){
     deferredInstall=null;
     $('#installYes').disabled=false;
     if(c&&c.outcome==='accepted'){
+      store.set('tt-installed','1');
       setInstallState('busy','Installing Timetable\u2026',
         'Installation is in progress and will finish in the background in about 2\u20133 minutes. You can keep using the timetable. Then open it directly from your '+(isAndroidDevice()?'app drawer':'apps list')+'.');
       clearTimeout(installHideTimer);
@@ -2751,10 +2777,11 @@ function installNow(){
 window.addEventListener('beforeinstallprompt',function(e){
   e.preventDefault();
   deferredInstall=e;
-  if(ttShownForInstall) showInstallBar();             // timetable already visible: show now
+  refreshInstallUI();
 });
 window.addEventListener('appinstalled',function(){
   deferredInstall=null;
+  store.set('tt-installed','1');
   store.set('tt-install-dismissed',String(Date.now()));
   setInstallState('done','Timetable installed \u2713','Open it anytime from your '+(isAndroidDevice()?'app drawer':'apps list')+'.');
   clearTimeout(installHideTimer);
@@ -2787,7 +2814,6 @@ function openAdmin(){
   clearHolidaySeen();   // opening the admin panel resets the 'holiday message already shown' memory
   /* Reset the Study Planner nudge so it can be re-tested: it shows again and the first-click intro replays. */
   try{localStorage.removeItem('tt-planner-used');localStorage.removeItem('tt-planner-intro');}catch(e){}
-  plannerNudgeDismissed=false;
   var dlg=$('#admin');
   if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open','');
   if(ADM.pin) loadAdmin(); else renderPinForm();
@@ -3901,42 +3927,12 @@ window.addEventListener('scroll',updateFeatureNudge,{passive:true});
 setTimeout(updateFeatureNudge,0);
 
 
-/* ---------- Study Planner bottom nudge: shows at the top of the page, scrolls to the card, explains it on first click ---------- */
-var plannerNudgeDismissed=false;
-function hidePlannerNudge(){var w=$('#plannerWrap');if(w)w.hidden=true;}
-function updatePlannerNudge(){
-  var w=$('#plannerWrap');if(!w)return;
-  var pk=$('#picker');
-  var show=!plannerNudgeDismissed&&!store.get('tt-planner-used','')&&window.scrollY<=120&&!document.querySelector('dialog[open]')&&!!CUR&&!(pk&&!pk.hidden);
-  w.hidden=!show;
-}
-function dismissPlannerNudge(){plannerNudgeDismissed=true;hidePlannerNudge();}
+/* ---------- Study Planner intro ---------- */
 function plannerLog(a){try{logVisit(a,{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});}catch(e){}}
-function plannerNudgeClick(){
-  plannerLog('click_planner_nudge');
-  plannerNudgeDismissed=true;hidePlannerNudge();
-  var card=$('#plannerCard');
-  if(card){
-    var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
-    card.scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});
-    card.classList.remove('pn-flash');void card.offsetWidth;card.classList.add('pn-flash');
-  }
-  if(!store.get('tt-planner-intro','')){
-    store.set('tt-planner-intro','1');
-    setTimeout(function(){
-      var dlg=$('#plannerIntro');
-      if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open','');
-      plannerLog('open_planner_intro');
-    },600);
-  }
-}
 function closePlannerIntro(){
   var dlg=$('#plannerIntro');
   if(typeof dlg.close==='function') dlg.close(); else dlg.removeAttribute('open');
 }
-window.addEventListener('scroll',updatePlannerNudge,{passive:true});
-setInterval(updatePlannerNudge,800);
-setTimeout(updatePlannerNudge,0);
 
 /* ---------- Boot loading screen ---------- */
 var LOAD_QUOTES=[
