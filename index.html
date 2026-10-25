@@ -574,16 +574,18 @@ body.diwali .hero{box-shadow:0 0 0 2px #ffb020,0 8px 28px rgba(255,160,32,.38)}
 @media (prefers-reduced-motion:reduce){#diwaliScreen,.dv-diyas,#diwaliLights i{animation:none}}
 
 /* new-schedule notice (full-screen, once a day for 2 days) + latest badge */
-#labNotice,#chgNotice,#susNotice{position:fixed;inset:0;z-index:82;display:flex;flex-direction:column;align-items:center;justify-content:center;
+#labNotice,#chgNotice,#susNotice,#roomNotice{position:fixed;inset:0;z-index:82;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:0;text-align:center;padding:24px;background:var(--surface);color:var(--ink);
   animation:hiIn .4s ease-out;transition:opacity .4s ease,transform .4s ease}
-#labNotice.out,#chgNotice.out,#susNotice.out{opacity:0;transform:scale(1.04);pointer-events:none}
+#labNotice.out,#chgNotice.out,#susNotice.out,#roomNotice.out{opacity:0;transform:scale(1.04);pointer-events:none}
 #labNotice{z-index:83}
 #labNotice[hidden]{display:none}
 #chgNotice{z-index:84}
 #chgNotice[hidden]{display:none}
 #susNotice{z-index:81}
 #susNotice[hidden]{display:none}
+#roomNotice{z-index:85}
+#roomNotice[hidden]{display:none}
 .tn-card{max-width:420px;display:flex;flex-direction:column;align-items:center;gap:10px}
 .tn-emoji{font-size:44px;line-height:1;animation:hiPop .6s ease-out}
 .tn-kicker{margin:4px 0 0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--danger)}
@@ -603,7 +605,7 @@ body.diwali .hero{box-shadow:0 0 0 2px #ffb020,0 8px 28px rgba(255,160,32,.38)}
 .tn-btn .tn-bar{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ink);opacity:.18;z-index:-1}
 .tn-btn.wait .tn-bar{animation:tnFill 2s linear forwards}
 @keyframes tnFill{from{width:0}to{width:100%}}
-@media (prefers-reduced-motion:reduce){#labNotice,#chgNotice,#susNotice,.tn-emoji{animation:none}}
+@media (prefers-reduced-motion:reduce){#labNotice,#chgNotice,#susNotice,#roomNotice,.tn-emoji{animation:none}}
 #rollWarn{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55)}
 #rollWarn[hidden]{display:none}
 .rw-card{width:100%;max-width:400px;display:flex;flex-direction:column;gap:10px;padding:22px 20px 18px;border-radius:16px;background:var(--surface);color:var(--ink);box-shadow:0 12px 40px rgba(0,0,0,.35);text-align:center}
@@ -1122,6 +1124,15 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       <p class="tn-title" id="chgTitle">Human Values is cancelled</p>
       <p class="tn-body">Today&rsquo;s <b>Human Values</b> lecture is <b>cancelled</b>.<br><br>This applies to <b>15/10/2026</b> and <b>CSSE-C</b> only.</p>
       <button type="button" class="tn-btn" id="chgNoticeOk">Got it</button>
+    </div>
+  </div>
+  <div id="roomNotice" hidden role="alertdialog" aria-modal="true" aria-labelledby="roomTitle">
+    <div class="tn-card">
+      <div class="tn-emoji" aria-hidden="true">&#128205;</div>
+      <p class="tn-kicker">Room change &middot; Monday only</p>
+      <p class="tn-title" id="roomTitle">Your lab has moved to C206</p>
+      <p class="tn-body">All labs scheduled in <b>Room E402</b> have been shifted to <b>Room C206</b> for <b>Monday, 26 October 2026</b>, only.<br><br>Please take note of the change.</p>
+      <button type="button" class="tn-btn" id="roomNoticeOk">Got it</button>
     </div>
   </div>
   <div id="holidayIntro" hidden>
@@ -1809,7 +1820,18 @@ function dur(ms){
 }
 /* One-day changes (15 Oct 2026): all classes suspended 2 PM-6 PM (Vishwakarandak); CSSE-C Human Values lecture cancelled */
 function dayOverride(list,date){
-  if(!date||ymd(date)!=='2026-10-15') return list;
+  if(!date) return list;
+  var k=ymd(date);
+  if(k==='2026-10-26'){   // Mon 26 Oct 2026 only: labs in E402 moved to C206 (copies, so the cached timetable is untouched)
+    return list.map(function(x){
+      if(x.room&&/\bE402\b/.test(x.room)&&(x.b||/lab|pract/i.test(x.type||''))){
+        var y={};for(var q in x) y[q]=x[q];
+        y.room=x.room.replace(/\bE402\b/g,'C206');y.rm=true;return y;
+      }
+      return x;
+    });
+  }
+  if(k!=='2026-10-15') return list;
   list=list.filter(function(x){return !(x.s<1080&&x.e>840)});
   if(st.branch==='CSSE'&&st.div==='C') list=list.filter(function(x){return !(x.sub==='ES26106'&&x.type==='Theory')});
   return list;
@@ -2348,7 +2370,7 @@ function closePicker(fromBoot){
   if(fromBoot){
     stopLoadScreen();
     maybeShowHolidayIntro();
-    maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();
+    maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();maybeShowRoomNotice();
   }
   scheduleSurvey();
   scheduleInstallToast();
@@ -2398,7 +2420,7 @@ function submitPickerNow(){
     store.set('tt-roll',goRoll);store.set('tt-rollq','1');   // roll number: localStorage only
     closePicker();
     maybeShowHolidayIntro();
-    maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();
+    maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();maybeShowRoomNotice();
   });
 }
 function openRollWarn(){
@@ -2671,7 +2693,7 @@ document.addEventListener('click',function(e){
   if(a.indexOf('pk-')===0){pickerAct(a,b);return;}
   if(a==='open'){openDetail(+b.getAttribute('data-sid'),+b.getAttribute('data-date')||0,b.getAttribute('data-key'));return;}
   if(a==='close'){closeSheet();return;}
-  if(a==='batch'){st.batch=b.getAttribute('data-v');store.set('tt-batch',st.batch);maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();}
+  if(a==='batch'){st.batch=b.getAttribute('data-v');store.set('tt-batch',st.batch);maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();maybeShowRoomNotice();}
   else if(a==='fmt'){st.fmt=b.getAttribute('data-v');store.set('tt-fmt',st.fmt);}
   else if(a==='day'){st.dayMs=dayStart(nowFloor(),+b.getAttribute('data-off')).getTime();centerTab=true;}
   render();
@@ -4168,6 +4190,22 @@ function maybeShowSuspendNotice(){
   }catch(e){}
 }
 
+var roomShown=false;
+var ROOM_UNTIL=new Date('2026-10-27T00:00:00+05:30').getTime();
+function maybeShowRoomNotice(){
+  try{
+    if(roomShown) return;
+    if(Date.now()>=ROOM_UNTIL) return;
+    if(!forDay(1,st.batch,parseISODate('2026-10-26')).some(function(x){return x.rm;})) return;   // only students with a lab in E402
+    var el=$('#roomNotice');if(!el) return;
+    roomShown=true;
+    el.classList.remove('out');el.hidden=false;
+    $('#roomNoticeOk').addEventListener('click',function(){
+      el.classList.add('out');setTimeout(function(){el.hidden=true;},420);
+    },{once:true});
+  }catch(e){}
+}
+
 var chgShown=false;
 function maybeShowChangeNotice(){
   try{
@@ -4190,7 +4228,7 @@ var SV={ans:{q1:null,qh:null,q2:0,q3:null,q4:null},shown:false,sending:false,tim
 function svForced(){ return /[?&]survey=1\b/.test(location.search); }   // ?survey=1 re-shows it for testing
 function svDone(){ return store.get('tt-survey-done','')==='1'; }
 function svBlocked(){   // wait while a notice, splash or dialog is on screen
-  var ids=['labNotice','chgNotice','susNotice','holidayIntro','loadScreen'];
+  var ids=['labNotice','chgNotice','susNotice','roomNotice','holidayIntro','loadScreen'];
   for(var i=0;i<ids.length;i++){ var el=document.getElementById(ids[i]); if(el&&!el.hidden) return true; }
   if(document.querySelector('dialog[open]')) return true;
   return !!$('#view').hidden;
