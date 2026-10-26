@@ -1131,9 +1131,9 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
   <div id="roomNotice" hidden role="alertdialog" aria-modal="true" aria-labelledby="roomTitle">
     <div class="tn-card">
       <div class="tn-emoji" aria-hidden="true">&#128205;</div>
-      <p class="tn-kicker">Room change &middot; Monday only</p>
+      <p class="tn-kicker">Room change &middot; Until further notice</p>
       <p class="tn-title" id="roomTitle">Your lab has moved to C206</p>
-      <p class="tn-body">All labs scheduled in <b>Room E402</b> have been shifted to <b>Room C206</b> for <b>Monday, 26 October 2026</b>, only.<br><br>Please take note of the change.</p>
+      <p class="tn-body">All labs scheduled in <b>Room E402</b> have been shifted to <b>Room C206</b> until further notice.<br><br>Please take note of the change.</p>
       <button type="button" class="tn-btn" id="roomNoticeOk">Got it</button>
     </div>
   </div>
@@ -1830,17 +1830,18 @@ function dur(ms){
   return h?(r?h+' h '+r+' min':h+' h'):m+' min';
 }
 /* One-day changes (15 Oct 2026): all classes suspended 2 PM-6 PM (Vishwakarandak); CSSE-C Human Values lecture cancelled */
+function isE402Lab(x){return !!(x&&x.room&&/\bE402\b/.test(x.room)&&(x.b||/lab|pract/i.test(x.type||'')));}
 function dayOverride(list,date){
   if(!date) return list;
   var k=ymd(date);
-  if(k==='2026-10-26'){   // Mon 26 Oct 2026 only: labs in E402 moved to C206 (copies, so the cached timetable is untouched)
-    list=list.map(function(x){
-      if(x.room&&/\bE402\b/.test(x.room)&&(x.b||/lab|pract/i.test(x.type||''))){
-        var y={};for(var q in x) y[q]=x[q];
-        y.room=x.room.replace(/\bE402\b/g,'C206');y.rm=true;return y;
-      }
-      return x;
-    });
+  list=list.map(function(x){   // Until further notice: labs in E402 moved to C206 (copies, so the cached timetable is untouched)
+    if(isE402Lab(x)){
+      var y={};for(var q in x) y[q]=x[q];
+      y.room=x.room.replace(/\bE402\b/g,'C206');y.rm=true;return y;
+    }
+    return x;
+  });
+  if(k==='2026-10-26'){
     if(st.branch==='CSSE'&&st.div==='C'){   // extra Mathematics lecture, CSSE-C only, 9-10 AM in E-209
       if(!SUBJ.EXMATH) SUBJ.EXMATH={code:'EXMATH',name:'Mathematics (Extra Lecture)',short:'Maths (Extra)',color:'#2F5BD6'};
       list=list.concat([{id:9026,d:1,s:540,e:600,sub:'EXMATH',type:'Extra Lecture',b:undefined,fac:'\u2014',room:'E-209'}]);
@@ -4223,14 +4224,17 @@ function maybeShowExtraNotice(){
 }
 
 var roomShown=false;
-var ROOM_UNTIL=new Date('2026-10-27T00:00:00+05:30').getTime();
+function hasE402Lab(){   // does this student's batch have a lab in E402 on any day of the week?
+  return SESS.some(function(x){return (!x.b||x.b===st.batch)&&isE402Lab(x);});
+}
 function maybeShowRoomNotice(){
   try{
     if(roomShown) return;
-    if(Date.now()>=ROOM_UNTIL) return;
-    if(!forDay(1,st.batch,parseISODate('2026-10-26')).some(function(x){return x.rm;})) return;   // only students with a lab in E402
+    if(!hasE402Lab()) return;   // only students with a lab in E402 at any point in the week
+    var today=ymd(nowFloor());
+    if(store.get('tt-room-seen','')===today) return;   // full-screen notice: once a day
     var el=$('#roomNotice');if(!el) return;
-    roomShown=true;
+    roomShown=true;store.set('tt-room-seen',today);
     el.classList.remove('out');el.hidden=false;
     $('#roomNoticeOk').addEventListener('click',function(){
       el.classList.add('out');setTimeout(function(){el.hidden=true;},420);
