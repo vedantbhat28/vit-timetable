@@ -1140,9 +1140,9 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
   <div id="xtraNotice" hidden role="alertdialog" aria-modal="true" aria-labelledby="xtraTitle">
     <div class="tn-card">
       <div class="tn-emoji" aria-hidden="true">&#128208;</div>
-      <p class="tn-kicker">Extra lecture &middot; Monday only</p>
-      <p class="tn-title" id="xtraTitle">Extra Mathematics lecture, 9 AM</p>
-      <p class="tn-body">There will be an <b>extra Mathematics lecture</b> on <b>Monday, 26 October 2026</b>, <b>9:00 AM to 10:00 AM</b> in <b>Room E-209</b>.<br><br>This applies to <b>CSSE-C</b> only.</p>
+      <p class="tn-kicker">Room &amp; time &middot; today only</p>
+      <p class="tn-title" id="xtraTitle">Basics of Engineering, 4 PM in D301</p>
+      <p class="tn-body">Today&rsquo;s <b>Basics of Engineering (theory)</b> lecture will be held in <b>Room D301</b>, <b>4:00 PM to 5:00 PM</b>.<br><br>This applies to <b>27/10/2026</b> and <b>CSSE-C</b> only.</p>
       <button type="button" class="tn-btn" id="xtraNoticeOk">Got it</button>
     </div>
   </div>
@@ -1845,6 +1845,17 @@ function dayOverride(list,date){
     if(st.branch==='CSSE'&&st.div==='C'){   // extra Mathematics lecture, CSSE-C only, 9-10 AM in E-209
       if(!SUBJ.EXMATH) SUBJ.EXMATH={code:'EXMATH',name:'Mathematics (Extra Lecture)',short:'Maths (Extra)',color:'#2F5BD6'};
       list=list.concat([{id:9026,d:1,s:540,e:600,sub:'EXMATH',type:'Extra Lecture',b:undefined,fac:'\u2014',room:'E-209'}]);
+    }
+    return list;
+  }
+  if(k==='2026-10-27'){   // Basics of Engineering (theory) 4-5 PM in D301, CSSE-C only, today only
+    if(st.branch==='CSSE'&&st.div==='C'){
+      var hit=false;
+      list=list.map(function(x){
+        if(x.sub==='ES26105'&&x.type==='Theory'&&x.s===960){hit=true;var y={};for(var q in x) y[q]=x[q];y.room='D301';y.rm=true;return y;}
+        return x;
+      });
+      if(!hit) list=list.concat([{id:9027,d:2,s:960,e:1020,sub:'ES26105',type:'Theory',b:undefined,fac:'\u2014',room:'D301'}]);
     }
     return list;
   }
@@ -4208,12 +4219,12 @@ function maybeShowSuspendNotice(){
 }
 
 var xtraShown=false;
-var XTRA_UNTIL=new Date('2026-10-27T00:00:00+05:30').getTime();
+var XTRA_UNTIL=new Date('2026-10-28T00:00:00+05:30').getTime();
 function maybeShowExtraNotice(){
   try{
     if(xtraShown) return;
     if(st.branch!=='CSSE'||st.div!=='C') return;
-    if(Date.now()>=XTRA_UNTIL) return;
+    if(Date.now()>=XTRA_UNTIL||ymd(nowFloor())!=='2026-10-27') return;
     var el=$('#xtraNotice');if(!el) return;
     xtraShown=true;
     el.classList.remove('out');el.hidden=false;
