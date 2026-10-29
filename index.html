@@ -2872,7 +2872,7 @@ function closeAdmin(){
   var dlg=$('#admin');
   if(typeof dlg.close==='function') dlg.close(); else dlg.removeAttribute('open');
 }
-function lockAdmin(){ ADM.pin='';ADM.data=null;ADM.survey=null;ADM.surveyErr=false;ADM.jp=null;ADM.jpErr=false;renderPinForm(); }
+function lockAdmin(){ admStopTick();ADM.busy=false;ADM.refreshing=false;ADM.pin='';ADM.data=null;ADM.survey=null;ADM.surveyErr=false;ADM.jp=null;ADM.jpErr=false;renderPinForm(); }
 function renderPinForm(msg){
   $('#admBody').innerHTML=
     '<form id="admPinForm" class="adm-pinform" autocomplete="off">'+
@@ -2883,31 +2883,76 @@ function renderPinForm(msg){
     '</form>';
   var inp=$('#admPinInput'); if(inp) setTimeout(function(){inp.focus();},50);
 }
+/* RPC helper: hard client-side timeout, always resolves with {ok,status,j} for HTTP replies */
+function admRpc(name,body,ms){
+  var ctl=(typeof AbortController!=='undefined')?new AbortController():null;
+  var timer=setTimeout(function(){ if(ctl) ctl.abort(); },ms||30000);
+  return fetch(SUPA_URL+'/rest/v1/rpc/'+name,{
+    method:'POST',
+    headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify(body),
+    signal:ctl?ctl.signal:undefined
+  }).then(function(res){
+    return res.json().then(function(j){return {ok:res.ok,status:res.status,j:j};},function(){return {ok:res.ok,status:res.status,j:{}};});
+  }).then(function(r){clearTimeout(timer);return r;},function(e){clearTimeout(timer);throw e;});
+}
+var admTick=0;
+function admStopTick(){ if(admTick){clearInterval(admTick);admTick=0;} }
+function renderAdminError(msg){
+  $('#admBody').innerHTML='<p class="adm-empty">'+escHtml(msg)+'</p>'+
+    '<div class="adm-actions"><button type="button" class="btn2" data-act="admin-refresh">Try again</button><button type="button" class="btn2" data-act="admin-lock">Lock</button></div>';
+}
 function loadAdmin(){
   if(ADM.busy) return;
   ADM.busy=true;
-  $('#admBody').innerHTML='<p class="adm-empty">Loading\u2026</p>';
+  var pin=ADM.pin;
+  if(ADM.data){
+    /* refresh: keep showing the previous numbers instead of blanking the panel */
+    ADM.refreshing=true; renderAdmin();
+  }else{
+    $('#admBody').innerHTML='<p class="adm-empty" id="admLoadMsg">Loading\u2026</p>';
+    var t0=Date.now();
+    admStopTick();
+    admTick=setInterval(function(){
+      var el=document.getElementById('admLoadMsg');
+      if(!el){ admStopTick(); return; }
+      var s=Math.round((Date.now()-t0)/1000);
+      if(s>=3) el.textContent='Crunching the numbers\u2026 '+s+'s';
+    },1000);
+  }
   var tz=(Intl.DateTimeFormat().resolvedOptions()||{}).timeZone||'Asia/Kolkata';
-  fetch(SUPA_URL+'/rest/v1/rpc/admin_traffic_stats',{
-    method:'POST',
-    headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
-    body:JSON.stringify({p_pin:ADM.pin,p_tz:tz})
-  }).then(function(res){ return res.json().then(function(j){return {ok:res.ok,j:j};}); })
-    .then(function(r){
-      ADM.busy=false;
+  function done(){ ADM.busy=false; ADM.refreshing=false; admStopTick(); }
+  function fail(status,code){
+    done();
+    if(ADM.data){ renderAdmin(); return; }   // keep the old numbers on screen
+    renderAdminError(code==='57014'
+      ? 'The database timed out while counting. Tap Try again.'
+      : 'Could not load traffic'+(status?' ('+status+')':'')+'. Tap Try again.');
+  }
+  function attempt(n){
+    admRpc('admin_traffic_stats',{p_pin:pin,p_tz:tz},30000).then(function(r){
+      if(ADM.pin!==pin){ done(); return; }   // locked / closed while waiting
       if(!r.ok){
-        ADM.pin='';
         var msg=r.j&&r.j.message;
-        if(msg==='locked'){ renderPinForm(r.j.hint||'Too many wrong PINs.'); return; }
-        if(msg==='denied'){ renderPinForm('Wrong PIN.'); return; }
-        renderPinForm('Could not load traffic.');
+        if(msg==='locked'){ done(); ADM.pin='';ADM.data=null; renderPinForm(r.j.hint||'Too many wrong PINs.'); return; }
+        if(msg==='denied'){ done(); ADM.pin='';ADM.data=null; renderPinForm('Wrong PIN.'); return; }
+        /* timeout / server hiccup: retry once automatically (the second run is usually warm), keep the PIN */
+        if(n<2){ setTimeout(function(){ attempt(n+1); },1500); return; }
+        fail(r.status,r.j&&r.j.code);
         return;
       }
+      done();
       ADM.data=r.j;ADM.survey=null;ADM.surveyErr=false;ADM.jp=null;ADM.jpErr=false;
       renderAdmin();
       loadSurveyAdmin();
       loadJpAdmin();
-    }).catch(function(){ ADM.busy=false; ADM.pin=''; renderPinForm('Could not reach the server.'); });
+    }).catch(function(){
+      if(ADM.pin!==pin){ done(); return; }
+      if(n<2){ setTimeout(function(){ attempt(n+1); },1500); return; }
+      fail(0,'');
+    });
+  }
+  attempt(1);
 }
 /* ---------- Japanese student lists in the admin panel (PIN-checked RPC; PDFs open through a short-lived signed ImageKit link) ---------- */
 function loadJpAdmin(){
@@ -3038,7 +3083,7 @@ function renderAdmin(){
     {l:'All time',n:t.v_all||0,u:(t.u_all||0)+' uniq'}
   ];
   var html='';
-  html+='<div class="adm-toolbar"><p class="adm-sub">Updated '+escHtml(fmtAdmTime(d.generated_at))+'</p>'+
+  html+='<div class="adm-toolbar"><p class="adm-sub">Updated '+escHtml(fmtAdmTime(d.generated_at))+(ADM.refreshing?' \u00b7 refreshing\u2026':'')+'</p>'+
     '<div class="seg" role="group" aria-label="Chart range">'+
       '<button type="button" data-act="admin-range" data-v="24h" aria-pressed="'+(ADM.range==='24h')+'">24h</button>'+
       '<button type="button" data-act="admin-range" data-v="30d" aria-pressed="'+(ADM.range==='30d')+'">30d</button>'+
