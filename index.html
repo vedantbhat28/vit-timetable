@@ -94,6 +94,15 @@ a{touch-action:manipulation}
 .app{max-width:960px;margin:0 auto;padding:12px 12px 32px}
 @media (min-width:720px){.app{padding:22px 22px 44px}}
 
+/* live schedule-change strip (data: Supabase tt_changes) */
+#chgStrip{margin:0 0 12px;padding:10px 12px;border:1px solid var(--line);border-left:4px solid var(--now);border-radius:12px;background:var(--surface);font-size:13px}
+#chgStrip[hidden]{display:none}
+#chgStrip b.hd{display:block;margin-bottom:4px;color:var(--muted);font-size:12px;letter-spacing:.03em;text-transform:uppercase}
+#chgStrip ul{margin:0;padding-left:18px}
+#chgStrip li{margin:2px 0}
+#chgStrip .w{color:var(--muted);font-weight:600}
+#chgStrip .more{margin:4px 0 0;color:var(--muted);font-size:12px}
+
 /* header */
 .top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px 20px;flex-wrap:wrap}
 h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);line-height:.92;margin:0}
@@ -1056,6 +1065,8 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
     </div>
   </header>
 
+  <div id="chgStrip" hidden role="status" aria-live="polite"></div>
+
   <div class="controls">
     <div class="ctl"><span id="lblB">Lab batch</span>
       <div class="seg" role="group" aria-labelledby="lblB">
@@ -1568,7 +1579,7 @@ var MONS=['January','February','March','April','May','June','July','August','Sep
 var START=null, END=null;   // set per class from tt_divisions.effective_from / effective_to
 var inRange=function(d){return START&&END&&d>=START&&d<=END};
 
-/* Supabase project (public, read-only: RLS only grants SELECT on tt_divisions / tt_sessions) */
+/* Supabase project (public, read-only: RLS only grants SELECT on tt_divisions / tt_sessions, and applied rows of tt_changes (safe columns only)) */
 var SUPA_URL='https://fqfzygubyjqkimsphmdn.supabase.co';
 var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxZnp5Z3VieWpxa2ltc3BobWRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NzQwMDYsImV4cCI6MjEwNTQ1MDAwNn0.k0T2HEH8cJlrQvxHWU4lcImLgtcXKGTAaowKyNDg1gI';
 function fetchSupa(path){
@@ -1853,7 +1864,7 @@ function dur(ms){
 }
 /* One-day changes (15 Oct 2026): all classes suspended 2 PM-6 PM (Vishwakarandak); CSSE-C Human Values lecture cancelled */
 function isE402Lab(x){return !!(x&&x.room&&/\bE402\b/.test(x.room)&&(x.b||/lab|pract/i.test(x.type||'')));}
-function dayOverride(list,date){
+function dayOverrideStatic(list,date){
   if(!date) return list;
   var k=ymd(date);
   list=list.map(function(x){   // Until further notice: labs in E402 moved to C206 (copies, so the cached timetable is untouched)
@@ -1889,6 +1900,96 @@ function dayOverride(list,date){
   list=list.filter(function(x){return !(x.s<1080&&x.e>840)});
   if(st.branch==='CSSE'&&st.div==='C') list=list.filter(function(x){return !(x.sub==='ES26106'&&x.type==='Theory')});
   return list;
+}
+/* ---------- Live schedule changes (Supabase table tt_changes, filled from the class WhatsApp groups by the Android helper app) ---------- */
+var CHANGES=[],chgSig='';
+function loadChanges(){
+  var from=ymd(dayStart(new Date(),-1));
+  return fetchSupa('tt_changes?status=eq.applied&or=(date_to.is.null,date_to.gte.'+from+')'+
+      '&select=id,branch,division,batch,change_type,subject_code,session_type,old_start,old_end,old_room,new_start,new_end,new_room,new_faculty,date_from,date_to,title,details&order=id.asc')
+    .then(function(rows){
+      rows=rows||[];
+      var sig=JSON.stringify(rows);
+      if(sig===chgSig) return;            // nothing new: no re-render
+      chgSig=sig;CHANGES=rows;
+      if(CUR) render();
+    }).catch(function(e){ console.error(e); });   // offline / table missing: the normal timetable still works
+}
+function chgApplies(c,k){   // k = 'YYYY-MM-DD'
+  if(c.branch&&c.branch!==st.branch) return false;
+  if(c.division&&c.division!==st.div) return false;
+  if(k<c.date_from) return false;
+  if(c.date_to&&k>c.date_to) return false;
+  return true;
+}
+function roomKey(r){return String(r||'').toUpperCase().replace(/[\s\-]/g,'');}
+function chgMatch(c,x){
+  if(c.subject_code&&x.sub!==c.subject_code) return false;
+  if(c.session_type&&x.type!==c.session_type) return false;
+  if(c.batch&&x.b!==c.batch) return false;
+  if(c.old_start&&x.s!==toMin(c.old_start)) return false;
+  if(c.old_room&&roomKey(x.room)!==roomKey(c.old_room)) return false;
+  return true;
+}
+function chgHasSelector(c){return !!(c.subject_code||c.session_type||c.old_start||c.old_room);}
+function chgClone(x){var y={};for(var q in x) y[q]=x[q];return y;}
+function chgSubj(c){
+  var code=c.subject_code||('CHG'+c.id);
+  if(!SUBJ[code]) SUBJ[code]={code:code,name:c.title,short:String(c.title).slice(0,16),color:'#2F5BD6'};
+  return code;
+}
+function applyDbChanges(list,date){
+  if(!date||!CHANGES.length) return list;
+  var k=ymd(date),dow=date.getDay();
+  CHANGES.forEach(function(c){
+    if(!chgApplies(c,k)) return;
+    var t=c.change_type;
+    if(t==='holiday'||t==='suspend'){
+      var a=c.old_start?toMin(c.old_start):0,b=c.old_end?toMin(c.old_end):1440;
+      list=list.filter(function(x){return !(x.s<b&&x.e>a&&(!c.subject_code||x.sub===c.subject_code)&&(!c.batch||x.b===c.batch));});
+    }else if(t==='cancel'){
+      if(!chgHasSelector(c)) return;   // never cancel the whole day from a vague change
+      list=list.filter(function(x){return !chgMatch(c,x);});
+    }else if(t==='room_change'||t==='time_change'||t==='reschedule'||t==='faculty_change'){
+      if(!chgHasSelector(c)) return;
+      var hit=false;
+      list=list.map(function(x){
+        if(!chgMatch(c,x)) return x;
+        hit=true;var y=chgClone(x);
+        if(c.new_start){var d0=x.e-x.s;y.s=toMin(c.new_start);y.e=c.new_end?toMin(c.new_end):y.s+d0;}
+        if(c.new_room){y.room=c.new_room;y.rm=true;}
+        if(c.new_faculty) y.fac=c.new_faculty;
+        return y;
+      });
+      if(!hit&&t==='reschedule'&&c.new_start&&c.new_end&&c.subject_code){   // moved in from another day: add it here
+        list=list.concat([{id:900000+c.id,d:dow,s:toMin(c.new_start),e:toMin(c.new_end),sub:chgSubj(c),type:c.session_type||'Theory',b:c.batch||undefined,fac:c.new_faculty||'\u2014',room:c.new_room||''}]);
+      }
+    }else if(t==='extra_class'){
+      if(!c.new_start||!c.new_end) return;
+      list=list.concat([{id:900000+c.id,d:dow,s:toMin(c.new_start),e:toMin(c.new_end),sub:chgSubj(c),type:c.session_type||'Extra Lecture',b:c.batch||undefined,fac:c.new_faculty||'\u2014',room:c.new_room||''}]);
+    }
+  });
+  return list;
+}
+function dayOverride(list,date){return applyDbChanges(dayOverrideStatic(list,date),date);}
+function renderChgStrip(){
+  var el=$('#chgStrip');if(!el) return;
+  if(!CUR||!CHANGES.length){el.hidden=true;el.innerHTML='';return;}
+  var base=dayStart(nowFloor(),0),items=[];
+  CHANGES.forEach(function(c){
+    if(c.change_type==='other'&&!c.title) return;
+    for(var i=0;i<3;i++){ if(chgApplies(c,ymd(dayStart(base,i)))){ items.push({c:c,i:i}); break; } }
+  });
+  if(!items.length){el.hidden=true;el.innerHTML='';return;}
+  var lbl=function(it){
+    if(!it.c.date_to) return 'Until further notice';
+    return it.i===0?'Today':it.i===1?'Tomorrow':DAYS[dayStart(base,it.i).getDay()];
+  };
+  var h='<b class="hd">Updates from your class groups</b><ul>'+items.slice(0,4).map(function(it){
+    return '<li>'+escHtml(it.c.title)+' <span class="w">\u00b7 '+escHtml(lbl(it))+'</span></li>';
+  }).join('')+'</ul>';
+  if(items.length>4) h+='<p class="more">+'+(items.length-4)+' more</p>';
+  el.innerHTML=h;el.hidden=false;
 }
 function forDay(dow,b,date){
   var l=SESS.filter(function(x){return x.d===dow&&(!x.b||x.b===b)});
@@ -2183,6 +2284,7 @@ function weekHTML(now){
 /* ---------- Render ---------- */
 function render(){
   if(!CUR||$('#view').hidden) return;
+  renderChgStrip();
   var ae=document.activeElement,key=ae&&ae.getAttribute?ae.getAttribute('data-key'):null;
   var sc={};['days','wk-scroll'].forEach(function(c){var el=$('.'+c);if(el)sc[c]=el.scrollLeft});
 
@@ -4515,6 +4617,7 @@ document.addEventListener('keydown',function(e){
 });
 
 function boot(){
+  loadChanges();   // schedule changes (tt_changes), in parallel with the class list
   initForumTip();
   $('#view').hidden=true;$('#picker').hidden=true;$('#pkCancel').hidden=true;
   // saved choice: branch + division + batch. If we already know it, show the animated
@@ -4545,7 +4648,8 @@ function boot(){
     showPickerStatus('Could not load the class list. Check your connection and reload the page.');
   }).then(function(){
     setInterval(tick,1000);
-    document.addEventListener('visibilitychange',tick);
+    setInterval(loadChanges,180000);   // pick up new changes every 3 min
+    document.addEventListener('visibilitychange',function(){ tick(); if(!document.hidden) loadChanges(); });
     window.addEventListener('focus',tick);
   });
 }
