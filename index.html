@@ -1145,8 +1145,8 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
     <div class="tn-card">
       <div class="tn-emoji" aria-hidden="true">&#128226;</div>
       <p class="tn-kicker">Schedule change &middot; today only</p>
-      <p class="tn-title" id="chgTitle">Human Values is cancelled</p>
-      <p class="tn-body">Today&rsquo;s <b>Human Values</b> lecture is <b>cancelled</b>.<br><br>This applies to <b>15/10/2026</b> and <b>CSSE-C</b> only.</p>
+      <p class="tn-title" id="chgTitle">Basics of Engineering is cancelled</p>
+      <p class="tn-body">Today&rsquo;s <b>Basics of Engineering</b> lecture is <b>cancelled</b>.<br><br>This applies to <b>29/10/2026</b> and <b>CSSE-C</b> only.</p>
       <button type="button" class="tn-btn" id="chgNoticeOk">Got it</button>
     </div>
   </div>
@@ -1868,6 +1868,10 @@ function dayOverride(list,date){
       if(!SUBJ.EXMATH) SUBJ.EXMATH={code:'EXMATH',name:'Mathematics (Extra Lecture)',short:'Maths (Extra)',color:'#2F5BD6'};
       list=list.concat([{id:9026,d:1,s:540,e:600,sub:'EXMATH',type:'Extra Lecture',b:undefined,fac:'\u2014',room:'E-209'}]);
     }
+    return list;
+  }
+  if(k==='2026-10-29'){   // Basics of Engineering (theory) lecture cancelled, CSSE-C only, today only
+    if(st.branch==='CSSE'&&st.div==='C') list=list.filter(function(x){return !(x.sub==='ES26105'&&x.type==='Theory')});
     return list;
   }
   if(k==='2026-10-27'){   // Basics of Engineering (theory) 4-5 PM in D301, CSSE-C only, today only
@@ -4395,7 +4399,7 @@ function maybeShowChangeNotice(){
   try{
     if(chgShown) return;
     if(st.branch!=='CSSE'||st.div!=='C') return;
-    if(ymd(nowFloor())!=='2026-10-15') return;
+    if(ymd(nowFloor())!=='2026-10-29') return;
     var el=$('#chgNotice');if(!el) return;
     chgShown=true;
     el.classList.remove('out');el.hidden=false;
