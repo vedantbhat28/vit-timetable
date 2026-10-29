@@ -928,6 +928,28 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
 .adm-rank .barw{flex:1;height:8px;background:var(--wash);border-radius:99px;overflow:hidden}
 .adm-rank .barf{height:100%;background:var(--ink);border-radius:99px}
 .adm-rank .cnt{flex:0 0 auto;min-width:24px;text-align:right;color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
+/* ---- classes donut chart (admin) ---- */
+.cls-wrap{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
+@media (min-width:560px){.cls-wrap{grid-template-columns:220px minmax(0,1fr)}}
+.cls-pie{width:100%;max-width:220px;margin:0 auto;display:block;overflow:visible}
+.cls-sl{cursor:pointer;stroke:var(--surface);stroke-width:1.5;transition:transform .15s ease,opacity .15s ease}
+.cls-sl:hover{opacity:.85}
+.cls-pie.has-sel .cls-sl:not(.on){opacity:.5}
+.cls-c1{font:800 22px var(--display);fill:var(--ink);text-anchor:middle;pointer-events:none}
+.cls-c2{font:600 9.5px var(--body);fill:var(--muted);text-anchor:middle;pointer-events:none}
+.cls-list{margin:0;padding:0;list-style:none;max-height:236px;overflow:auto;display:flex;flex-direction:column;gap:2px}
+.cls-li{display:flex;width:100%;align-items:center;gap:8px;padding:6px 8px;border:0;border-radius:9px;background:transparent;color:var(--ink);font:600 12.5px var(--body);text-align:left;cursor:pointer;min-height:34px}
+.cls-li:hover{background:var(--wash)}
+.cls-li.on{background:var(--wash);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.cls-li:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.cls-li i{width:10px;height:10px;border-radius:3px;flex:none}
+.cls-li .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cls-li .ct{color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cls-detail{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.cls-detail h4{margin:0 0 10px;font:800 15px var(--display);display:flex;align-items:center;gap:8px}
+.cls-detail h4 i{width:12px;height:12px;border-radius:4px;flex:none}
+.cls-detail .adm-h{margin:12px 0 6px}
+.cls-hint{margin:12px 0 0;color:var(--muted);font-size:12.5px;text-align:center}
 .adm-grid2{display:grid;grid-template-columns:1fr;gap:18px}
 @media (min-width:560px){.adm-grid2{grid-template-columns:1fr 1fr}}
 
@@ -2712,6 +2734,7 @@ document.addEventListener('click',function(e){
   if(a==='admin-lock'){lockAdmin();return;}
   if(a==='admin-refresh'){loadAdmin();return;}
   if(a==='admin-jp-view'){openJpPdf(b);return;}
+  if(a==='admin-cls'){admPickClass(b.getAttribute('data-i'));return;}
   if(a==='admin-range'){ADM.range=b.getAttribute('data-v');renderAdmin();return;}
   if(a==='install-yes'){installNow();return;}
   if(a==='install-no'){dismissInstall();return;}
@@ -2854,7 +2877,7 @@ document.addEventListener('click',function(e){
   if(taps.length>TAP_NEEDED){ taps=[]; openAdmin(); }
 },true);
 
-var ADM={pin:'',data:null,busy:false,range:'24h',survey:null,surveyErr:false,jp:null,jpErr:false};
+var ADM={pin:'',data:null,cls:null,busy:false,range:'24h',survey:null,surveyErr:false,jp:null,jpErr:false};
 function escHtml(s){
   return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
 }
@@ -2872,7 +2895,7 @@ function closeAdmin(){
   var dlg=$('#admin');
   if(typeof dlg.close==='function') dlg.close(); else dlg.removeAttribute('open');
 }
-function lockAdmin(){ admStopTick();ADM.busy=false;ADM.refreshing=false;ADM.pin='';ADM.data=null;ADM.survey=null;ADM.surveyErr=false;ADM.jp=null;ADM.jpErr=false;renderPinForm(); }
+function lockAdmin(){ admStopTick();ADM.busy=false;ADM.refreshing=false;ADM.pin='';ADM.data=null;ADM.survey=null;ADM.surveyErr=false;ADM.jp=null;ADM.jpErr=false;ADM.cls=null;renderPinForm(); }
 function renderPinForm(msg){
   $('#admBody').innerHTML=
     '<form id="admPinForm" class="adm-pinform" autocomplete="off">'+
@@ -3072,6 +3095,75 @@ function surveyAdminHTML(){
   }).join('')+'</div>';
   return out;
 }
+/* ---------- Classes donut chart: every class, tap a slice (or a list row) for details ---------- */
+function clsRows(){
+  var rows=((ADM.data||{}).classes||[]).filter(function(r){return (r.n||0)>0;});
+  rows.sort(function(a,b){return (b.n||0)-(a.n||0)||String(a.k).localeCompare(String(b.k));});
+  return rows;
+}
+function clsColor(i){ return 'hsl('+Math.round((i*137.508)%360)+' 62% '+(44+(i%3)*8)+'%)'; }
+function clsPt(a,r){ return (100+r*Math.cos(a)).toFixed(2)+' '+(100+r*Math.sin(a)).toFixed(2); }
+function clsSlice(a0,a1){
+  var R=92,r=54;
+  if(a1-a0>=Math.PI*2-0.0005){
+    return 'M100 '+(100-R)+'A'+R+' '+R+' 0 1 1 100 '+(100+R)+'A'+R+' '+R+' 0 1 1 100 '+(100-R)+'Z'+
+           'M100 '+(100-r)+'A'+r+' '+r+' 0 1 0 100 '+(100+r)+'A'+r+' '+r+' 0 1 0 100 '+(100-r)+'Z';
+  }
+  var big=(a1-a0>Math.PI)?1:0;
+  return 'M'+clsPt(a0,R)+'A'+R+' '+R+' 0 '+big+' 1 '+clsPt(a1,R)+'L'+clsPt(a1,r)+'A'+r+' '+r+' 0 '+big+' 0 '+clsPt(a0,r)+'Z';
+}
+function clsPct(n,total){ var p=total?(n/total*100):0; return (p>=10?p.toFixed(0):p.toFixed(1))+'%'; }
+function clsInner(){
+  var rows=clsRows();
+  if(!rows.length) return '<p class="adm-empty">No data yet.</p>';
+  var total=0; rows.forEach(function(r){ total+=r.n||0; });
+  var sel=-1; rows.forEach(function(r,i){ if(ADM.cls!==null&&r.k===ADM.cls) sel=i; });
+  var a=-Math.PI/2, paths='';
+  rows.forEach(function(r,i){
+    var a0=a, a1=a+(r.n/total)*Math.PI*2; a=a1;
+    var mid=(a0+a1)/2, dx=0, dy=0;
+    if(i===sel&&rows.length>1){ dx=Math.cos(mid)*5; dy=Math.sin(mid)*5; }
+    paths+='<path class="cls-sl'+(i===sel?' on':'')+'" d="'+clsSlice(a0,a1)+'" fill="'+clsColor(i)+'" fill-rule="evenodd" data-act="admin-cls" data-i="'+i+'" transform="translate('+dx.toFixed(1)+' '+dy.toFixed(1)+')"><title>'+escHtml(r.k)+': '+r.n+' visits ('+clsPct(r.n,total)+')</title></path>';
+  });
+  var c1=sel>=0?rows[sel].n:total, c2=sel>=0?clsPct(rows[sel].n,total)+' of visits':rows.length+' classes \u00b7 '+total+' visits';
+  var pie='<svg class="cls-pie'+(sel>=0?' has-sel':'')+'" viewBox="-8 -8 216 216" role="img" aria-label="Visits by class, last 30 days">'+paths+
+    '<text class="cls-c1" x="100" y="102">'+c1+'</text><text class="cls-c2" x="100" y="118">'+escHtml(c2)+'</text></svg>';
+  var list='<ul class="cls-list">'+rows.map(function(r,i){
+    return '<li><button type="button" class="cls-li'+(i===sel?' on':'')+'" data-act="admin-cls" data-i="'+i+'" aria-pressed="'+(i===sel)+'">'+
+      '<i style="background:'+clsColor(i)+'"></i><span class="nm">'+escHtml(r.k)+'</span><span class="ct">'+r.n+' \u00b7 '+clsPct(r.n,total)+'</span></button></li>';
+  }).join('')+'</ul>';
+  return '<div class="cls-wrap"><div>'+pie+'</div><div>'+list+'</div></div>'+clsDetail(rows,sel,total);
+}
+function clsDetail(rows,sel,total){
+  if(sel<0) return '<p class="cls-hint">Tap a slice or a class to see its details.</p>';
+  var r=rows[sel], u=r.u||0;
+  var kp=[
+    {l:'Visits',n:r.n||0,u:'30 days'},
+    {l:'Share',n:clsPct(r.n||0,total),u:'of all visits'},
+    {l:'Unique',n:u,u:'visitors'},
+    {l:'Per visitor',n:u?((r.n||0)/u).toFixed(1):'-',u:'visits each'},
+    {l:'Rank',n:'#'+(sel+1),u:'of '+rows.length}
+  ];
+  if(r.v_24h!=null) kp.push({l:'24 hours',n:r.v_24h,u:'visits'});
+  if(r.v_7d!=null) kp.push({l:'7 days',n:r.v_7d,u:'visits'});
+  var h='<div class="cls-detail"><h4><i style="background:'+clsColor(sel)+'"></i>'+escHtml(r.k)+'</h4>'+
+    '<div class="adm-kpis">'+kp.map(function(k){
+      return '<div class="adm-kpi"><span class="n">'+k.n+'</span><span class="u">'+k.u+'</span><span class="l">'+k.l+'</span></div>';
+    }).join('')+'</div>';
+  if(r.last_at) h+='<p class="adm-sub" style="margin-top:10px">Last visit '+escHtml(fmtAdmTime(r.last_at))+'</p>';
+  if(r.mobile!=null||r.desktop!=null||r.tablet!=null){
+    h+='<p class="adm-h">Devices &amp; app</p>'+rankList([
+      {k:'Mobile',n:r.mobile||0},{k:'Desktop',n:r.desktop||0},{k:'Tablet',n:r.tablet||0},{k:'Installed app',n:r.app||0}
+    ],'k','n');
+  }
+  return h+'</div>';
+}
+function admPickClass(i){
+  var rows=clsRows(), r=rows[+i];
+  if(!r) return;
+  ADM.cls=(ADM.cls===r.k)?null:r.k;
+  var el=$('#admCls'); if(el) el.innerHTML=clsInner();
+}
 function renderAdmin(){
   var d=ADM.data||{},t=d.totals||{},ret=d.returning||{},inst=d.install_share||{};
   var kpis=[
@@ -3183,7 +3275,7 @@ function renderAdmin(){
     '<div><p class="adm-h">Browsers</p>'+rankList(d.browsers,'k','n')+'</div>'+
     '<div><p class="adm-h">Referrers</p>'+rankList(d.referrers,'k','n')+'</div>'+
   '</div>';
-  html+='<p class="adm-h">Classes</p>'+rankList(d.classes,'k','n');
+  html+='<p class="adm-h">Classes <span style="font-weight:400;color:var(--muted)">(30d \u00b7 tap a slice for details)</span></p><div id="admCls">'+clsInner()+'</div>';
   html+='<p class="adm-h">Link clicks <span style="font-weight:400;color:var(--muted)">(30d)</span></p>'+rankList(d.link_clicks,'k','n');
   html+=jpAdminHTML();
   html+=surveyAdminHTML();
