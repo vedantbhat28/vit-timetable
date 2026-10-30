@@ -102,6 +102,8 @@ a{touch-action:manipulation}
 #chgStrip li{margin:2px 0}
 #chgStrip .w{color:var(--muted);font-weight:600}
 #chgStrip .more{margin:4px 0 0;color:var(--muted);font-size:12px}
+.ev-after{position:absolute;left:2px;right:2px;display:flex;align-items:center;justify-content:center;text-align:center;box-sizing:border-box;padding:4px;border:1px dashed var(--line);border-radius:8px;background:var(--surface);color:var(--muted);font-size:11px;font-weight:700;line-height:1.25}
+.ev-note{margin:10px 2px 0;padding:8px 12px;border:1px solid var(--line);border-left:4px solid var(--now);border-radius:12px;background:var(--surface);font-size:13px;font-weight:600}
 
 /* header */
 .top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px 20px;flex-wrap:wrap}
@@ -642,6 +644,22 @@ body.diwali .hero{box-shadow:0 0 0 2px #ffb020,0 8px 28px rgba(255,160,32,.38)}
 .jp-err:empty{display:none}
 .adm-jp{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
 .adm-jp .btn2{margin:0;min-height:30px;padding:3px 12px;font-size:12px}
+
+/* ---- Bibwewadi timetable PDF request (full screen) + admin switch ---- */
+#bbAsk{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;padding:max(20px,env(safe-area-inset-top)) 20px max(20px,env(safe-area-inset-bottom));background:var(--surface);color:var(--ink);overflow:auto}
+#bbAsk[hidden]{display:none}
+.bb-card{width:100%;max-width:440px;margin:auto;display:flex;flex-direction:column;gap:12px;text-align:center;outline:0}
+.bb-panel{display:flex;flex-direction:column;gap:12px}
+.bb-panel[hidden]{display:none}
+.bb-card .rw-emoji{font-size:48px}
+.bb-card .rw-title{font-size:22px}
+.bb-sw{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font-weight:600;font-size:13px;text-align:left;cursor:pointer}
+.bb-sw .trk{position:relative;flex:none;width:44px;height:26px;border-radius:999px;background:#9aa0a6;transition:background .15s}
+.bb-sw .trk::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .15s}
+.bb-sw[aria-checked="true"] .trk{background:#16a34a}
+.bb-sw[aria-checked="true"] .trk::after{transform:translateX(18px)}
+.bb-sw:disabled{opacity:.6;cursor:wait}
+.bb-sw small{display:block;font-weight:400;color:var(--muted);font-size:11.5px;margin-top:2px}
 
 /* phones: compact chrome, week grid fits the screen (no sideways scroll) */
 @media (max-width:600px){
@@ -1243,6 +1261,28 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       </div>
     </div>
   </div>
+  <div id="bbAsk" hidden role="dialog" aria-modal="true" aria-labelledby="bbT1">
+    <div class="bb-card" id="bbCard" tabindex="-1">
+      <div class="bb-panel" id="bbP1">
+        <div class="rw-emoji" aria-hidden="true">&#128196;</div>
+        <p class="rw-title" id="bbT1">Submit the Bibwewadi Timetable PDF</p>
+        <p class="rw-body">For <b>Vishwakarandak</b>, please upload the <b>Bibwewadi Timetable PDF</b> if you have it. It helps us keep the Bibwewadi timetable accurate for everyone.</p>
+        <p class="rw-body jp-priv">&#128274; The PDF is stored securely and is <b>never made public</b>.</p>
+        <label class="jp-file" id="bbFileBox" for="bbFile"><span id="bbFileLbl">Choose PDF</span><input id="bbFile" type="file" accept="application/pdf,.pdf"></label>
+        <p class="jp-err" id="bbErr" role="alert"></p>
+        <div class="rw-actions">
+          <button type="button" class="btn" id="bbUpload" data-bb="upload" disabled>Upload PDF</button>
+          <button type="button" class="btn2" id="bbSkip" data-bb="skip">Not now</button>
+        </div>
+      </div>
+      <div class="bb-panel" id="bbP2" hidden>
+        <div class="rw-emoji" aria-hidden="true">&#9989;</div>
+        <p class="rw-title" id="bbT2">Thank you!</p>
+        <p class="rw-body">We received your PDF.</p>
+        <div class="rw-actions"><button type="button" class="btn" id="bbDone" data-bb="done">Go to timetable</button></div>
+      </div>
+    </div>
+  </div>
   <section id="picker" class="picker" hidden aria-labelledby="pkTitle">
     <div class="pk-card">
       <div class="pk-top">
@@ -1759,12 +1799,41 @@ function loadDivisions(){
       CLASSES=byBranch;
     });
 }
+/* ---------- Vishwakarandak special timetable (Supabase table tt_vishwakarandak_sessions) ----------
+   On these dates it fully replaces tt_sessions for divisions that have rows in it. Fetched once per division, cached on meta.ev. */
+var EV_FROM='2026-11-02', EV_TO='2026-11-05', EV_ID0=500000, EV_LABEL='Vishwakarandak special timetable (2\u20135 Nov)';
+function evFetch(meta){
+  var none=function(){return {has:false,byDate:{},list:[],fac:{}};};
+  if(ymd(new Date())>EV_TO) return Promise.resolve(none());   // event is over: no extra request
+  return fetchSupa('tt_vishwakarandak_sessions?division=eq.'+encodeURIComponent(meta.slug)+
+      '&event_date=gte.'+EV_FROM+'&event_date=lte.'+EV_TO+
+      '&select=event_date,weekday,start_time,end_time,subject_code,subject_name,session_type,room,faculty_initials,faculty_name,faculty_id'+
+      '&order=event_date.asc,start_time.asc')
+    .then(function(rows){
+      var ev=none();
+      (rows||[]).forEach(function(r,i){
+        getSubj(r.subject_code,r.subject_name||r.subject_code);
+        var x={id:EV_ID0+i,d:r.weekday,s:toMin(r.start_time),e:toMin(r.end_time),sub:r.subject_code,
+          type:r.session_type||'Theory',b:undefined,fac:r.faculty_initials||'',room:r.room||'',ev:true};
+        (ev.byDate[r.event_date]=ev.byDate[r.event_date]||[]).push(x);
+        ev.list.push(x);
+        if(r.faculty_name && r.faculty_initials && !ev.fac[r.faculty_initials]){
+          var hn=humanName(r.faculty_name);
+          ev.fac[r.faculty_initials]={name:hn.name,id:r.faculty_id||'',title:hn.title};
+        }
+      });
+      ev.has=ev.list.length>0;
+      return ev;
+    })
+    .catch(function(e){ console.error(e); return none(); });   // request failed: normal timetable is used
+}
 function loadDivisionData(meta){
   if(meta.loaded) return Promise.resolve(meta);
-  return fetchSupa('tt_sessions?division=eq.'+encodeURIComponent(meta.slug)+
+  return Promise.all([fetchSupa('tt_sessions?division=eq.'+encodeURIComponent(meta.slug)+
       '&select=weekday,start_time,end_time,subject_code,subject_name,session_type,batch,room,faculty_initials,faculty_name,faculty_id'+
-      '&order=weekday.asc,start_time.asc')
-    .then(function(rows){
+      '&order=weekday.asc,start_time.asc'),evFetch(meta)])
+    .then(function(res){
+      var rows=res[0];meta.ev=res[1];
       var sess=[],fac={},daySet={};
       rows.forEach(function(r,i){
         getSubj(r.subject_code,r.subject_name);
@@ -1776,6 +1845,7 @@ function loadDivisionData(meta){
           fac[r.faculty_initials]={name:hn.name,id:r.faculty_id||'',title:hn.title};
         }
       });
+      Object.keys(meta.ev.fac).forEach(function(k){ if(!fac[k]) fac[k]=meta.ev.fac[k]; });
       meta.sess=sess;meta.fac=fac;
       daySet[6]=true; // always show Saturday in the week view, even with no classes yet
       meta.days=Object.keys(daySet).map(Number).sort(function(a,b){return a-b});
@@ -1991,8 +2061,20 @@ function renderChgStrip(){
   if(items.length>4) h+='<p class="more">+'+(items.length-4)+' more</p>';
   el.innerHTML=h;el.hidden=false;
 }
+function evDay(date){   // special-timetable rows for this date (possibly empty = free day), or null when the normal timetable applies
+  if(!date||!CUR||!CUR.ev||!CUR.ev.has) return null;
+  var k=ymd(date);
+  if(k<EV_FROM||k>EV_TO) return null;
+  return CUR.ev.byDate[k]||[];
+}
+function evNoteHTML(){return '<div class="ev-note" role="note">'+EV_LABEL+'</div>';}
+function sessById(sid){
+  if(sid>=EV_ID0&&sid<EV_ID0+100000&&CUR&&CUR.ev){ var h=CUR.ev.list.filter(function(x){return x.id===sid})[0]; if(h) return h; }
+  return SESS[sid];
+}
 function forDay(dow,b,date){
-  var l=SESS.filter(function(x){return x.d===dow&&(!x.b||x.b===b)});
+  var evl=evDay(date);
+  var l=evl?evl.slice():SESS.filter(function(x){return x.d===dow&&(!x.b||x.b===b)});
   return dayOverride(l,date).sort(function(a,c){return a.s-c.s||(c.ger?1:0)-(a.ger?1:0)});
 }
 function typeLine(x){return x.b?x.type+', batch '+x.b:x.type}
@@ -2126,6 +2208,7 @@ function heroModel(now,occ,cur,nxt){
     var kind=after.type==='Theory'?'':' '+after.type.toLowerCase();
     html+='<p class="then">Then '+whenWord(after)+': '+as.name+kind+', room '+after.room+'.</p>';
   }
+  if(evDay(focus.date)) html+='<p class="then">'+EV_LABEL+'</p>';
   html+='<button type="button" class="hero-btn" aria-haspopup="dialog" data-act="open" data-sid="'+focus.id+'" data-date="'+focus.date.getTime()+'" data-key="hero-open">Details and other batches</button>';
   return {color:sub.color,state:cur?'live':'next',html:html,flag:focus.ger?focus.lk:''};
 }
@@ -2203,6 +2286,7 @@ function panelHTML(now,occ,sel){
       '<p class="hol-sub">As per the <a href="'+CAL_URL+'" target="_blank" rel="noopener">FY Academic Calendar 2026-27</a></p>'+
       '</div></div>';
   }
+  if(inRange(sd)&&evDay(sd)) strip+=evNoteHTML();
   var body;
   if(special&&special.kind==='holiday'){
     head+='</div>';
@@ -2248,6 +2332,7 @@ function weekHTML(now){
   if(!all.length) return '';
   var h0=Math.floor(Math.min.apply(null,all.map(function(x){return x.s}))/60);
   var h1=Math.ceil(Math.max.apply(null,all.map(function(x){return x.e}))/60);
+  if(cols.some(function(c){return inRange(c.d)&&evDay(c.d);})&&h1<13) h1=13;   // room for the "Vishwakarandak event" block after 12:00
   var rows=h1-h0,nowM=mins(now);
   var y=function(m){return 'calc(var(--hrw)*'+((m-h0*60)/60).toFixed(4)+')'};
   var gut='';
@@ -2263,6 +2348,7 @@ function weekHTML(now){
       if(isT){ if(x.e<=nowM) state='past'; else if(x.s<=nowM) state='live'; }
       return blockHTML(x,{ci:lay[i].ci,cn:lay[i].cn,state:state,sm:true,date:c.d.getTime(),top:'calc('+y(x.s)+' + 2px)',h:'calc(var(--hrw)*'+((x.e-x.s)/60).toFixed(4)+' - 4px)'});
     }).join('');
+    if(inRange(c.d)&&evDay(c.d)&&h1*60>720) blks+='<li class="ev-after" style="top:calc('+y(720)+' + 2px);height:calc(var(--hrw)*'+((h1*60-720)/60).toFixed(4)+' - 4px)">Vishwakarandak event</li>';
     var colCls='wk-col'+(isT?' today':'')+(sp?sp.kind==='holiday'?' hol':' exam-day':'');
     var label=sp?'<div class="wk-hol-label">'+(sp.kind==='holiday'?'Holiday':'Exams')+'</div>':'';
     body+='<div class="'+colCls+'">'+label+'<ol class="blks">'+(sp&&sp.kind==='holiday'?'':blks)+'</ol></div>';
@@ -2272,10 +2358,11 @@ function weekHTML(now){
     line='<div class="wk-now"><div class="now" style="top:'+y(nowM)+'"><span class="now-t">'+fmtT(nowM).replace(/ [ap]m$/,'')+'</span></div></div>';
   }
   var tot={Theory:0,Lab:0,Tutorial:0};
-  for(var w=0;w<wd.length;w++) forDay(wd[w],st.batch).forEach(function(x){if(tot[x.type]!==undefined) tot[x.type]+=(x.e-x.s)/60});
+  for(var w=0;w<wd.length;w++) (evDay(cols[w]&&cols[w].d)?cols[w].list:forDay(wd[w],st.batch)).forEach(function(x){if(tot[x.type]!==undefined) tot[x.type]+=(x.e-x.s)/60});
   var title=(dow===0||dow>last||rolled)?'Next week':'This week';
   var offDays=forDay(6,st.batch).length?'Sunday has':'Saturday and Sunday have';
   return '<div class="weekp-head"><h2>'+title+'</h2><p>'+shortDate(cols[0].d)+' to '+shortDate(cols[cols.length-1].d)+', batch '+st.batch+'</p></div>'+
+    (cols.some(function(c){return inRange(c.d)&&evDay(c.d);})?evNoteHTML():'')+
     '<div class="wk-scroll"><div class="wk'+(wd.length>5?' six':'')+'" style="--rows:'+rows+';--nc:'+wd.length+'">'+head+
     '<div class="wk-gut" aria-hidden="true">'+gut+'</div>'+body+line+'</div></div>'+
     '<p class="week-note">Each week for batch '+st.batch+': '+tot.Theory+' h of theory, '+tot.Lab+' h of labs and '+tot.Tutorial+' h of tutorials. '+offDays+' no classes.</p>';
@@ -2306,7 +2393,7 @@ function render(){
   $('#h1').textContent=headTitle;
   document.title=headTitle+' timetable';
   $('#campusLine').innerHTML='<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 14.5S13 10.2 13 6.5a5 5 0 10-10 0C3 10.2 8 14.5 8 14.5z"/><circle cx="8" cy="6.5" r="1.8"/></svg><span>'+campusFor(st.branch)+'</span>';
-  var lb=$('#latestBadge');if(lb){$('#latestTxt').textContent='Latest schedule \u00b7 '+CUR.version+' \u00b7 from '+fmtDateLong(CUR.effFrom);lb.hidden=false;}
+  var lb=$('#latestBadge');if(lb){if(ymd(now)<=EV_TO){$('#latestTxt').textContent='Vishwakarandak';lb.hidden=false;}else lb.hidden=true;}   // badge shows the event until 5 Nov, then disappears
   $('#subLine').textContent='First year, semester 1. Timetable version '+CUR.version+', valid '+fmtDateLong(CUR.effFrom)+' to '+fmtDateLong(CUR.effTo)+'.'+(st.lang?' '+langName(st.lang)+' ('+st.lang+') is added from the foreign language list.':'');
   $('#footTxt').textContent="Built from timetable Form FF957 for First Year "+CUR.pdf+", version "+CUR.version+", effective "+fmtDateLong(CUR.effFrom)+" to "+fmtDateLong(CUR.effTo)+". Class blocks show faculty initials; tap a class for full names from the faculty list on page 2 of the PDF, pulled live from the TimeTable_VIT database. Holidays and exam windows follow the FY Academic Calendar 2026-27, Sem I.";
   $('#clockTime').textContent=fmtT(mins(now));
@@ -2398,7 +2485,7 @@ function detailHTML(x,dateMs,now){
   }
 
   // 3. faculty for this subject (full names are typed in by the student)
-  var all=SESS.filter(function(y){return y.sub===x.sub}).sort(byTime);
+  var all=(x.ev?CUR.ev.list:SESS).filter(function(y){return y.sub===x.sub}).sort(byTime);
   var order=[x.fac],roles={};
   all.forEach(function(y){
     if(order.indexOf(y.fac)<0) order.push(y.fac);
@@ -2430,7 +2517,7 @@ function detailHTML(x,dateMs,now){
   var others=BATCHES.filter(function(b){return b!==st.batch}).map(function(b){
     return group('Batch '+b,all.filter(function(y){return y.b===b}),x,false);
   }).join('');
-  var sec4='<section class="sec"><h3 class="sh-h">All '+esc(sub.name)+' classes <small>Batch '+st.batch+' has '+hrTxt+' a week</small></h3>'+
+  var sec4='<section class="sec"><h3 class="sh-h">All '+esc(sub.name)+' classes <small>'+(x.ev?hrTxt+' during Vishwakarandak (2\u20135 Nov)':'Batch '+st.batch+' has '+hrTxt+' a week')+'</small></h3>'+
     group('Whole division',whole,x,false)+group('Batch '+st.batch,mine,x,true)+
     (others?'<details class="more"><summary>Other batches</summary>'+others+'</details>':'')+'</section>';
 
@@ -2439,10 +2526,10 @@ function detailHTML(x,dateMs,now){
 
 function fillSheet(){
   if(!openCtx) return;
-  $('#sheetBody').innerHTML=detailHTML(SESS[openCtx.sid],openCtx.dateMs,nowFloor());
+  $('#sheetBody').innerHTML=detailHTML(sessById(openCtx.sid),openCtx.dateMs,nowFloor());
 }
 function openDetail(sid,dateMs,key){
-  if(!SESS[sid]) return;
+  if(!sessById(sid)) return;
   openCtx={sid:sid,dateMs:dateMs,key:key};
   fillSheet();
   var dlg=$('#sheet');
@@ -2531,6 +2618,7 @@ function closePicker(fromBoot){
   scheduleSurvey();
   scheduleInstallToast();
   maybeShowJpToast();
+  bbMaybeAsk();
   var c=document.querySelector('.chg');
   if(c) c.focus({preventScroll:true});
 }
@@ -2704,6 +2792,109 @@ document.addEventListener('keydown',function(e){
   if(e.shiftKey&&(ae===first||ae===$('#jpCard'))){ e.preventDefault(); last.focus(); }
   else if(!e.shiftKey&&ae===last){ e.preventDefault(); first.focus(); }
 });
+/* ---------- Bibwewadi timetable PDF request (full screen) ----------
+   Shown to Bibwewadi students (CS, IT, CSAIML, CSAI) when the timetable opens, while the admin switch is ON.
+   The switch is re-read from the database every time (public.bib_tt_window_open), so turning it OFF hides it for everyone.
+   Upload -> bibwewadi-tt-pdf edge function -> private ImageKit file -> listed in the admin panel.
+   "Not now" hides it on this device for 1 day; a successful upload hides it for good. ?bb=1 re-shows it for testing. */
+var BB={file:null,busy:false,open:false,checking:false,timer:null,opener:null};
+var BB_MAX=10*1024*1024, BB_SNOOZE_MS=864e5;
+function bbForced(){ return /[?&]bb=1\b/.test(location.search); }
+function bbSnoozed(){
+  if(bbForced()) return false;
+  var v=store.get('tt-bb','');
+  if(v==='done') return true;
+  if(v.indexOf('skip:')===0){ var t=+v.slice(5); return !!t&&Date.now()-t<BB_SNOOZE_MS; }
+  return false;
+}
+function bbMaybeAsk(){
+  if(BB.open||BB.checking) return;
+  if(BIBWEWADI.indexOf(st.branch)<0||bbSnoozed()) return;
+  BB.checking=true;
+  admRpc('bib_tt_window_open',{},8000).then(function(r){
+    BB.checking=false;
+    if(r.ok&&r.j===true&&!BB.open&&BIBWEWADI.indexOf(st.branch)>-1&&!bbSnoozed()) bbShow();
+  },function(){ BB.checking=false; });   // network problem: stay out of the way
+}
+function bbShow(){
+  BB.open=true; BB.file=null; BB.busy=false;
+  $('#bbFile').value=''; $('#bbErr').textContent='';
+  $('#bbP1').hidden=false; $('#bbP2').hidden=true;
+  $('#bbAsk').setAttribute('aria-labelledby','bbT1');
+  bbRender();
+  BB.opener=document.activeElement;
+  $('#bbAsk').hidden=false; document.documentElement.classList.add('lock');
+  $('#bbAsk').scrollTop=0;
+  $('#bbCard').focus({preventScroll:true});
+}
+function bbClose(){
+  if(BB.timer){ clearTimeout(BB.timer); BB.timer=null; }
+  $('#bbAsk').hidden=true; BB.open=false;
+  document.documentElement.classList.remove('lock');
+  try{ if(BB.opener&&BB.opener.focus) BB.opener.focus({preventScroll:true}); }catch(e){}
+}
+function bbRender(){
+  var has=!!BB.file;
+  $('#bbFileBox').classList.toggle('has',has);
+  $('#bbFileLbl').textContent=has?(BB.file.name+' ('+jpFmtSize(BB.file.size)+')'):'Choose PDF';
+  $('#bbUpload').disabled=!has||BB.busy; $('#bbUpload').textContent=BB.busy?'Uploading\u2026':'Upload PDF';
+  $('#bbSkip').disabled=BB.busy; $('#bbFile').disabled=BB.busy;
+}
+function bbCheckFile(f){
+  if(!f) return 'Choose a PDF file.';
+  if(!(f.type==='application/pdf'||/\.pdf$/i.test(f.name))) return 'That is not a PDF. Please choose the PDF file.';
+  if(f.size>BB_MAX) return 'That file is too large (max 10 MB).';
+  if(f.size<100) return 'That file looks empty.';
+  return '';
+}
+function bbUpload(){
+  if(BB.busy||!BB.file) return;
+  var err=bbCheckFile(BB.file); if(err){ $('#bbErr').textContent=err; return; }
+  BB.busy=true; $('#bbErr').textContent=''; bbRender();
+  var fd=new FormData();
+  fd.append('file',BB.file,BB.file.name);
+  fd.append('visitor_id',visitorId);
+  fd.append('branch',st.branch||''); fd.append('division',st.div||''); fd.append('batch',st.batch||'');
+  fetch(SUPA_URL+'/functions/v1/bibwewadi-tt-pdf',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY},body:fd})
+    .then(function(res){ return res.json().catch(function(){return {};}).then(function(j){return {ok:res.ok,j:j||{}};}); })
+    .then(function(r){
+      BB.busy=false;
+      if(!r.ok||!r.j.ok){
+        if(r.j.error==='closed'){ bbClose(); return; }   // admin switched the window off while this was open
+        var m={not_pdf:'That file is not a valid PDF.',too_large:'That file is too large (max 10 MB).',rate_limited:'You have uploaded a few files already today. Please try again tomorrow.',busy:'Too many uploads right now. Please try again in a little while.'};
+        $('#bbErr').textContent=m[r.j.error]||'Could not upload. Please try again.';
+        bbRender(); return;
+      }
+      store.set('tt-bb','done');
+      $('#bbP1').hidden=true; $('#bbP2').hidden=false;
+      $('#bbAsk').setAttribute('aria-labelledby','bbT2');
+      var d=$('#bbDone'); if(d) d.focus({preventScroll:true});
+      BB.timer=setTimeout(bbClose,2400);
+    })
+    .catch(function(){ BB.busy=false; $('#bbErr').textContent='Could not upload. Check your connection and try again.'; bbRender(); });
+}
+$('#bbFile').addEventListener('change',function(){
+  var f=this.files&&this.files[0]; BB.file=null; $('#bbErr').textContent='';
+  if(f){ var e=bbCheckFile(f); if(e){ $('#bbErr').textContent=e; this.value=''; } else BB.file=f; }
+  bbRender();
+});
+$('#bbAsk').addEventListener('click',function(e){
+  var b=e.target.closest&&e.target.closest('[data-bb]'); if(!b||b.disabled) return;
+  var a=b.getAttribute('data-bb');
+  if(a==='upload') bbUpload();
+  else if(a==='skip'){ store.set('tt-bb','skip:'+Date.now()); bbClose(); }
+  else if(a==='done') bbClose();
+});
+document.addEventListener('keydown',function(e){
+  var el=$('#bbAsk'); if(!el||el.hidden) return;
+  if(e.key==='Escape'){ if(!BB.busy&&!$('#bbP1').hidden){ e.preventDefault(); store.set('tt-bb','skip:'+Date.now()); bbClose(); } return; }
+  if(e.key!=='Tab') return;
+  var f=[].slice.call(el.querySelectorAll('button:not([disabled]),input:not([disabled])')).filter(function(x){return x.offsetParent!==null||x.id==='bbFile';});
+  if(!f.length) return;
+  var first=f[0],last=f[f.length-1],ae=document.activeElement;
+  if(e.shiftKey&&(ae===first||ae===$('#bbCard'))){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey&&ae===last){ e.preventDefault(); first.focus(); }
+});
 function pickerAct(a,b){
   var v=b.getAttribute('data-v');
   if(a==='pk-cancel'){ if(CUR) closePicker(); return; }
@@ -2840,6 +3031,8 @@ document.addEventListener('click',function(e){
   if(a==='admin-lock'){lockAdmin();return;}
   if(a==='admin-refresh'){loadAdmin();return;}
   if(a==='admin-jp-view'){openJpPdf(b);return;}
+  if(a==='admin-bb-view'){openJpPdf(b,'bibwewadi-tt-pdf');return;}
+  if(a==='admin-bb-toggle'){toggleBbWindow();return;}
   if(a==='admin-cls'){admPickClass(b.getAttribute('data-i'));return;}
   if(a==='admin-range'){ADM.range=b.getAttribute('data-v');renderAdmin();return;}
   if(a==='install-yes'){installNow();return;}
@@ -2983,7 +3176,7 @@ document.addEventListener('click',function(e){
   if(taps.length>TAP_NEEDED){ taps=[]; openAdmin(); }
 },true);
 
-var ADM={pin:'',data:null,cls:null,busy:false,range:'24h',survey:null,surveyErr:false,jp:null,jpErr:false};
+var ADM={pin:'',data:null,cls:null,busy:false,range:'24h',survey:null,surveyErr:false,jp:null,jpErr:false,bb:null,bbErr:false,bbBusy:false};
 function escHtml(s){
   return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
 }
@@ -3001,7 +3194,7 @@ function closeAdmin(){
   var dlg=$('#admin');
   if(typeof dlg.close==='function') dlg.close(); else dlg.removeAttribute('open');
 }
-function lockAdmin(){ admStopTick();ADM.busy=false;ADM.refreshing=false;ADM.pin='';ADM.data=null;ADM.survey=null;ADM.surveyErr=false;ADM.jp=null;ADM.jpErr=false;ADM.cls=null;renderPinForm(); }
+function lockAdmin(){ admStopTick();ADM.busy=false;ADM.refreshing=false;ADM.pin='';ADM.data=null;ADM.survey=null;ADM.surveyErr=false;ADM.jp=null;ADM.jpErr=false;ADM.bb=null;ADM.bbErr=false;ADM.bbBusy=false;ADM.cls=null;renderPinForm(); }
 function renderPinForm(msg){
   $('#admBody').innerHTML=
     '<form id="admPinForm" class="adm-pinform" autocomplete="off">'+
@@ -3071,10 +3264,11 @@ function loadAdmin(){
         return;
       }
       done();
-      ADM.data=r.j;ADM.survey=null;ADM.surveyErr=false;ADM.jp=null;ADM.jpErr=false;
+      ADM.data=r.j;ADM.survey=null;ADM.surveyErr=false;ADM.jp=null;ADM.jpErr=false;ADM.bb=null;ADM.bbErr=false;
       renderAdmin();
       loadSurveyAdmin();
       loadJpAdmin();
+      loadBbAdmin();
     }).catch(function(){
       if(ADM.pin!==pin){ done(); return; }
       if(n<2){ setTimeout(function(){ attempt(n+1); },1500); return; }
@@ -3107,14 +3301,52 @@ function jpAdminHTML(){
       '<button type="button" class="btn2" data-act="admin-jp-view" data-id="'+escHtml(r.id)+'">View PDF</button></span></div>';
   }).join('')+'</div>';
 }
-function openJpPdf(btn){
+/* ---------- Bibwewadi timetable PDFs in the admin panel: on/off switch + private PDF list ---------- */
+function loadBbAdmin(){
+  var pin=ADM.pin; if(!pin) return;
+  admRpc('admin_bib_tt_uploads',{p_pin:pin},30000).then(function(r){
+    if(!ADM.pin||!ADM.data) return;
+    if(!r.ok) throw new Error('bb '+r.status);
+    ADM.bb=r.j;ADM.bbErr=false;renderAdmin();
+  }).catch(function(){ if(!ADM.pin||!ADM.data) return; ADM.bbErr=true;renderAdmin(); });
+}
+function bbAdminHTML(){
+  var h='<p class="adm-h">Bibwewadi timetable PDFs <span style="font-weight:400;color:var(--muted)">(Vishwakarandak \u00b7 private PDFs)</span></p>';
+  if(ADM.bbErr) return h+'<p class="adm-empty">Could not load the Bibwewadi submissions.</p><div class="adm-actions"><button type="button" class="btn2" data-act="admin-refresh">Try again</button></div>';
+  if(!ADM.bb) return h+'<p class="adm-empty">Loading\u2026</p>';
+  var on=ADM.bb.open!==false;
+  h+='<button type="button" class="bb-sw" role="switch" aria-checked="'+on+'" data-act="admin-bb-toggle"'+(ADM.bbBusy?' disabled':'')+'>'+
+     '<span class="trk" aria-hidden="true"></span>'+
+     '<span>Submission pop-up: '+(on?'ON':'OFF')+
+     '<small>'+(on?'Shown to Bibwewadi students (CS, IT, CSAIML, CSAI). Tap to turn it off for everyone.':'Hidden for everyone. Tap to turn it back on.')+'</small></span></button>';
+  var items=ADM.bb.items||[];
+  if(!items.length) return h+'<p class="adm-empty">No Bibwewadi timetable PDFs submitted yet.</p>';
+  return h+'<p class="adm-empty">'+(ADM.bb.total||items.length)+' submitted</p><div class="adm-recent">'+items.map(function(r){
+    var cls=[r.branch,r.division,r.batch].filter(Boolean).join(' ');
+    return '<div class="adm-row"><span class="t">'+escHtml(fmtAdmTime(r.created_at))+'</span><span class="d adm-jp">'+
+      '<span>'+(cls?'<b>'+escHtml(cls)+'</b> \u00b7 ':'')+escHtml(r.file_name||'timetable.pdf')+' \u00b7 '+escHtml(jpFmtSize(r.file_size||0))+'</span>'+
+      '<button type="button" class="btn2" data-act="admin-bb-view" data-id="'+escHtml(r.id)+'">View PDF</button></span></div>';
+  }).join('')+'</div>';
+}
+function toggleBbWindow(){
+  if(!ADM.pin||!ADM.bb||ADM.bbBusy) return;
+  var want=!(ADM.bb.open!==false);
+  ADM.bbBusy=true; renderAdmin();
+  admRpc('admin_set_bib_tt_window',{p_pin:ADM.pin,p_open:want},20000).then(function(r){
+    ADM.bbBusy=false;
+    if(r.ok&&r.j&&typeof r.j.open==='boolean') ADM.bb.open=r.j.open;
+    else window.alert('Could not change the switch. Please try again.');
+    renderAdmin();
+  },function(){ ADM.bbBusy=false; window.alert('Could not change the switch. Check your connection.'); renderAdmin(); });
+}
+function openJpPdf(btn,fn){
   var id=btn.getAttribute('data-id'); if(!id||!ADM.pin) return;
   var w=window.open('about:blank','_blank');   // opened straight from the click so pop-up blockers allow it
   if(!w){ btn.textContent='Allow pop-ups'; return; }
   try{ w.opener=null; }catch(e){}
   var label='View PDF'; btn.disabled=true; btn.textContent='Opening\u2026';
   var fail=function(msg){ try{w.close();}catch(e){} btn.disabled=false; btn.textContent=msg; setTimeout(function(){btn.textContent=label;},2500); };
-  fetch(SUPA_URL+'/functions/v1/japanese-pdf',{
+  fetch(SUPA_URL+'/functions/v1/'+(fn||'japanese-pdf'),{
     method:'POST',
     headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
     body:JSON.stringify({action:'view',pin:ADM.pin,id:id})
@@ -3383,6 +3615,7 @@ function renderAdmin(){
   '</div>';
   html+='<p class="adm-h">Classes <span style="font-weight:400;color:var(--muted)">(30d \u00b7 tap a slice for details)</span></p><div id="admCls">'+clsInner()+'</div>';
   html+='<p class="adm-h">Link clicks <span style="font-weight:400;color:var(--muted)">(30d)</span></p>'+rankList(d.link_clicks,'k','n');
+  html+=bbAdminHTML();
   html+=jpAdminHTML();
   html+=surveyAdminHTML();
   html+='<p class="adm-h">Latest visits</p>';
@@ -3552,8 +3785,10 @@ function broGo(){
       }
       var sess=meta.sess.filter(function(x){return !x.b||x.b===f.t;});
       if(lang){var g=langSlot(lang);getSubj(langSubj(lang),langName(lang));sess=sess.concat([{d:g[0],s:g[1],e:g[2],sub:langSubj(lang),type:'Foreign Language',room:g[3],ger:true,lk:isJpCode(lang)?'jp':'de'}]);}
+      sess=broEvApply(meta,sess);
       return {label:label,b:f.b,d:f.d,t:f.t,lang:lang,sess:sess};
     });
+    if(broEvWeek()&&(fr.some(function(f){var m=CLASSES[f.b].divs[f.d];return m.ev&&m.ev.has;})||(BRO.me&&CUR&&CUR.ev&&CUR.ev.has))) notes.push(EV_LABEL+' is included for this week.');
     BRO.cmp={friends:list,notes:notes};
     broRecompute();broPaint();
     broLog('bro_compare','bro:'+list.map(function(p){return p.b+'-'+p.d+'-'+p.t+(p.lang?(isJpCode(p.lang)?'+JA':'+DE'):'');}).join(',')+(BRO.me?'+me':''));
@@ -3564,8 +3799,18 @@ function broGo(){
     broMsg('Could not load a timetable. Check your connection and try again.');
   });
 }
-function broKey(){return [st.fmt,st.branch,st.div,st.batch,st.lang||'',BRO.me?1:0].join('|');}
-function broMine(){return SESS.filter(function(x){return !x.b||x.b===st.batch;});}
+function broEvWeek(){   // Buddy Connect compares the current week (Sunday shows the coming one); true when that week is the Vishwakarandak week
+  var t=dayStart(new Date(),0),dw=t.getDay();
+  return ymd(dayStart(t,dw===0?1:1-dw))===EV_FROM;
+}
+function broEvApply(meta,sess){   // special timetable replaces the event weekdays (Mon-Thu) for divisions that have it
+  if(!broEvWeek()||!meta||!meta.ev||!meta.ev.has) return sess;
+  var wd=[],d=parseISODate(EV_FROM),e=parseISODate(EV_TO);
+  for(;d<=e;d=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1)) wd.push(d.getDay());
+  return sess.filter(function(x){return wd.indexOf(x.d)<0;}).concat(meta.ev.list);
+}
+function broKey(){return [st.fmt,st.branch,st.div,st.batch,st.lang||'',BRO.me?1:0,broEvWeek()?'ev':''].join('|');}
+function broMine(){return broEvApply(CUR,SESS.filter(function(x){return !x.b||x.b===st.batch;}));}
 function broPeople(includeMe){
   var out=[];
   if(includeMe) out.push({label:'You',b:st.branch,d:st.div,t:st.batch,lang:st.lang,sess:broMine(),me:true,color:'#1B2340'});
