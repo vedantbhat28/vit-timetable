@@ -145,6 +145,8 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);lin
 .plate-n{display:block;font-family:var(--display);font-weight:800;font-size:clamp(30px,8vw,42px);line-height:.95;letter-spacing:.02em}
 .prog{height:5px;border-radius:99px;background:rgba(255,255,255,.3);margin-top:12px;overflow:hidden}
 .prog>i{display:block;height:100%;width:var(--p);background:#fff;border-radius:inherit;transition:width .6s ease}
+.onl-hero{display:inline-flex;align-items:center;margin-right:8px;text-decoration:none;background:rgba(255,255,255,.22)}
+.hero.flag-jp .onl-hero{color:#141B34}
 .hero-btn{margin:12px 0 0;min-height:40px;padding:8px 14px;border:1.5px solid rgba(255,255,255,.8);border-radius:10px;background:transparent;color:#fff;font-weight:600;font-size:13px;cursor:pointer}
 .hero-btn:hover{background:rgba(255,255,255,.16)}
 .hero-btn:focus-visible{outline:3px solid #fff;outline-offset:2px}
@@ -1211,9 +1213,8 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       <div class="tn-emoji" aria-hidden="true">&#128187;</div>
       <p class="tn-kicker">Extra ONLINE sessions &middot; Python Theory</p>
       <p class="tn-title" id="onlTitle">Online class on Zoom</p>
-      <p class="tn-body">Regular sessions: <b>attendance will be marked in ERP</b>. Dates and timings are <b>final</b>.</p>
+      <p class="tn-body">Two separate sessions on <b>two different days</b>, each with its own date and timing. Regular sessions: <b>attendance will be marked in ERP</b>. Dates and timings are <b>final</b>.<br><br>The Zoom link is in the <b>Next up</b> card on the timetable.</p>
       <ul class="onl-list" id="onlList"></ul>
-      <a class="tn-btn" id="onlJoin" href="#" target="_blank" rel="noopener">Join Zoom</a>
       <button type="button" class="tn-btn" id="onlNoticeOk" style="margin-top:8px">Got it</button>
     </div>
   </div>
@@ -2243,6 +2244,9 @@ function heroModel(now,occ,cur,nxt){
     html+='<p class="then">Then '+whenWord(after)+': '+as.name+kind+', room '+after.room+'.</p>';
   }
   if(evDay(focus.date)) html+='<p class="then">'+EV_LABEL+'</p>';
+  var onl=focus.online?focus:(after&&after.online?after:null);
+  if(onl) html+='<p class="then"><b>Online class (Zoom)</b>'+(onl===focus?'':' &middot; '+shortDate(onl.date||focus.date)+', '+fmtRange(onl.s,onl.e))+'<br>Meeting ID '+onl.mid+' &middot; Passcode '+onl.pass+'</p>'+
+    '<a class="hero-btn onl-hero" href="'+onl.url+'" target="_blank" rel="noopener">Join Zoom meeting</a>';
   html+='<button type="button" class="hero-btn" aria-haspopup="dialog" data-act="open" data-sid="'+focus.id+'" data-date="'+focus.date.getTime()+'" data-key="hero-open">Details and other batches</button>';
   return {color:sub.color,state:cur?'live':'next',html:html,flag:focus.ger?focus.lk:''};
 }
@@ -4770,9 +4774,8 @@ function maybeShowOnlineNotice(){
     if(store.get('tt-onl-seen','')===today) return;   // once a day
     var el=$('#onlNotice');if(!el) return;
     onlShown=true;store.set('tt-onl-seen',today);
-    var fmt=function(o){var d=parseISODate(o.k);return '<li><b>'+d.getDate()+' '+MONS[d.getMonth()]+' 2026, '+fmtRange(o.s,o.e)+'</b><span>Meeting ID '+o.mid+' &middot; Passcode '+o.pass+'</span></li>';};
+    var fmt=function(o){var d=parseISODate(o.k);return '<li><b>'+DAYS[d.getDay()]+', '+d.getDate()+' '+MONS[d.getMonth()]+' 2026</b><span>'+fmtRange(o.s,o.e)+' &middot; Online (Zoom)</span></li>';};
     $('#onlList').innerHTML=ONL.map(fmt).join('');
-    $('#onlJoin').href=cur.url;
     el.classList.remove('out');el.hidden=false;
     $('#onlNoticeOk').addEventListener('click',function(){
       el.classList.add('out');setTimeout(function(){el.hidden=true;},420);
