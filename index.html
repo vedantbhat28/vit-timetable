@@ -585,10 +585,10 @@ body.diwali .hero{box-shadow:0 0 0 2px #ffb020,0 8px 28px rgba(255,160,32,.38)}
 @media (prefers-reduced-motion:reduce){#diwaliScreen,.dv-diyas,#diwaliLights i{animation:none}}
 
 /* new-schedule notice (full-screen, once a day for 2 days) + latest badge */
-#labNotice,#chgNotice,#susNotice,#roomNotice,#xtraNotice{position:fixed;inset:0;z-index:82;display:flex;flex-direction:column;align-items:center;justify-content:center;
+#labNotice,#chgNotice,#susNotice,#roomNotice,#xtraNotice,#onlNotice{position:fixed;inset:0;z-index:82;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:0;text-align:center;padding:24px;background:var(--surface);color:var(--ink);
   animation:hiIn .4s ease-out;transition:opacity .4s ease,transform .4s ease}
-#labNotice.out,#chgNotice.out,#susNotice.out,#roomNotice.out,#xtraNotice.out{opacity:0;transform:scale(1.04);pointer-events:none}
+#labNotice.out,#chgNotice.out,#susNotice.out,#roomNotice.out,#xtraNotice.out,#onlNotice.out{opacity:0;transform:scale(1.04);pointer-events:none}
 #labNotice{z-index:83}
 #labNotice[hidden]{display:none}
 #chgNotice{z-index:84}
@@ -599,6 +599,15 @@ body.diwali .hero{box-shadow:0 0 0 2px #ffb020,0 8px 28px rgba(255,160,32,.38)}
 #roomNotice[hidden]{display:none}
 #xtraNotice{z-index:86}
 #xtraNotice[hidden]{display:none}
+#onlNotice{z-index:87}
+#onlNotice[hidden]{display:none}
+.onl-list{margin:6px 0 0;padding:0;list-style:none;display:grid;gap:8px;width:100%}
+.onl-list li{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--wash);font-size:13.5px;color:var(--ink);text-align:left}
+.onl-list li b{display:block}
+.onl-list li span{color:var(--muted);font-size:12.5px}
+a.tn-btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.onl-pill{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:700;background:var(--focus);color:#fff;vertical-align:middle}
+.kv a.onl-join{display:inline-flex;align-items:center;min-height:40px;padding:7px 16px;border-radius:10px;background:var(--ink);color:var(--surface);font-weight:700;text-decoration:none}
 .tn-card{max-width:420px;display:flex;flex-direction:column;align-items:center;gap:10px}
 .tn-emoji{font-size:44px;line-height:1;animation:hiPop .6s ease-out}
 .tn-kicker{margin:4px 0 0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--danger)}
@@ -618,7 +627,7 @@ body.diwali .hero{box-shadow:0 0 0 2px #ffb020,0 8px 28px rgba(255,160,32,.38)}
 .tn-btn .tn-bar{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ink);opacity:.18;z-index:-1}
 .tn-btn.wait .tn-bar{animation:tnFill 2s linear forwards}
 @keyframes tnFill{from{width:0}to{width:100%}}
-@media (prefers-reduced-motion:reduce){#labNotice,#chgNotice,#susNotice,#roomNotice,#xtraNotice,.tn-emoji{animation:none}}
+@media (prefers-reduced-motion:reduce){#labNotice,#chgNotice,#susNotice,#roomNotice,#xtraNotice,#onlNotice,.tn-emoji{animation:none}}
 #rollWarn{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55)}
 #rollWarn[hidden]{display:none}
 .rw-card{width:100%;max-width:400px;display:flex;flex-direction:column;gap:10px;padding:22px 20px 18px;border-radius:16px;background:var(--surface);color:var(--ink);box-shadow:0 12px 40px rgba(0,0,0,.35);text-align:center}
@@ -1195,6 +1204,17 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       <p class="tn-title" id="xtraTitle">Basics of Engineering, 4 PM in D301</p>
       <p class="tn-body">Today&rsquo;s <b>Basics of Engineering (theory)</b> lecture will be held in <b>Room D301</b>, <b>4:00 PM to 5:00 PM</b>.<br><br>This applies to <b>27/10/2026</b> and <b>CSSE-C</b> only.</p>
       <button type="button" class="tn-btn" id="xtraNoticeOk">Got it</button>
+    </div>
+  </div>
+  <div id="onlNotice" hidden role="alertdialog" aria-modal="true" aria-labelledby="onlTitle">
+    <div class="tn-card">
+      <div class="tn-emoji" aria-hidden="true">&#128187;</div>
+      <p class="tn-kicker">Extra ONLINE sessions &middot; Python Theory</p>
+      <p class="tn-title" id="onlTitle">Online class on Zoom</p>
+      <p class="tn-body">Regular sessions: <b>attendance will be marked in ERP</b>. Dates and timings are <b>final</b>.</p>
+      <ul class="onl-list" id="onlList"></ul>
+      <a class="tn-btn" id="onlJoin" href="#" target="_blank" rel="noopener">Join Zoom</a>
+      <button type="button" class="tn-btn" id="onlNoticeOk" style="margin-top:8px">Got it</button>
     </div>
   </div>
   <div id="holidayIntro" hidden>
@@ -1934,9 +1954,22 @@ function dur(ms){
 }
 /* One-day changes (15 Oct 2026): all classes suspended 2 PM-6 PM (Vishwakarandak); CSSE-C Human Values lecture cancelled */
 function isE402Lab(x){return !!(x&&x.room&&/\bE402\b/.test(x.room)&&(x.b||/lab|pract/i.test(x.type||'')));}
+/* Extra ONLINE Python Theory sessions (Zoom), AIDS-C and CSSE-C only. Regular sessions, attendance in ERP. */
+var ONL=[
+  {id:9031,k:'2026-10-31',s:1020,e:1140,url:'https://us02web.zoom.us/j/82853356412?pwd=1mNn9VFxH89dAPaJL3w1RkDaouXY3j.1',mid:'828 5335 6412',pass:'455174'},
+  {id:9032,k:'2026-11-01',s:1050,e:1170,url:'https://us02web.zoom.us/j/87990279811?pwd=BsSBjGJkYJHwV0xdGJEz3q0xu5EIE8.1',mid:'879 9027 9811',pass:'396342'}
+];
+var ONL_BY_ID={};
+function onlApplies(){return (st.branch==='AIDS'&&st.div==='C')||(st.branch==='CSSE'&&st.div==='C');}
+function onlSess(o,date){
+  if(!SUBJ.EXPYON) SUBJ.EXPYON={code:'EXPYON',name:'Python Theory (Online)',short:'Python (Online)',color:'#0E7C69'};
+  var y={id:o.id,d:date.getDay(),s:o.s,e:o.e,sub:'EXPYON',type:'Online Theory',b:undefined,fac:'\u2014',room:'Online (Zoom)',online:true,url:o.url,mid:o.mid,pass:o.pass};
+  ONL_BY_ID[o.id]=y;return y;
+}
 function dayOverrideStatic(list,date){
   if(!date) return list;
   var k=ymd(date);
+  if(onlApplies()) ONL.forEach(function(o){if(o.k===k) list=list.concat([onlSess(o,date)]);});
   list=list.map(function(x){   // Until further notice: labs in E402 moved to C206 (copies, so the cached timetable is untouched)
     if(isE402Lab(x)){
       var y={};for(var q in x) y[q]=x[q];
@@ -2069,6 +2102,7 @@ function evDay(date){   // special-timetable rows for this date (possibly empty 
 }
 function evNoteHTML(){return '<div class="ev-note" role="note">'+EV_LABEL+'</div>';}
 function sessById(sid){
+  if(ONL_BY_ID[sid]) return ONL_BY_ID[sid];
   if(sid>=EV_ID0&&sid<EV_ID0+100000&&CUR&&CUR.ev){ var h=CUR.ev.list.filter(function(x){return x.id===sid})[0]; if(h) return h; }
   return SESS[sid];
 }
@@ -2227,7 +2261,7 @@ function blockHTML(x,o){
     '<button type="button" class="blk-btn" aria-haspopup="dialog" data-act="open" data-sid="'+x.id+'" data-date="'+(o.date||0)+'" data-key="'+key+'-'+(o.date||0)+'">'+
     '<span class="sr">'+fmtRange(x.s,x.e)+', </span>'+
     (o.sm?'<span class="blk-name" title="'+sub.name+'"><span aria-hidden="true">'+sub.short+'</span><span class="sr">'+sub.name+'</span></span>':'<span class="blk-name">'+sub.name+'</span>')+
-    '<span class="blk-meta"><b>'+x.room+'</b><span>'+x.type+'</span>'+(x.ger?'':'<span>'+x.fac+'</span>')+'</span></button>'+chip+'</li>';
+    '<span class="blk-meta"><b>'+x.room+'</b><span>'+x.type+'</span>'+(x.ger||x.online?'':'<span>'+x.fac+'</span>')+'</span></button>'+chip+'</li>';
 }
 
 function timelineHTML(list,isToday,now,date){
@@ -2465,6 +2499,9 @@ function detailHTML(x,dateMs,now){
     '<dt>When</dt><dd>'+when+'</dd>'+
     '<dt>Time</dt><dd>'+fmtRange(x.s,x.e)+' ('+dur((x.e-x.s)*60000)+')</dd>'+
     '<dt>Room</dt><dd>'+x.room+'</dd>'+
+    (x.online?'<dt>Join</dt><dd><a class="onl-join" href="'+x.url+'" target="_blank" rel="noopener">Join Zoom meeting</a></dd>'+
+      '<dt>Meeting ID</dt><dd>'+x.mid+'</dd><dt>Passcode</dt><dd>'+x.pass+'</dd>'+
+      '<dt>Attendance</dt><dd>Marked in ERP (regular session)</dd>':'')+
     '<dt>Type</dt><dd>'+x.type+(x.b?', batch '+x.b:', whole division')+'</dd>'+
     '<dt>Faculty</dt><dd>'+esc(facLabel(x.fac))+'</dd></dl></section>';
 
@@ -2613,7 +2650,7 @@ function closePicker(fromBoot){
   if(fromBoot){
     stopLoadScreen();
     maybeShowHolidayIntro();
-    maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();maybeShowRoomNotice();maybeShowExtraNotice();
+    maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();maybeShowRoomNotice();maybeShowExtraNotice();maybeShowOnlineNotice();
   }
   scheduleSurvey();
   scheduleInstallToast();
@@ -2664,7 +2701,7 @@ function submitPickerNow(){
     store.set('tt-roll',goRoll);store.set('tt-rollq','1');   // roll number: localStorage only
     closePicker();
     maybeShowHolidayIntro();
-    maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();maybeShowRoomNotice();maybeShowExtraNotice();
+    maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();maybeShowRoomNotice();maybeShowExtraNotice();maybeShowOnlineNotice();
   });
 }
 function openRollWarn(){
@@ -3043,7 +3080,7 @@ document.addEventListener('click',function(e){
   if(a.indexOf('pk-')===0){pickerAct(a,b);return;}
   if(a==='open'){openDetail(+b.getAttribute('data-sid'),+b.getAttribute('data-date')||0,b.getAttribute('data-key'));return;}
   if(a==='close'){closeSheet();return;}
-  if(a==='batch'){st.batch=b.getAttribute('data-v');store.set('tt-batch',st.batch);maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();maybeShowRoomNotice();maybeShowExtraNotice();}
+  if(a==='batch'){st.batch=b.getAttribute('data-v');store.set('tt-batch',st.batch);maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();maybeShowRoomNotice();maybeShowExtraNotice();maybeShowOnlineNotice();}
   else if(a==='fmt'){st.fmt=b.getAttribute('data-v');store.set('tt-fmt',st.fmt);}
   else if(a==='day'){st.dayMs=dayStart(nowFloor(),+b.getAttribute('data-off')).getTime();centerTab=true;}
   render();
@@ -4722,6 +4759,27 @@ function maybeShowExtraNotice(){
   }catch(e){}
 }
 
+var onlShown=false;
+var ONL_END={'2026-10-31':new Date('2026-10-31T19:00:00+05:30').getTime(),'2026-11-01':new Date('2026-11-01T19:30:00+05:30').getTime()};
+function maybeShowOnlineNotice(){
+  try{
+    if(onlShown||!onlApplies()) return;
+    var today=ymd(nowFloor());
+    var cur=ONL.filter(function(o){return o.k===today;})[0];
+    if(!cur||Date.now()>=ONL_END[today]) return;
+    if(store.get('tt-onl-seen','')===today) return;   // once a day
+    var el=$('#onlNotice');if(!el) return;
+    onlShown=true;store.set('tt-onl-seen',today);
+    var fmt=function(o){var d=parseISODate(o.k);return '<li><b>'+d.getDate()+' '+MONS[d.getMonth()]+' 2026, '+fmtRange(o.s,o.e)+'</b><span>Meeting ID '+o.mid+' &middot; Passcode '+o.pass+'</span></li>';};
+    $('#onlList').innerHTML=ONL.map(fmt).join('');
+    $('#onlJoin').href=cur.url;
+    el.classList.remove('out');el.hidden=false;
+    $('#onlNoticeOk').addEventListener('click',function(){
+      el.classList.add('out');setTimeout(function(){el.hidden=true;},420);
+    },{once:true});
+  }catch(e){}
+}
+
 var roomShown=false;
 function hasE402Lab(){   // does this student's batch have a lab in E402 on any day of the week?
   return SESS.some(function(x){return (!x.b||x.b===st.batch)&&isE402Lab(x);});
@@ -4763,7 +4821,7 @@ var SV={ans:{q1:null,qh:null,q2:0,q3:null,q4:null},shown:false,sending:false,tim
 function svForced(){ return /[?&]survey=1\b/.test(location.search); }   // ?survey=1 re-shows it for testing
 function svDone(){ return store.get('tt-survey-done','')==='1'; }
 function svBlocked(){   // wait while a notice, splash or dialog is on screen
-  var ids=['labNotice','chgNotice','susNotice','roomNotice','xtraNotice','holidayIntro','loadScreen'];
+  var ids=['labNotice','chgNotice','susNotice','roomNotice','xtraNotice','onlNotice','holidayIntro','loadScreen'];
   for(var i=0;i<ids.length;i++){ var el=document.getElementById(ids[i]); if(el&&!el.hidden) return true; }
   if(document.querySelector('dialog[open]')) return true;
   return !!$('#view').hidden;
