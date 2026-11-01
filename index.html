@@ -1066,7 +1066,7 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
 <style id="rrStyle">
 /* ---------- Reminder Ranger (Alpha) ---------- */
 .rr-alpha{display:inline-block;padding:2px 9px;border-radius:99px;background:linear-gradient(135deg,#E5383B,#B84E0F);color:#fff;font-family:var(--body);font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;line-height:1.4;vertical-align:middle}
-.rr-bar{display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap;margin:0 0 12px;padding:10px 12px;border:1px solid var(--line);border-left:4px solid var(--line);border-radius:12px;background:var(--surface)}
+.rr-bar{display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap;margin:12px 0 0;padding:10px 12px;border:1px solid var(--line);border-left:4px solid var(--line);border-radius:12px;background:var(--surface)}
 .rr-bar[data-on="1"]{border-left-color:var(--focus)}
 .rr-ic{flex:none;width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:var(--wash);color:var(--muted)}
 .rr-bar[data-on="1"] .rr-ic{background:var(--ink);color:var(--surface)}
@@ -1195,6 +1195,11 @@ dialog#rrApp::backdrop{background:rgba(12,16,32,.55)}
     </div>
   </div>
 
+  <main>
+    <div class="layout">
+      <section id="hero" class="hero" aria-label="Current or next class"></section>
+      <section id="panel" class="panel" aria-label="Day schedule"></section>
+    </div>
   <div class="rr-bar" id="rrBar" data-on="0" role="region" aria-label="Reminder Ranger">
     <div class="rr-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11.5h9l-1.2-1.6V7a3.3 3.3 0 0 0-6.6 0v2.9zM6.6 13.4a1.5 1.5 0 0 0 2.8 0"/></svg></div>
     <div class="rr-txt">
@@ -1209,12 +1214,6 @@ dialog#rrApp::backdrop{background:rgba(12,16,32,.55)}
       <button type="button" class="chg" data-rr="open" aria-haspopup="dialog"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4.5h7M12.5 4.5H14M2 11.5h1.5M7 11.5h7"/><circle cx="10.5" cy="4.5" r="1.6"/><circle cx="5.2" cy="11.5" r="1.6"/></svg> Customize</button>
     </div>
   </div>
-
-  <main>
-    <div class="layout">
-      <section id="hero" class="hero" aria-label="Current or next class"></section>
-      <section id="panel" class="panel" aria-label="Day schedule"></section>
-    </div>
     <button type="button" class="feature-nudge" id="featureNudge" data-act="features-scroll" hidden><span>New features have been added</span><span class="arrow" aria-hidden="true">↓</span></button>
     <section id="week" class="weekp" aria-label="Weekly timetable"></section>
     <section id="features" class="beta" aria-labelledby="featuresH">
@@ -2068,8 +2067,7 @@ function dur(ms){
 function isE402Lab(x){return !!(x&&x.room&&/\bE402\b/.test(x.room)&&(x.b||/lab|pract/i.test(x.type||'')));}
 /* Extra ONLINE Python Theory sessions (Zoom), AIDS-C and CSSE-C only. Regular sessions, attendance in ERP. */
 var ONL=[
-  {id:9031,k:'2026-10-31',s:1020,e:1140,url:'https://us02web.zoom.us/j/82853356412?pwd=1mNn9VFxH89dAPaJL3w1RkDaouXY3j.1',mid:'828 5335 6412',pass:'455174'},
-  {id:9032,k:'2026-11-01',s:1050,e:1170,url:'https://us02web.zoom.us/j/87990279811?pwd=BsSBjGJkYJHwV0xdGJEz3q0xu5EIE8.1',mid:'879 9027 9811',pass:'396342'}
+  {id:9031,k:'2026-10-31',s:1020,e:1140,url:'https://us02web.zoom.us/j/82853356412?pwd=1mNn9VFxH89dAPaJL3w1RkDaouXY3j.1',mid:'828 5335 6412',pass:'455174'}
 ];
 var ONL_BY_ID={};
 function onlApplies(){return (st.branch==='AIDS'&&st.div==='C')||(st.branch==='CSSE'&&st.div==='C');}
@@ -2127,6 +2125,7 @@ function loadChanges(){
       var sig=JSON.stringify(rows);
       if(sig===chgSig) return;            // nothing new: no re-render
       chgSig=sig;CHANGES=rows;
+      if(typeof rrpSchedule==='function') rrpSchedule(4000);   // cancelled / moved lectures: refresh pushed reminders
       if(CUR) render();
     }).catch(function(e){ console.error(e); });   // offline / table missing: the normal timetable still works
 }
@@ -2235,6 +2234,7 @@ function setClass(b,d){
     applyGerman();
     st.dayMs=null;centerTab=true;
     logVisit('open_class',{branch:b,div:d,batch:st.batch});
+    if(typeof rrpSchedule==='function') rrpSchedule(2500);
     return true;
   }).catch(function(e){ console.error(e); return false; });
 }
@@ -4875,7 +4875,7 @@ function maybeShowExtraNotice(){
 }
 
 var onlShown=false;
-var ONL_END={'2026-10-31':new Date('2026-10-31T19:00:00+05:30').getTime(),'2026-11-01':new Date('2026-11-01T19:30:00+05:30').getTime()};
+var ONL_END={'2026-10-31':new Date('2026-10-31T19:00:00+05:30').getTime()};
 function maybeShowOnlineNotice(){
   try{
     if(onlShown||!onlApplies()) return;
@@ -5239,7 +5239,7 @@ function rrFire(p,mLeft,test){
     rrPlay(l,l===3?3:1);
     if(l===3&&navigator.vibrate){try{navigator.vibrate([220,110,220,110,420]);}catch(e){}}
   }
-  if(cfg.sil||(cfg.snd&&hidden)) rrSystem(title,body+'\n'+why,'rr-'+(test?'test':x.sub+x.s),!(cfg.snd&&hidden),l===3);
+  if((test||!RRP.on)&&(cfg.sil||(cfg.snd&&hidden))) rrSystem(title,body+'\n'+why,'rr-'+(test?'test':x.sub+x.s),!(cfg.snd&&hidden),l===3);   // with background push on, the server notification replaces this one
   var endIn=test?0:Math.max(0,(x.s-mins(nowFloor()))*60000+60000);
   rrToast({l:l,kick:test?RR_LV[l].kick+' \u00B7 test':RR_LV[l].kick,title:title,body:body,why:why,
     ttl:l===3?(test?20000:endIn||60000):(l===2?10000:7000),
@@ -5248,6 +5248,7 @@ function rrFire(p,mLeft,test){
 function rrFiredMap(){try{return JSON.parse(store.get(RR_FIRED,'{}'))||{};}catch(e){return {};}}
 function rrCheck(){
   if(!RR.on||!CUR||$('#view').hidden) return;
+  if(RRP.on&&document.hidden) return;   // background push covers a hidden page
   var now=nowFloor(),d=dayStart(now,0);
   if(!inRange(d)||holidayFor(d)) return;
   var nm=mins(now),dk=ymd(d),fm=rrFiredMap(),dirty=false;
@@ -5284,6 +5285,7 @@ function rrStatusText(){
     var day=n.off===0?'today':(n.off===1?'tomorrow':DAYS[n.d.getDay()]);
     s='On. Next: '+rrName(n.p.x)+' '+day+' at '+fmtT(n.p.x.s)+' (level '+n.p.lvl+').';
   }
+  if(RRP.on) s+=' Background push is on.';
   if(perm==='default') s+=' Tap Customize to allow notifications.';
   else if(perm==='denied') s+=' Notifications are blocked, so you will only see in-app banners.';
   return s;
@@ -5317,10 +5319,11 @@ function rrPaint(){
   var body=$('#rrBody');if(!body) return;
   var ae=document.activeElement,fk=ae&&ae.getAttribute?ae.getAttribute('data-k'):null,sc=body.scrollTop;
   var perm=rrPerm(),h='';
-  h+='<p class="rr-lead">Reminders ranked by how easy a lecture is to miss. This is an alpha: it works while the app is open or running in the background on your device, and nothing leaves this device.</p>';
+  h+='<p class="rr-lead">Reminders ranked by how easy a lecture is to miss. This is an alpha. By default it runs on this device only and works while the app is open. Turn on background push to get reminders even when the app is closed: that stores your push address and your next 7 days of reminder times, lecture names and rooms on our server. Language classes always stay on your device.</p>';
   // permission
   var pt=perm==='granted'?'Notifications are allowed.':perm==='default'?'Allow notifications to get banners when the app is in the background.':perm==='denied'?'Notifications are blocked in your browser settings. In-app banners and sounds still work.':'This browser does not support system notifications. In-app banners and sounds still work.';
   h+='<div class="rr-box"><div class="rr-perm"><p>'+pt+'</p>'+(perm==='default'?'<button type="button" class="rr-btn" data-rr="perm">Allow notifications</button>':'')+'</div></div>';
+  h+=rrpBox(perm);
   // today's plan
   var pd=rrPlanDay();
   h+='<div class="rr-box"><h4>'+(pd?(pd.off===0?'Today':pd.off===1?'Tomorrow':DAYS[pd.d.getDay()])+' \u00B7 how your lectures rank':'How your lectures rank')+'</h4>';
@@ -5357,14 +5360,14 @@ function rrPaint(){
   if(fk){var nf=body.querySelector('[data-k="'+fk+'"]');if(nf) nf.focus({preventScroll:true});}
 }
 function rrMsg(t){var m=$('#rrMsg');if(m) m.textContent=t||'';}
-function rrCommit(){rrSave();rrBarSync(true);}
+function rrCommit(){rrSave();rrBarSync(true);rrpSchedule(1200);}
 
 function rrSetOn(on){
   RR.on=on;rrSave();
   if(on){
     rrAudio();
     rrAsk(function(){rrBarSync(true);if($('#rrApp').open) rrPaint();});
-  }
+  }else rrpDisable();   // switching Reminder Ranger off also removes this device from the push server
   rrBarSync(true);
 }
 function rrPreview(l){rrAudio();rrPlay(l,1);}
@@ -5382,6 +5385,9 @@ function rrAct(a,b){
   else if(a==='on') rrSetOn(true);
   else if(a==='off') rrSetOn(false);
   else if(a==='perm') rrAsk(function(){rrBarSync(true);rrPaint();});
+  else if(a==='push-on') rrpEnable();
+  else if(a==='push-off') rrpDisable();
+  else if(a==='push-test') rrpTest();
   else if(a==='sw'){
     var k=b.getAttribute('data-k'),l=+k.slice(3),f=k.slice(0,3);
     RR.lvl[l][f]=!RR.lvl[l][f];rrCommit();
@@ -5432,13 +5438,178 @@ document.addEventListener('input',function(e){
   if(e.target&&e.target.id==='rrVol'){RR.vol=+e.target.value;rrSave();}
 });
 document.addEventListener('pointerdown',function(){if(RR.on) rrAudio();},{passive:true});
-function rrTick(){rrCheck();rrBarSync(false);}
+/* ----- background push (Web Push via Supabase) -----
+   The page works out its own upcoming reminders (same ranking as above) and syncs them to the server.
+   A cron job there sends each one on time, so reminders arrive even when the app is closed.
+   Language classes are never synced: they depend on the roll number check, which stays on this device. */
+var RRP_FLAG='tt-rr-push',RRP_DAYS=7,RRP_IST='+05:30';
+var RRP={want:store.get(RRP_FLAG,'')==='1',on:false,busy:false,again:false,boot:false,last:0,hash:'',timer:0,err:'',msg:''};
+function rrpSupported(){return ('serviceWorker' in navigator)&&('PushManager' in window)&&('Notification' in window);}
+function rrpIosNeedsInstall(){
+  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var standalone=!!navigator.standalone||(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches);
+  return ios&&!standalone;
+}
+function rrpKey(s){
+  var b=(s+'='.repeat((4-s.length%4)%4)).replace(/-/g,'+').replace(/_/g,'/'),r=atob(b),o=new Uint8Array(r.length);
+  for(var i=0;i<r.length;i++) o[i]=r.charCodeAt(i);
+  return o;
+}
+function rrpSame(a,b){if(a.length!==b.length) return false;for(var i=0;i<a.length;i++) if(a[i]!==b[i]) return false;return true;}
+function rrpHash(items){var t=JSON.stringify(items),h=5381;for(var i=0;i<t.length;i++) h=((h<<5)+h+t.charCodeAt(i))|0;return String(h);}
+function rrp2(n){return (n<10?'0':'')+n;}
+function rrpAt(dk,m){return new Date(dk+'T'+rrp2(Math.floor(m/60))+':'+rrp2(m%60)+':00'+RRP_IST);}   // campus times are IST
+function rrpRpc(name,body){
+  return fetch(SUPA_URL+'/rest/v1/rpc/'+name,{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify(body||{})})
+    .then(function(r){
+      if(!r.ok) throw new Error(name+' '+r.status);
+      return r.status===204?null:r.json().catch(function(){return null;});
+    });
+}
+function rrpReady(){   // the service worker can fail to register; do not wait for it forever
+  return Promise.race([navigator.serviceWorker.ready,new Promise(function(_,no){setTimeout(function(){no(new Error('no service worker'));},8000);})]);
+}
+function rrpSubscribe(reg){
+  return rrpRpc('tt_push_key').then(function(key){
+    if(typeof key!=='string'||key.length<80) throw new Error('no push key');
+    var want=rrpKey(key);
+    return reg.pushManager.getSubscription().then(function(sub){
+      if(sub){
+        var cur=sub.options&&sub.options.applicationServerKey;
+        if(!cur||rrpSame(new Uint8Array(cur),want)) return sub;
+        return sub.unsubscribe().then(function(){return reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:want});});   // server key changed
+      }
+      return reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:want});
+    });
+  });
+}
+
+/* the next 7 days of reminders, exactly as the local checker would fire them */
+function rrpBuild(){
+  var items=[],now=nowFloor(),nowMs=Date.now();
+  for(var i=0;i<RRP_DAYS;i++){
+    var d=dayStart(now,i);
+    if(!inRange(d)||holidayFor(d)) continue;
+    var dk=ymd(d);
+    rrPlan(d).forEach(function(p){
+      var x=p.x,cfg=RR.lvl[p.lvl];
+      if(rrIsLang(x)||!rrActive(p.lvl)) return;   // language classes stay local-only
+      var at=rrpAt(dk,x.s-cfg.lead);
+      if(at.getTime()<=nowMs+20000) return;
+      items.push({
+        k:dk+'|'+x.sub+'|'+x.s+'|'+(x.b||'')+'|'+x.type,   // same key rrCheck uses, so the page never alerts twice
+        t:at.toISOString(),x:rrpAt(dk,x.s).toISOString(),
+        title:(p.lvl===3?'Don\u2019t miss: ':'Up next: ')+rrName(x),
+        body:fmtRange(x.s,x.e)+(x.room?' \u00B7 '+x.room:'')+' \u00B7 starts in '+cfg.lead+' min',
+        tag:'rr-'+x.sub+x.s,l:p.lvl,snd:!!cfg.snd,sil:!!cfg.sil
+      });
+    });
+  }
+  items.sort(function(a,b){return a.t<b.t?-1:a.t>b.t?1:0;});
+  return items.slice(0,150);
+}
+
+function rrpDone(){rrBarSync(true);var a=$('#rrApp');if(a&&a.open) rrPaint();}
+function rrpSync(force){
+  if(!RRP.want||!RR.on||!CUR||!rrpSupported()||rrPerm()!=='granted') return Promise.resolve(false);
+  if(RRP.busy){RRP.again=true;return Promise.resolve(false);}
+  var items=rrpBuild(),h=rrpHash(items);
+  if(!force&&RRP.on&&h===RRP.hash&&Date.now()-RRP.last<12*3600*1000) return Promise.resolve(true);   // nothing changed
+  RRP.busy=true;
+  return rrpReady().then(rrpSubscribe).then(function(sub){
+    var j=sub.toJSON(),k=j.keys||{};
+    if(!j.endpoint||!k.p256dh||!k.auth) throw new Error('incomplete subscription');
+    return rrpRpc('tt_push_sync',{p_endpoint:j.endpoint,p_p256dh:k.p256dh,p_auth:k.auth,p_items:items});
+  }).then(function(){
+    RRP.on=true;RRP.hash=h;RRP.last=Date.now();RRP.err='';return true;
+  }).catch(function(e){
+    RRP.on=false;RRP.err=String((e&&e.message)||e);return false;
+  }).then(function(ok){
+    RRP.busy=false;rrpDone();
+    if(RRP.again){RRP.again=false;rrpSchedule(500);}
+    return ok;
+  });
+}
+function rrpSchedule(ms){
+  if(!RRP.want) return;
+  clearTimeout(RRP.timer);
+  RRP.timer=setTimeout(function(){rrpSync(false);},ms==null?1500:ms);
+}
+function rrpEnable(){
+  if(!RR.on){RRP.msg='Switch Reminder Ranger on first.';rrpDone();return Promise.resolve(false);}
+  if(!rrpSupported()||rrpIosNeedsInstall()){rrpDone();return Promise.resolve(false);}
+  RRP.msg='';
+  return new Promise(function(res){rrAsk(res);}).then(function(p){
+    if(p!=='granted'){rrpDone();return false;}
+    RRP.want=true;store.set(RRP_FLAG,'1');
+    RRP.msg='Connecting\u2026';rrpDone();
+    return rrpSync(true).then(function(ok){RRP.msg=ok?'':'Could not connect. Check your internet and try again.';rrpDone();return ok;});
+  });
+}
+function rrpDisable(){   // forget this device on the server; the browser subscription itself is left alone
+  var was=RRP.want||RRP.on;
+  RRP.want=false;RRP.on=false;RRP.hash='';RRP.err='';RRP.msg='';store.set(RRP_FLAG,'');clearTimeout(RRP.timer);
+  if(!was||!rrpSupported()){rrpDone();return Promise.resolve();}
+  return rrpReady().then(function(reg){return reg.pushManager.getSubscription();}).then(function(sub){
+    return sub?rrpRpc('tt_push_unsub',{p_endpoint:sub.endpoint}):null;
+  }).catch(function(){}).then(rrpDone);
+}
+function rrpTest(){
+  if(!RRP.on) return;
+  RRP.msg='Sending\u2026 it should arrive within a minute.';rrpDone();
+  rrpReady().then(function(reg){return reg.pushManager.getSubscription();}).then(function(sub){
+    return sub?rrpRpc('tt_push_test',{p_endpoint:sub.endpoint}):false;
+  }).then(function(ok){RRP.msg=ok?'Test sent. Close the app to see how it looks in the background.':'Please wait a minute before sending another test.';})
+    .catch(function(){RRP.msg='Could not send the test.';}).then(rrpDone);
+}
+/* the service worker hands a push to the page when the app is on screen: show the in-app banner and sound */
+function rrFromPush(d){
+  if(!RR.on) return;
+  var l=+d.l;if(!(l>=1&&l<=3)) l=2;
+  if(d.k){
+    var fm=rrFiredMap();
+    if(fm[d.k]) return;   // the local checker already alerted for this lecture
+    fm[d.k]=1;store.set(RR_FIRED,JSON.stringify(fm));
+  }
+  if(d.snd){
+    rrPlay(l,l===3?3:1);
+    if(l===3&&navigator.vibrate){try{navigator.vibrate([220,110,220,110,420]);}catch(e){}}
+  }
+  rrToast({l:l,kick:RR_LV[l].kick,title:String(d.title||'Lecture reminder'),body:String(d.body||''),why:'',ttl:l===3?60000:(l===2?10000:7000),snooze:null});
+}
+/* settings box */
+function rrpBox(perm){
+  var t='',b='',tb='';
+  if(!rrpSupported()) t='This browser cannot receive background push, so reminders only work while the app is open.';
+  else if(rrpIosNeedsInstall()) t='On iPhone and iPad, add this site to your Home Screen first. Background push only works from the installed app.';
+  else if(perm==='denied') t='Notifications are blocked in your browser settings, so background push cannot be turned on.';
+  else if(!RR.on) t='Switch Reminder Ranger on to use background push.';
+  else if(RRP.on){
+    t='On. Reminders reach you even when the app is closed. Your next 7 days of reminder times, lecture names and rooms are stored on our server for this. Language classes stay on your device.';
+    b='<button type="button" class="rr-btn alt" data-rr="push-test">Send test push</button><button type="button" class="rr-btn alt" data-rr="push-off">Turn off</button>';
+  }else if(RRP.want){
+    t=RRP.err?'Could not connect to the push server. Check your internet connection and try again.':'Connecting\u2026';
+    b='<button type="button" class="rr-btn" data-rr="push-on">Try again</button><button type="button" class="rr-btn alt" data-rr="push-off">Turn off</button>';
+  }else{
+    t='Off. Get reminders even when the app is closed. This stores your push address and your next 7 days of reminders on our server. Language classes never leave your device.';
+    b='<button type="button" class="rr-btn" data-rr="push-on">Turn on background push</button>';
+  }
+  if(RRP.msg) tb='<p class="rr-msg" role="status" aria-live="polite" style="margin:8px 0 0!important">'+esc(RRP.msg)+'</p>';
+  return '<div class="rr-box"><h4>Background push</h4><div class="rr-perm"><p>'+esc(t)+'</p>'+(b?'<div class="rr-btns">'+b+'</div>':'')+'</div>'+tb+'</div>';
+}
+
+function rrTick(){rrCheck();rrBarSync(false);if(RRP.want&&!RRP.boot&&CUR){RRP.boot=true;rrpSchedule(3000);}}
 (function(){
   rrBarSync(true);
   var rrB=$('#rrToasts');if(rrB&&rrB.showPopover){rrB.removeAttribute('hidden');rrB.setAttribute('popover','manual');}
   setInterval(rrTick,5000);
   document.addEventListener('visibilitychange',function(){if(!document.hidden) rrTick();});
   window.addEventListener('focus',rrTick);
+  if(rrpSupported()){
+    navigator.serviceWorker.addEventListener('message',function(e){var m=e.data;if(m&&m.type==='rr-push'&&m.d) rrFromPush(m.d);});
+    document.addEventListener('visibilitychange',function(){if(!document.hidden&&Date.now()-RRP.last>20*60000) rrpSchedule(1500);});
+    setInterval(function(){rrpSchedule(0);},30*60000);
+  }
 })();
 
 boot();
