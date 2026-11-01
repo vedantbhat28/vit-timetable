@@ -1063,6 +1063,89 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
   .hero,.prog>i{transition:none}
 }
 </style>
+<style id="rrStyle">
+/* ---------- Reminder Ranger (Alpha) ---------- */
+.rr-alpha{display:inline-block;padding:2px 9px;border-radius:99px;background:linear-gradient(135deg,#E5383B,#B84E0F);color:#fff;font-family:var(--body);font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;line-height:1.4;vertical-align:middle}
+.rr-bar{display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap;margin:0 0 12px;padding:10px 12px;border:1px solid var(--line);border-left:4px solid var(--line);border-radius:12px;background:var(--surface)}
+.rr-bar[data-on="1"]{border-left-color:var(--focus)}
+.rr-ic{flex:none;width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:var(--wash);color:var(--muted)}
+.rr-bar[data-on="1"] .rr-ic{background:var(--ink);color:var(--surface)}
+.rr-txt{flex:1 1 200px;min-width:0}
+.rr-t{margin:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:700;font-size:14px}
+.rr-s{margin:2px 0 0;color:var(--muted);font-size:12.5px;line-height:1.4}
+.rr-btns{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rr-btns .chg{margin-top:0}
+.rr-btns .seg button{min-height:36px}
+
+dialog#rrApp{padding:0;border:0;margin:auto;background:var(--surface);color:var(--ink);width:min(580px,calc(100vw - 24px));max-width:none;max-height:none;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(8,12,30,.4)}
+dialog#rrApp[open]{animation:sheetIn .2s ease-out}
+dialog#rrApp::backdrop{background:rgba(12,16,32,.55)}
+@media (prefers-reduced-motion:reduce){dialog#rrApp[open]{animation:none}}
+
+.terms-body .rr-lead{margin:0 0 12px}
+.rr-box{margin:0 0 12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--wash)}
+.rr-box h4{margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.terms-body .rr-box p{margin:0 0 8px;font-size:12.5px}
+.rr-box p:last-child{margin-bottom:0}
+.rr-perm{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.rr-perm p{flex:1 1 200px;margin:0!important}
+.rr-btn{min-height:38px;padding:6px 14px;border:1px solid var(--ink);border-radius:10px;background:var(--ink);color:var(--surface);font-weight:600;font-size:13px;cursor:pointer}
+.rr-btn.alt{background:transparent;color:var(--ink);border-color:var(--line)}
+.rr-btn.alt:hover{background:var(--wash)}
+.rr-btn:focus-visible,.rr-sw:focus-visible,.rr-tb:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.rr-set{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 8px}
+.rr-set:last-child{margin-bottom:0}
+.rr-set>span{font-size:13px;font-weight:600;color:var(--ink)}
+.rr-range{flex:1 1 160px;max-width:260px;min-height:32px;accent-color:var(--ink)}
+
+.rr-plan{list-style:none;margin:0;padding:0}
+.rr-plan li{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:13px}
+.rr-plan li:first-child{border-top:0;padding-top:0}
+.rr-plan .pt{flex:none;width:92px;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums;font-size:12px}
+.rr-plan .pn{flex:1 1 auto;min-width:0;font-weight:600}
+.rr-plan .pn small{display:block;color:var(--muted);font-weight:500;font-size:11.5px}
+.rr-chip{flex:none;display:inline-flex;align-items:center;gap:6px;padding:2px 9px 2px 7px;border:1.5px solid var(--c);border-radius:99px;font-size:11px;font-weight:700;color:var(--ink);white-space:nowrap}
+.rr-chip i{width:7px;height:7px;border-radius:50%;background:var(--c)}
+
+.rr-lv{margin:0 0 12px;padding:12px;border:1px solid var(--line);border-left:4px solid var(--c);border-radius:12px;background:var(--wash)}
+.rr-lv-h{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 4px}
+.rr-lv-h b{font-family:var(--display);font-weight:800;font-size:19px;line-height:1.1}
+.terms-body .rr-lv-d{margin:0 0 10px;font-size:12.5px}
+.rr-lv .rr-set{padding-top:8px;border-top:1px solid var(--line)}
+.rr-sw{flex:none;position:relative;width:46px;height:28px;padding:0;border:1.5px solid var(--line);border-radius:99px;background:var(--surface);cursor:pointer;transition:background .15s,border-color .15s}
+.rr-sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--muted);transition:transform .15s,background .15s}
+.rr-sw[aria-checked="true"]{background:var(--ink);border-color:var(--ink)}
+.rr-sw[aria-checked="true"]::after{transform:translateX(18px);background:var(--surface)}
+.rr-tone{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.rr-tone select{min-height:38px;max-width:170px;padding:4px 8px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:600 13px var(--body);color-scheme:light dark}
+.rr-tone select:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.rr-lv .seg button{min-width:40px;min-height:32px;padding:3px 10px}
+.rr-msg{min-height:18px;margin:0 0 8px!important;color:var(--muted);font-size:12.5px;font-weight:600}
+.rr-foot{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+
+/* toasts */
+#rrToasts{position:fixed;inset:auto;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);width:min(94vw,420px);max-height:calc(100dvh - 24px);margin:0;padding:0;border:0;background:transparent;overflow:visible;color:var(--ink);display:flex;flex-direction:column;gap:8px;pointer-events:none;z-index:75}
+#rrToasts[hidden]{display:none}
+#rrToasts[popover]:not(:popover-open){display:none}
+.rr-toast{pointer-events:auto;display:flex;align-items:flex-start;gap:11px;padding:12px 12px 12px 13px;border:1px solid var(--line);border-left:5px solid var(--c);border-radius:14px;background:var(--surface);color:var(--ink);box-shadow:0 14px 40px rgba(8,12,30,.28);animation:rrIn .25s ease-out}
+.rr-toast[data-l="3"]{border-color:var(--c);box-shadow:0 0 0 2px var(--c),0 16px 44px rgba(8,12,30,.34)}
+.rr-toast .ti{flex:none;width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--c);color:#fff}
+.rr-toast[data-l="3"] .ti svg{animation:rrRing 1.1s ease-in-out 3}
+.rr-toast .tb{flex:1 1 auto;min-width:0}
+.rr-toast .tk{margin:0;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.rr-toast[data-l="3"] .tk{color:var(--danger)}
+.rr-toast .tt{margin:1px 0 0;font-family:var(--display);font-weight:800;font-size:20px;line-height:1.1}
+.rr-toast .tm{margin:3px 0 0;font-size:13px;font-weight:600}
+.rr-toast .tw{margin:2px 0 0;color:var(--muted);font-size:12px}
+.rr-toast .ta{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}
+.rr-tb{min-height:36px;padding:4px 14px;border:1px solid var(--ink);border-radius:10px;background:var(--ink);color:var(--surface);font-weight:600;font-size:13px;cursor:pointer}
+.rr-tb.alt{background:transparent;color:var(--ink);border-color:var(--line)}
+.rr-toast.out{opacity:0;transform:translateY(-10px);transition:opacity .2s,transform .2s}
+@keyframes rrIn{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+@keyframes rrRing{0%,100%{transform:rotate(0)}20%{transform:rotate(16deg)}40%{transform:rotate(-14deg)}60%{transform:rotate(9deg)}80%{transform:rotate(-6deg)}}
+@media (prefers-reduced-motion:reduce){.rr-toast,.rr-toast[data-l="3"] .ti svg{animation:none}.rr-toast.out{transition:none}.rr-sw,.rr-sw::after{transition:none}}
+@media (max-width:420px){.rr-plan .pt{width:78px}.rr-tone select{max-width:130px}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -1112,6 +1195,21 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
     </div>
   </div>
 
+  <div class="rr-bar" id="rrBar" data-on="0" role="region" aria-label="Reminder Ranger">
+    <div class="rr-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11.5h9l-1.2-1.6V7a3.3 3.3 0 0 0-6.6 0v2.9zM6.6 13.4a1.5 1.5 0 0 0 2.8 0"/></svg></div>
+    <div class="rr-txt">
+      <p class="rr-t">Reminder Ranger <span class="rr-alpha">Alpha</span></p>
+      <p class="rr-s" id="rrStatus" role="status" aria-live="polite">Lecture reminders are off.</p>
+    </div>
+    <div class="rr-btns">
+      <div class="seg" role="group" aria-label="Reminder Ranger on or off">
+        <button type="button" data-rr="off" aria-pressed="true">Off</button>
+        <button type="button" data-rr="on" aria-pressed="false">On</button>
+      </div>
+      <button type="button" class="chg" data-rr="open" aria-haspopup="dialog"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4.5h7M12.5 4.5H14M2 11.5h1.5M7 11.5h7"/><circle cx="10.5" cy="4.5" r="1.6"/><circle cx="5.2" cy="11.5" r="1.6"/></svg> Customize</button>
+    </div>
+  </div>
+
   <main>
     <div class="layout">
       <section id="hero" class="hero" aria-label="Current or next class"></section>
@@ -1146,6 +1244,11 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
           <div class="feature-card-top"><p class="feature-name">Study Planner <span class="bro-tag">New</span></p></div>
           <p class="feature-desc">Turn your timetable into a daily and week-by-week study plan for the mid-sems, around your own activities and sleep.</p>
           <a class="btn" href="studyPlanner.html" data-act="planner-open">Open Study Planner</a>
+        </article>
+        <article class="feature-card" id="rrCard">
+          <div class="feature-card-top"><p class="feature-name">Reminder Ranger <span class="rr-alpha">Alpha</span></p></div>
+          <p class="feature-desc">Ranks every lecture by how easy it is to miss and reminds you accordingly: stark for standalone and language classes, silent for room changes.</p>
+          <button type="button" class="btn" data-rr="open" aria-haspopup="dialog">Open settings</button>
         </article>
       </div>
     </section>
@@ -1507,6 +1610,14 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
         <div id="roomOut" role="status" aria-live="polite"><p class="tp-state tp-load">Loading rooms…</p></div>
       </div></div>
   </dialog>
+
+  <dialog id="rrApp" aria-labelledby="rrAppT">
+    <div class="terms"><div class="terms-head"><h3 id="rrAppT">Reminder Ranger <span class="rr-alpha">Alpha</span></h3><button type="button" class="terms-x" data-rr="close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div>
+      <div class="terms-body" id="rrBody"></div></div>
+    <input type="file" id="rrFile" accept="audio/*" hidden>
+  </dialog>
+
+  <div id="rrToasts" hidden aria-live="polite"></div>
 
   <dialog id="teacherDetail" aria-labelledby="teacherDetailName">
     <div class="terms"><div class="terms-head"><h3 id="teacherDetailName">Teacher</h3><button type="button" class="terms-x" data-act="teacher-detail-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div><div class="terms-body" id="teacherDetailBody"></div></div>
@@ -4959,6 +5070,377 @@ function boot(){
     window.addEventListener('focus',tick);
   });
 }
+/* ---------- Reminder Ranger (Alpha): lecture reminders ranked by how easy a lecture is to miss ----------
+   Level 3: standalone lectures (a gap of 2 h or more from the previous class) and language classes (German, Japanese, English) -> stark
+   Level 2: back-to-back lecture in a different room -> silent heads-up
+   Level 1: back-to-back lecture in the same room -> cannot be missed, no reminder by default
+   Runs entirely on this device. Works while the app is open (or running in the background on your phone). */
+var RR_STORE='tt-rr',RR_FIRED='tt-rr-fired';
+var RR_TONES=[['chime','Chime'],['bell','Soft bell'],['drop','Droplet'],['pluck','Pluck'],['pulse','Pulse']];
+var RR_LEADS=[5,10,15,30],RR_GAPS=[60,90,120,180],RR_MAX_SND=700*1024;
+var RR_LV={
+  1:{name:'Level 1',tag:'Cannot be missed',kick:'FYI',c:'var(--muted)',desc:'Back-to-back lectures in the same room. You are already there, so no reminder by default.'},
+  2:{name:'Level 2',tag:'Room change',kick:'Heads-up',c:'var(--focus)',desc:'Back-to-back lectures in a different room. A silent nudge so you can head over.'},
+  3:{name:'Level 3',tag:'Easy to miss',kick:'Don\u2019t miss this',c:'var(--now)',desc:'Standalone lectures (2 hours or more from your other classes) and language classes: German, Japanese and English. A stark reminder.'}
+};
+var RR_BELL='<svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11.5h9l-1.2-1.6V7a3.3 3.3 0 0 0-6.6 0v2.9zM6.6 13.4a1.5 1.5 0 0 0 2.8 0"/></svg>';
+function rrDefaults(){return {on:false,gap:120,vol:70,lvl:{
+  1:{snd:false,sil:false,lead:5,tone:'chime'},
+  2:{snd:false,sil:true,lead:5,tone:'chime'},
+  3:{snd:true,sil:true,lead:15,tone:'chime'}}};}
+function rrLoad(){
+  var d=rrDefaults(),s=null;
+  try{s=JSON.parse(store.get(RR_STORE,'')||'null');}catch(e){}
+  if(!s||typeof s!=='object') return d;
+  d.on=!!s.on;
+  if(RR_GAPS.indexOf(+s.gap)>-1) d.gap=+s.gap;
+  if(s.vol!=null&&+s.vol>=0&&+s.vol<=100) d.vol=+s.vol;
+  [1,2,3].forEach(function(l){
+    var a=s.lvl&&s.lvl[l],t=d.lvl[l];if(!a) return;
+    if(typeof a.snd==='boolean') t.snd=a.snd;
+    if(typeof a.sil==='boolean') t.sil=a.sil;
+    if(RR_LEADS.indexOf(+a.lead)>-1) t.lead=+a.lead;
+    if(a.tone==='custom'||RR_TONES.some(function(x){return x[0]===a.tone;})) t.tone=a.tone;
+  });
+  return d;
+}
+var RR=rrLoad();
+function rrSave(){store.set(RR_STORE,JSON.stringify(RR));}
+function rrGet(k){try{return localStorage.getItem(k)||'';}catch(e){return '';}}
+function rrCustom(l){return rrGet('tt-rr-snd-'+l);}
+function rrToneOk(l){return RR.lvl[l].tone!=='custom'||!!rrCustom(l);}
+
+/* ----- sound: small synthesised tones, nothing to download ----- */
+var rrCtx=null;
+function rrAudio(){
+  try{
+    if(!rrCtx){var C=window.AudioContext||window.webkitAudioContext;if(!C) return null;rrCtx=new C();}
+    if(rrCtx.state==='suspended') rrCtx.resume();
+    return rrCtx;
+  }catch(e){return null;}
+}
+function rrNote(ctx,t0,f,dur,vol,type,sweepTo){
+  var o=ctx.createOscillator(),g=ctx.createGain();
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t0);
+  if(sweepTo) o.frequency.exponentialRampToValueAtTime(sweepTo,t0+dur*0.8);
+  g.gain.setValueAtTime(0.0001,t0);
+  g.gain.exponentialRampToValueAtTime(Math.max(vol,0.0003),t0+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+  o.connect(g);g.connect(ctx.destination);o.start(t0);o.stop(t0+dur+0.05);
+}
+function rrSynth(name,vol){   // returns the length in seconds
+  var ctx=rrAudio();if(!ctx) return 0;
+  var t=ctx.currentTime+0.02,v=vol*0.5;
+  if(name==='bell'){rrNote(ctx,t,660,1.4,v);rrNote(ctx,t,990,1,v*0.35);rrNote(ctx,t,1320,0.6,v*0.15);return 1.5;}
+  if(name==='drop'){rrNote(ctx,t,1250,0.22,v,'sine',480);return 0.3;}
+  if(name==='pluck'){[523.25,659.25,783.99].forEach(function(f,i){rrNote(ctx,t+i*0.11,f,0.45,v,'triangle');});return 0.9;}
+  if(name==='pulse'){[0,0.2,0.4].forEach(function(o){rrNote(ctx,t+o,740,0.12,v,'triangle');});return 0.7;}
+  rrNote(ctx,t,880,0.6,v);rrNote(ctx,t+0.14,1318.5,0.9,v*0.9);return 1.1;   // chime (default)
+}
+function rrPlay(l,times){
+  var cfg=RR.lvl[l],vol=RR.vol/100,n=times||1,i=0,custom=(cfg.tone==='custom')?rrCustom(l):'';
+  (function once(){
+    var d;
+    if(custom){
+      try{var a=new Audio(custom);a.volume=vol;var p=a.play();if(p&&p.catch)p.catch(function(){});setTimeout(function(){try{a.pause();}catch(e){}},8000);}catch(e){}
+      d=2;
+    }else d=rrSynth(cfg.tone,vol);
+    i++;if(i<n) setTimeout(once,Math.max(900,(d||1)*1000+350));
+  })();
+}
+
+/* ----- system notifications ----- */
+function rrPerm(){return ('Notification' in window)?Notification.permission:'unsupported';}
+function rrAsk(cb){
+  var done=false,fin=function(p){if(done) return;done=true;if(cb) cb(p);};
+  if(!('Notification' in window)){fin('unsupported');return;}
+  if(Notification.permission!=='default'){fin(Notification.permission);return;}
+  try{var r=Notification.requestPermission(fin);if(r&&r.then) r.then(fin);}catch(e){fin('denied');}
+}
+function rrSystem(title,body,tag,silent,stark){
+  if(rrPerm()!=='granted') return;
+  var o={body:body,tag:tag,silent:!!silent,icon:'icons/icon-192.png',badge:'icons/icon-32.png',requireInteraction:!!stark};
+  try{new Notification(title,o);return;}catch(e){}
+  try{if(navigator.serviceWorker&&navigator.serviceWorker.ready) navigator.serviceWorker.ready.then(function(r){r.showNotification(title,o);});}catch(e){}
+}
+
+/* ----- ranking ----- */
+function rrIsLang(x){
+  var n=((SUBJ[x.sub]||{}).name)||'';
+  return !!x.ger||x.type==='Foreign Language'||/^LANG-/.test(x.sub||'')||x.sub==='ES26108A'||/english|german|japanese|french|foreign/i.test(n);
+}
+function rrPlan(date){
+  var l=forDay(date.getDay(),st.batch,date).filter(function(x){return x&&x.e>x.s;});
+  var lang=l.filter(function(x){return x.ger;});
+  l=l.filter(function(x){   // students who take German/Japanese do not have English in that slot
+    return !(st.lang&&isEng(x)&&lang.some(function(g){return g.s<x.e&&g.e>x.s;}));
+  });
+  return l.map(function(x){
+    var prev=null;
+    l.forEach(function(y){if(y!==x&&y.s<x.s&&(!prev||y.e>prev.e)) prev=y;});
+    var gap=prev?Math.max(0,x.s-prev.e):null,lvl,why;
+    if(rrIsLang(x)){lvl=3;why='lang';}
+    else if(!prev||gap>=RR.gap){lvl=3;why='solo';}
+    else if(roomKey(prev.room)&&roomKey(prev.room)===roomKey(x.room)){lvl=1;why='same';}
+    else{lvl=2;why='move';}
+    return {x:x,lvl:lvl,why:why,gap:gap,prev:prev};
+  });
+}
+function rrName(x){var s=SUBJ[x.sub]||{};return s.short||s.name||x.sub||'Lecture';}
+function rrWhy(p){
+  if(p.why==='lang') return 'Language class, so this one gets a stark reminder.';
+  if(p.why==='solo') return p.prev?'Standalone: '+dur(p.gap*60000)+' after your previous class.':'Standalone: no class before it.';
+  if(p.why==='same') return 'Same room as the previous lecture ('+(p.x.room||'')+').';
+  return 'Room change: '+(p.prev.room||'?')+' to '+(p.x.room||'?')+'.';
+}
+function rrActive(l){var c=RR.lvl[l];return c.snd||c.sil;}
+
+/* ----- toasts (shown on top of everything, even over open dialogs) ----- */
+function rrToastBox(){
+  var b=$('#rrToasts');if(!b) return null;
+  if(b.showPopover&&!b.hasAttribute('popover')){b.removeAttribute('hidden');b.setAttribute('popover','manual');}
+  return b;
+}
+function rrToastTop(b){
+  if(b.showPopover){try{if(b.matches(':popover-open')) b.hidePopover();b.showPopover();}catch(e){}}
+  else b.hidden=false;
+}
+function rrToastDrop(el){
+  if(!el||!el.parentNode) return;
+  var b=el.parentNode;
+  el.classList.add('out');
+  setTimeout(function(){
+    if(el.parentNode) el.parentNode.removeChild(el);
+    if(!b.children.length){if(b.hidePopover&&b.hasAttribute('popover')){try{b.hidePopover();}catch(e){}}else b.hidden=true;}
+  },210);
+}
+function rrToast(o){
+  var b=rrToastBox();if(!b) return;
+  var el=document.createElement('div');
+  el.className='rr-toast';el.setAttribute('data-l',o.l);el.style.setProperty('--c',RR_LV[o.l].c);
+  el.setAttribute('role',o.l===3?'alert':'status');
+  el.innerHTML='<div class="ti">'+RR_BELL+'</div><div class="tb"><p class="tk">'+esc(o.kick)+'</p><p class="tt">'+esc(o.title)+'</p><p class="tm">'+esc(o.body)+'</p>'+
+    (o.why?'<p class="tw">'+esc(o.why)+'</p>':'')+
+    '<div class="ta"><button type="button" class="rr-tb" data-rr="toast-ok">Got it</button>'+(o.snooze?'<button type="button" class="rr-tb alt" data-rr="toast-snooze">Snooze 5 min</button>':'')+'</div></div>';
+  el._snooze=o.snooze||null;
+  b.appendChild(el);rrToastTop(b);
+  if(o.ttl) setTimeout(function(){rrToastDrop(el);},o.ttl);
+}
+
+/* ----- firing ----- */
+function rrFire(p,mLeft,test){
+  var cfg=RR.lvl[p.lvl],l=p.lvl,x=p.x,name=p.name||rrName(x);
+  var title=(l===3?'Don\u2019t miss: ':'Up next: ')+name;
+  var when=mLeft>0?'starts in '+mLeft+' min':'starting now';
+  var body=fmtRange(x.s,x.e)+(x.room?' \u00B7 '+x.room:'')+' \u00B7 '+when;
+  var why=test&&!cfg.snd&&!cfg.sil?'Sound and silent are both off for this level, so a real one would not alert you.':rrWhy(p);
+  var hidden=document.hidden;
+  if(cfg.snd){
+    rrPlay(l,l===3?3:1);
+    if(l===3&&navigator.vibrate){try{navigator.vibrate([220,110,220,110,420]);}catch(e){}}
+  }
+  if(cfg.sil||(cfg.snd&&hidden)) rrSystem(title,body+'\n'+why,'rr-'+(test?'test':x.sub+x.s),!(cfg.snd&&hidden),l===3);
+  var endIn=test?0:Math.max(0,(x.s-mins(nowFloor()))*60000+60000);
+  rrToast({l:l,kick:test?RR_LV[l].kick+' \u00B7 test':RR_LV[l].kick,title:title,body:body,why:why,
+    ttl:l===3?(test?20000:endIn||60000):(l===2?10000:7000),
+    snooze:(l===3&&!test)?function(){setTimeout(function(){var left=x.s-mins(nowFloor());if(left>0) rrFire(p,left,false);},5*60000);}:null});
+}
+function rrFiredMap(){try{return JSON.parse(store.get(RR_FIRED,'{}'))||{};}catch(e){return {};}}
+function rrCheck(){
+  if(!RR.on||!CUR||$('#view').hidden) return;
+  var now=nowFloor(),d=dayStart(now,0);
+  if(!inRange(d)||holidayFor(d)) return;
+  var nm=mins(now),dk=ymd(d),fm=rrFiredMap(),dirty=false;
+  Object.keys(fm).forEach(function(k){if(k.indexOf(dk)!==0){delete fm[k];dirty=true;}});
+  rrPlan(d).forEach(function(p){
+    if(!rrActive(p.lvl)) return;
+    var x=p.x,at=x.s-RR.lvl[p.lvl].lead;
+    if(nm<at||nm>=x.s) return;
+    var fk=dk+'|'+x.sub+'|'+x.s+'|'+(x.b||'')+'|'+x.type;
+    if(fm[fk]) return;
+    fm[fk]=1;dirty=true;
+    rrFire(p,x.s-nm,false);
+  });
+  if(dirty) store.set(RR_FIRED,JSON.stringify(fm));
+}
+
+/* ----- status line on the bar ----- */
+function rrNext(){
+  var now=nowFloor(),nm=mins(now);
+  for(var i=0;i<7;i++){
+    var d=dayStart(now,i);
+    if(!inRange(d)||holidayFor(d)) continue;
+    var l=rrPlan(d).filter(function(p){return rrActive(p.lvl)&&(i>0||p.x.s>nm);});
+    if(l.length) return {p:l[0],off:i,d:d};
+  }
+  return null;
+}
+function rrStatusText(){
+  if(!RR.on) return 'Lecture reminders are off. Switch on to get alerts before your lectures.';
+  if(!CUR) return 'On.';
+  var perm=rrPerm(),n=rrNext(),s;
+  if(!n) s='On. No upcoming reminders this week.';
+  else{
+    var day=n.off===0?'today':(n.off===1?'tomorrow':DAYS[n.d.getDay()]);
+    s='On. Next: '+rrName(n.p.x)+' '+day+' at '+fmtT(n.p.x.s)+' (level '+n.p.lvl+').';
+  }
+  if(perm==='default') s+=' Tap Customize to allow notifications.';
+  else if(perm==='denied') s+=' Notifications are blocked, so you will only see in-app banners.';
+  return s;
+}
+var rrLastStatus='';
+function rrBarSync(force){
+  var bar=$('#rrBar');if(!bar) return;
+  var t=rrStatusText(),key=t+'|'+RR.on;
+  if(!force&&key===rrLastStatus) return;
+  rrLastStatus=key;
+  bar.setAttribute('data-on',RR.on?'1':'0');
+  $('#rrStatus').textContent=t;
+  Array.prototype.forEach.call(bar.querySelectorAll('[data-rr="on"],[data-rr="off"]'),function(b){
+    b.setAttribute('aria-pressed',String((b.getAttribute('data-rr')==='on')===RR.on));
+  });
+}
+
+/* ----- customise dialog ----- */
+function rrSw(k,on,label){return '<button type="button" class="rr-sw" role="switch" aria-checked="'+on+'" aria-label="'+esc(label)+'" data-rr="sw" data-k="'+k+'"></button>';}
+function rrPlanDay(){
+  var now=nowFloor();
+  for(var i=0;i<7;i++){
+    var d=dayStart(now,i);
+    if(!inRange(d)||holidayFor(d)) continue;
+    var p=rrPlan(d);
+    if(p.length) return {d:d,off:i,list:p};
+  }
+  return null;
+}
+function rrPaint(){
+  var body=$('#rrBody');if(!body) return;
+  var ae=document.activeElement,fk=ae&&ae.getAttribute?ae.getAttribute('data-k'):null,sc=body.scrollTop;
+  var perm=rrPerm(),h='';
+  h+='<p class="rr-lead">Reminders ranked by how easy a lecture is to miss. This is an alpha: it works while the app is open or running in the background on your device, and nothing leaves this device.</p>';
+  // permission
+  var pt=perm==='granted'?'Notifications are allowed.':perm==='default'?'Allow notifications to get banners when the app is in the background.':perm==='denied'?'Notifications are blocked in your browser settings. In-app banners and sounds still work.':'This browser does not support system notifications. In-app banners and sounds still work.';
+  h+='<div class="rr-box"><div class="rr-perm"><p>'+pt+'</p>'+(perm==='default'?'<button type="button" class="rr-btn" data-rr="perm">Allow notifications</button>':'')+'</div></div>';
+  // today's plan
+  var pd=rrPlanDay();
+  h+='<div class="rr-box"><h4>'+(pd?(pd.off===0?'Today':pd.off===1?'Tomorrow':DAYS[pd.d.getDay()])+' \u00B7 how your lectures rank':'How your lectures rank')+'</h4>';
+  if(!pd) h+='<p>No lectures coming up this week.</p>';
+  else{
+    h+='<ul class="rr-plan">'+pd.list.map(function(p){
+      return '<li><span class="pt">'+esc(fmtRange(p.x.s,p.x.e))+'</span><span class="pn">'+esc(rrName(p.x))+'<small>'+esc((p.x.room||'')+(p.x.room?' \u00B7 ':'')+rrWhy(p))+'</small></span><span class="rr-chip" style="--c:'+RR_LV[p.lvl].c+'"><i></i>L'+p.lvl+'</span></li>';
+    }).join('')+'</ul>';
+  }
+  h+='</div>';
+  // general
+  h+='<div class="rr-box"><h4>General</h4>'+
+    '<div class="rr-set"><span id="rrGapL">Standalone when the gap is at least</span><div class="seg" role="group" aria-labelledby="rrGapL">'+RR_GAPS.map(function(g){return '<button type="button" data-rr="gap" data-v="'+g+'" aria-pressed="'+(RR.gap===g)+'">'+(g%60===0?(g/60)+' h':g+' min')+'</button>';}).join('')+'</div></div>'+
+    '<div class="rr-set"><label for="rrVol">Volume</label><input type="range" class="rr-range" id="rrVol" min="0" max="100" step="5" value="'+RR.vol+'" data-k="vol"></div></div>';
+  h+='<p class="rr-msg" id="rrMsg" role="status" aria-live="polite"></p>';
+  // levels
+  [3,2,1].forEach(function(l){
+    var c=RR.lvl[l],V=RR_LV[l];
+    var opts=RR_TONES.map(function(t){return '<option value="'+t[0]+'"'+(c.tone===t[0]?' selected':'')+'>'+t[1]+'</option>';}).join('');
+    if(rrCustom(l)) opts+='<option value="custom"'+(c.tone==='custom'?' selected':'')+'>'+esc(rrGet('tt-rr-sndn-'+l)||'Your sound')+'</option>';
+    opts+='<option value="__upload">Upload your own\u2026</option>';
+    h+='<section class="rr-lv" style="--c:'+V.c+'" aria-label="'+V.name+'">'+
+      '<div class="rr-lv-h"><b>'+V.name+'</b><span class="rr-chip" style="--c:'+V.c+'"><i></i>'+V.tag+'</span></div>'+
+      '<p class="rr-lv-d">'+V.desc+'</p>'+
+      '<div class="rr-set"><span>Sound reminder</span>'+rrSw('snd'+l,c.snd,V.name+' sound reminder')+'</div>'+
+      '<div class="rr-set"><span>Silent notification</span>'+rrSw('sil'+l,c.sil,V.name+' silent notification')+'</div>'+
+      '<div class="rr-set"><span id="rrLeadL'+l+'">Remind me</span><div class="seg" role="group" aria-labelledby="rrLeadL'+l+'">'+RR_LEADS.map(function(m){return '<button type="button" data-rr="lead" data-l="'+l+'" data-v="'+m+'" aria-pressed="'+(c.lead===m)+'">'+m+' min</button>';}).join('')+'</div></div>'+
+      '<div class="rr-set"><label for="rrTone'+l+'">Ringtone</label><div class="rr-tone"><select id="rrTone'+l+'" data-rr-tone="'+l+'" data-k="tone'+l+'">'+opts+'</select><button type="button" class="rr-btn alt" data-rr="preview" data-l="'+l+'">Preview</button><button type="button" class="rr-btn alt" data-rr="test" data-l="'+l+'">Test</button></div></div>'+
+      '</section>';
+  });
+  h+='<div class="rr-foot"><button type="button" class="rr-btn alt" data-rr="reset">Reset to defaults</button></div>';
+  body.innerHTML=h;
+  body.scrollTop=sc;
+  if(fk){var nf=body.querySelector('[data-k="'+fk+'"]');if(nf) nf.focus({preventScroll:true});}
+}
+function rrMsg(t){var m=$('#rrMsg');if(m) m.textContent=t||'';}
+function rrCommit(){rrSave();rrBarSync(true);}
+
+function rrSetOn(on){
+  RR.on=on;rrSave();
+  if(on){
+    rrAudio();
+    rrAsk(function(){rrBarSync(true);if($('#rrApp').open) rrPaint();});
+  }
+  rrBarSync(true);
+}
+function rrPreview(l){rrAudio();rrPlay(l,1);}
+function rrTest(l){
+  rrAudio();
+  var now=nowFloor(),m=mins(now);
+  var x={sub:'__rr',type:'Theory',s:Math.min(1380,m+RR.lvl[l].lead),e:Math.min(1439,m+RR.lvl[l].lead+60),room:'D301'};
+  var p={x:x,lvl:l,why:l===3?'solo':l===2?'move':'same',gap:l===3?150:10,prev:{room:l===2?'E212':'D301'},name:'Sample lecture'};
+  var run=function(){rrFire(p,RR.lvl[l].lead,true);};
+  if(RR.lvl[l].sil&&rrPerm()==='default') rrAsk(function(){run();rrPaint();}); else run();
+}
+function rrAct(a,b){
+  if(a==='open'){markFeatureUsed();rrPaint();teacherDialog('#rrApp',true);}
+  else if(a==='close') teacherDialog('#rrApp',false);
+  else if(a==='on') rrSetOn(true);
+  else if(a==='off') rrSetOn(false);
+  else if(a==='perm') rrAsk(function(){rrBarSync(true);rrPaint();});
+  else if(a==='sw'){
+    var k=b.getAttribute('data-k'),l=+k.slice(3),f=k.slice(0,3);
+    RR.lvl[l][f]=!RR.lvl[l][f];rrCommit();
+    if(RR.lvl[l].snd) rrAudio();
+    if(RR.lvl[l].sil&&RR.on&&rrPerm()==='default') rrAsk(function(){rrBarSync(true);rrPaint();});
+    rrPaint();
+  }
+  else if(a==='lead'){RR.lvl[+b.getAttribute('data-l')].lead=+b.getAttribute('data-v');rrCommit();rrPaint();}
+  else if(a==='gap'){RR.gap=+b.getAttribute('data-v');rrCommit();rrPaint();}
+  else if(a==='preview') rrPreview(+b.getAttribute('data-l'));
+  else if(a==='test') rrTest(+b.getAttribute('data-l'));
+  else if(a==='reset'){
+    var keep=RR.on;RR=rrDefaults();RR.on=keep;
+    [1,2,3].forEach(function(l){try{localStorage.removeItem('tt-rr-snd-'+l);localStorage.removeItem('tt-rr-sndn-'+l);}catch(e){}});
+    rrCommit();rrPaint();rrMsg('Back to the default settings.');
+  }
+  else if(a==='toast-ok'){rrToastDrop(b.closest('.rr-toast'));}
+  else if(a==='toast-snooze'){var t=b.closest('.rr-toast');if(t&&t._snooze) t._snooze();rrToastDrop(t);}
+}
+var rrUploadFor=0;
+document.addEventListener('click',function(e){
+  if(e.target&&e.target.id==='rrApp'){rrAct('close');return;}
+  var b=e.target.closest&&e.target.closest('[data-rr]');if(!b) return;
+  rrAct(b.getAttribute('data-rr'),b);
+});
+document.addEventListener('change',function(e){
+  var t=e.target;if(!t) return;
+  if(t.hasAttribute&&t.hasAttribute('data-rr-tone')){
+    var l=+t.getAttribute('data-rr-tone');
+    if(t.value==='__upload'){rrUploadFor=l;var f=$('#rrFile');if(f){f.value='';f.click();}rrPaint();return;}
+    RR.lvl[l].tone=t.value;rrCommit();rrPreview(l);rrPaint();
+  }else if(t.id==='rrFile'){
+    var file=t.files&&t.files[0],lv=rrUploadFor;if(!file||!lv) return;
+    if(file.size>RR_MAX_SND){rrMsg('That file is too large. Please pick a clip under 700 KB.');return;}
+    var fr=new FileReader();
+    fr.onload=function(){
+      try{
+        localStorage.setItem('tt-rr-snd-'+lv,String(fr.result));
+        localStorage.setItem('tt-rr-sndn-'+lv,file.name.replace(/\.[^.]+$/,'').slice(0,24));
+        RR.lvl[lv].tone='custom';rrCommit();rrPaint();rrMsg('Ringtone saved for level '+lv+'. Only the first 8 seconds will play.');rrPreview(lv);
+      }catch(err){rrMsg('Could not save that sound on this device. Try a shorter clip.');}
+    };
+    fr.onerror=function(){rrMsg('Could not read that file.');};
+    fr.readAsDataURL(file);
+  }
+});
+document.addEventListener('input',function(e){
+  if(e.target&&e.target.id==='rrVol'){RR.vol=+e.target.value;rrSave();}
+});
+document.addEventListener('pointerdown',function(){if(RR.on) rrAudio();},{passive:true});
+function rrTick(){rrCheck();rrBarSync(false);}
+(function(){
+  rrBarSync(true);
+  var rrB=$('#rrToasts');if(rrB&&rrB.showPopover){rrB.removeAttribute('hidden');rrB.setAttribute('popover','manual');}
+  setInterval(rrTick,5000);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden) rrTick();});
+  window.addEventListener('focus',rrTick);
+})();
+
 boot();
 })();
 </script>
