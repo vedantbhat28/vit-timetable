@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>window.__bip=null;window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__bip=e;if(window.__bipCb)window.__bipCb(e);});</script>
 <meta charset="utf-8">
 <style id="antiframe">html{display:none!important}</style>
 <script>
@@ -19,7 +20,7 @@
 <script>
 /* Referral check: opened from the copycat site -> send to rouge.html before anything loads (no network/database calls) */
 (function(){
-  var BAD='vit-pune-campus-connect.vercel.app';
+  var BAD='abc';
   var ref=''; try{ ref=document.referrer||''; }catch(e){}
   var host='';
   try{ host=new URL(ref).hostname.toLowerCase(); }catch(e){ host=ref.toLowerCase().replace(/^[a-z]+:\/\//,'').split(/[\/?#:]/)[0]; }
@@ -93,6 +94,17 @@ a{touch-action:manipulation}
 .app{max-width:960px;margin:0 auto;padding:12px 12px 32px}
 @media (min-width:720px){.app{padding:22px 22px 44px}}
 
+/* live schedule-change strip (data: Supabase tt_changes) */
+#chgStrip{margin:0 0 12px;padding:10px 12px;border:1px solid var(--line);border-left:4px solid var(--now);border-radius:12px;background:var(--surface);font-size:13px}
+#chgStrip[hidden]{display:none}
+#chgStrip b.hd{display:block;margin-bottom:4px;color:var(--muted);font-size:12px;letter-spacing:.03em;text-transform:uppercase}
+#chgStrip ul{margin:0;padding-left:18px}
+#chgStrip li{margin:2px 0}
+#chgStrip .w{color:var(--muted);font-weight:600}
+#chgStrip .more{margin:4px 0 0;color:var(--muted);font-size:12px}
+.ev-after{position:absolute;left:2px;right:2px;display:flex;align-items:center;justify-content:center;text-align:center;box-sizing:border-box;padding:4px;border:1px dashed var(--line);border-radius:8px;background:var(--surface);color:var(--muted);font-size:11px;font-weight:700;line-height:1.25}
+.ev-note{margin:10px 2px 0;padding:8px 12px;border:1px solid var(--line);border-left:4px solid var(--now);border-radius:12px;background:var(--surface);font-size:13px;font-weight:600}
+
 /* header */
 .top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px 20px;flex-wrap:wrap}
 h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);line-height:.92;margin:0}
@@ -133,10 +145,50 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);lin
 .plate-n{display:block;font-family:var(--display);font-weight:800;font-size:clamp(30px,8vw,42px);line-height:.95;letter-spacing:.02em}
 .prog{height:5px;border-radius:99px;background:rgba(255,255,255,.3);margin-top:12px;overflow:hidden}
 .prog>i{display:block;height:100%;width:var(--p);background:#fff;border-radius:inherit;transition:width .6s ease}
+.onl-hero{display:inline-flex;align-items:center;margin-right:8px;text-decoration:none;background:rgba(255,255,255,.22)}
+.hero.flag-jp .onl-hero{color:#141B34}
 .hero-btn{margin:12px 0 0;min-height:40px;padding:8px 14px;border:1.5px solid rgba(255,255,255,.8);border-radius:10px;background:transparent;color:#fff;font-weight:600;font-size:13px;cursor:pointer}
 .hero-btn:hover{background:rgba(255,255,255,.16)}
 .hero-btn:focus-visible{outline:3px solid #fff;outline-offset:2px}
 .then{margin:12px 0 0;padding-top:9px;border-top:1px solid rgba(255,255,255,.35);font-size:13px}
+
+/* Japanese / German class in the big top card: blurred frosted-glass flag. The weekly grid is untouched. */
+.hero.flag-jp,.hero.flag-de{position:relative;overflow:hidden;isolation:isolate;transition:none}
+.hero.flag-jp::before,.hero.flag-de::before{content:"";position:absolute;inset:0;z-index:-2;transform:scale(1.25);filter:blur(11px);pointer-events:none}
+.hero.flag-jp::after,.hero.flag-de::after{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;pointer-events:none;-webkit-backdrop-filter:blur(8px) saturate(1.15);backdrop-filter:blur(8px) saturate(1.15)}
+/* Japan: white field, red disc in the centre, with a light glass layer so dark text stays easy to read */
+.hero.flag-jp{background:#fff;color:#141B34;box-shadow:inset 0 0 0 1px rgba(255,255,255,.75),0 6px 22px rgba(188,0,45,.16)}
+.hero.flag-jp::before{background:radial-gradient(circle closest-side at 50% 50%,#BC002D 0 60%,rgba(188,0,45,0) 61%),#fff}
+.hero.flag-jp::after{background:linear-gradient(135deg,rgba(255,255,255,.58),rgba(255,255,255,.46));box-shadow:inset 0 1px 0 rgba(255,255,255,.8)}
+.hero.flag-jp .dot{background:#BC002D}
+.hero.flag-jp .meta .code{opacity:.85}
+.hero.flag-jp .prog{background:rgba(20,27,52,.16)}
+.hero.flag-jp .prog>i{background:#BC002D}
+.hero.flag-jp .then{border-top-color:rgba(20,27,52,.28)}
+.hero.flag-jp .hero-btn{border-color:rgba(20,27,52,.6);color:#141B34;background:rgba(255,255,255,.35)}
+.hero.flag-jp .hero-btn:hover{background:rgba(255,255,255,.7)}
+.hero.flag-jp .hero-btn:focus-visible{outline-color:#141B34}
+/* Germany: black, red, gold bands, darkened glass layer with white text */
+.hero.flag-de{background:#16161B;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),0 6px 22px rgba(0,0,0,.28)}
+.hero.flag-de::before{background:linear-gradient(to bottom,#000 0 33.33%,#DD0000 33.33% 66.66%,#FFCE00 66.66% 100%)}
+.hero.flag-de::after{background:linear-gradient(135deg,rgba(14,14,20,.6),rgba(14,14,20,.54));box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
+.hero.flag-de .status,.hero.flag-de .big,.hero.flag-de .subject,.hero.flag-de .meta,.hero.flag-de .then{text-shadow:0 1px 3px rgba(0,0,0,.5)}
+@media (prefers-reduced-transparency:reduce){
+  .hero.flag-jp::after{background:rgba(255,255,255,.82);-webkit-backdrop-filter:none;backdrop-filter:none}
+  .hero.flag-de::after{background:rgba(14,14,20,.74);-webkit-backdrop-filter:none;backdrop-filter:none}
+}
+/* one-time "Japanese schedule updated" toast (top of the screen, clear of the install bar) */
+.jp-toast{position:fixed;z-index:70;top:calc(12px + env(safe-area-inset-top,0px));left:50%;width:min(92vw,400px);display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px;background:var(--surface,#fff);color:var(--ink,#1B2340);border:1px solid var(--line,rgba(0,0,0,.12));border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.22);transform:translate(-50%,-14px);opacity:0;transition:transform .25s ease,opacity .25s ease}
+.jp-toast[hidden]{display:none}
+.jp-toast.in{transform:translate(-50%,0);opacity:1}
+.jp-toast-flag{flex:none;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle closest-side at 50% 50%,#BC002D 0 60%,#fff 62%);box-shadow:0 0 0 1.5px rgba(20,27,52,.18)}
+.jp-toast-txt{min-width:0;flex:1}
+.jp-toast-t{margin:0;font-weight:700;font-size:14px;line-height:1.25}
+.jp-toast-s{margin:2px 0 0;font-size:12.5px;line-height:1.3;color:var(--muted,#596080)}
+.jp-toast-x{flex:none;width:32px;height:32px;border:0;border-radius:8px;background:transparent;color:inherit;font-size:22px;line-height:1;cursor:pointer}
+.jp-toast-x:hover{background:rgba(127,127,127,.18)}
+.jp-toast-x:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+@media (prefers-reduced-motion:reduce){.jp-toast{transition:none}}
 
 /* day panel */
 .panel,.weekp{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px}
@@ -454,6 +506,23 @@ dialog#roomApp::backdrop{background:rgba(12,16,32,.55)}
   .install-actions{border:1px solid var(--line);border-top:0;border-radius:0 0 16px 16px;margin:0}
 }
 .install-bar[hidden]{display:none}
+/* install nudge: top banner + small bottom button (website only, never in the installed app) */
+.inst-top{display:flex;align-items:center;gap:10px;margin:0 0 12px;padding:10px 10px 10px 12px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-left:4px solid var(--focus);border-radius:12px;box-shadow:0 4px 14px rgba(8,12,30,.08)}
+.inst-top[hidden]{display:none}
+.inst-top-ic{flex:none;width:36px;height:36px;border-radius:10px;overflow:hidden}
+.inst-top-ic img{display:block;width:100%;height:100%}
+.inst-top-txt{min-width:0;flex:1}
+.inst-top-t{margin:0;font-weight:700;font-size:13.5px;line-height:1.25}
+.inst-top-s{margin:2px 0 0;font-size:12px;line-height:1.35;color:var(--muted)}
+.inst-top .btn{flex:none;margin:0;min-height:34px;padding:5px 14px;font-size:13px}
+.inst-top-x{flex:none;width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-size:21px;line-height:1;cursor:pointer}
+.inst-top-x:hover{background:rgba(127,127,127,.18)}
+.inst-fab{position:fixed;z-index:55;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 14px;border:0;border-radius:99px;background:var(--focus);color:#fff;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 6px 18px rgba(8,12,30,.3)}
+.inst-fab[hidden]{display:none}
+:root:not([data-theme="light"]) .inst-fab{color:#0F1320}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .inst-fab{color:#fff}}
+:root[data-theme="dark"] .inst-fab{color:#0F1320}
+:root[data-theme="light"] .inst-fab{color:#fff}
 .install-card{border-top:3px solid var(--focus);box-shadow:0 -10px 30px rgba(8,12,30,.22),0 0 0 1px rgba(47,91,214,.25),0 0 22px rgba(47,91,214,.28)}
 .install-prog{display:none;height:5px;border-radius:99px;background:var(--wash);overflow:hidden;margin-top:9px}
 .install-prog i{display:block;height:100%;width:40%;border-radius:99px;background:linear-gradient(90deg,var(--focus),#6366F1);animation:installSlide 1.2s ease-in-out infinite}
@@ -518,16 +587,29 @@ body.diwali .hero{box-shadow:0 0 0 2px #ffb020,0 8px 28px rgba(255,160,32,.38)}
 @media (prefers-reduced-motion:reduce){#diwaliScreen,.dv-diyas,#diwaliLights i{animation:none}}
 
 /* new-schedule notice (full-screen, once a day for 2 days) + latest badge */
-#labNotice,#chgNotice,#susNotice{position:fixed;inset:0;z-index:82;display:flex;flex-direction:column;align-items:center;justify-content:center;
+#labNotice,#chgNotice,#susNotice,#roomNotice,#xtraNotice,#onlNotice{position:fixed;inset:0;z-index:82;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:0;text-align:center;padding:24px;background:var(--surface);color:var(--ink);
   animation:hiIn .4s ease-out;transition:opacity .4s ease,transform .4s ease}
-#labNotice.out,#chgNotice.out,#susNotice.out{opacity:0;transform:scale(1.04);pointer-events:none}
+#labNotice.out,#chgNotice.out,#susNotice.out,#roomNotice.out,#xtraNotice.out,#onlNotice.out{opacity:0;transform:scale(1.04);pointer-events:none}
 #labNotice{z-index:83}
 #labNotice[hidden]{display:none}
 #chgNotice{z-index:84}
 #chgNotice[hidden]{display:none}
 #susNotice{z-index:81}
 #susNotice[hidden]{display:none}
+#roomNotice{z-index:85}
+#roomNotice[hidden]{display:none}
+#xtraNotice{z-index:86}
+#xtraNotice[hidden]{display:none}
+#onlNotice{z-index:87}
+#onlNotice[hidden]{display:none}
+.onl-list{margin:6px 0 0;padding:0;list-style:none;display:grid;gap:8px;width:100%}
+.onl-list li{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--wash);font-size:13.5px;color:var(--ink);text-align:left}
+.onl-list li b{display:block}
+.onl-list li span{color:var(--muted);font-size:12.5px}
+a.tn-btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.onl-pill{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:700;background:var(--focus);color:#fff;vertical-align:middle}
+.kv a.onl-join{display:inline-flex;align-items:center;min-height:40px;padding:7px 16px;border-radius:10px;background:var(--ink);color:var(--surface);font-weight:700;text-decoration:none}
 .tn-card{max-width:420px;display:flex;flex-direction:column;align-items:center;gap:10px}
 .tn-emoji{font-size:44px;line-height:1;animation:hiPop .6s ease-out}
 .tn-kicker{margin:4px 0 0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--danger)}
@@ -547,7 +629,7 @@ body.diwali .hero{box-shadow:0 0 0 2px #ffb020,0 8px 28px rgba(255,160,32,.38)}
 .tn-btn .tn-bar{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ink);opacity:.18;z-index:-1}
 .tn-btn.wait .tn-bar{animation:tnFill 2s linear forwards}
 @keyframes tnFill{from{width:0}to{width:100%}}
-@media (prefers-reduced-motion:reduce){#labNotice,#chgNotice,#susNotice,.tn-emoji{animation:none}}
+@media (prefers-reduced-motion:reduce){#labNotice,#chgNotice,#susNotice,#roomNotice,#xtraNotice,#onlNotice,.tn-emoji{animation:none}}
 #rollWarn{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55)}
 #rollWarn[hidden]{display:none}
 .rw-card{width:100%;max-width:400px;display:flex;flex-direction:column;gap:10px;padding:22px 20px 18px;border-radius:16px;background:var(--surface);color:var(--ink);box-shadow:0 12px 40px rgba(0,0,0,.35);text-align:center}
@@ -557,6 +639,38 @@ body.diwali .hero{box-shadow:0 0 0 2px #ffb020,0 8px 28px rgba(255,160,32,.38)}
 .rw-body b{color:var(--ink)}
 .rw-actions{display:flex;flex-direction:column;gap:8px;margin-top:8px}
 .rw-actions .btn,.rw-actions .btn2{margin:0;width:100%}
+.rw-actions .btn:disabled{opacity:.45;cursor:not-allowed}
+/* ---- Japanese list popup ---- */
+#jpAsk{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55)}
+#jpAsk[hidden]{display:none}
+.jp-card{width:100%;max-width:420px;max-height:calc(100dvh - 40px);overflow:auto;padding:22px 20px 18px;border-radius:16px;background:var(--surface);color:var(--ink);box-shadow:0 12px 40px rgba(0,0,0,.35);text-align:center;outline:0}
+.jp-panel{display:flex;flex-direction:column;gap:10px}
+.jp-panel[hidden]{display:none}
+.jp-priv{font-size:13px}
+.jp-file{position:relative;display:flex;align-items:center;justify-content:center;min-height:54px;padding:8px 14px;border:1.5px dashed var(--line);border-radius:12px;font-weight:600;font-size:14.5px;cursor:pointer;overflow:hidden;overflow-wrap:anywhere}
+.jp-file input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.jp-file:focus-within{outline:2px solid var(--ink);outline-offset:2px}
+.jp-file.has{border-style:solid;border-color:var(--ink)}
+.jp-err{margin:0;color:#C0392B;font-size:13px;line-height:1.4}
+.jp-err:empty{display:none}
+.adm-jp{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.adm-jp .btn2{margin:0;min-height:30px;padding:3px 12px;font-size:12px}
+
+/* ---- Bibwewadi timetable PDF request (full screen) + admin switch ---- */
+#bbAsk{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;padding:max(20px,env(safe-area-inset-top)) 20px max(20px,env(safe-area-inset-bottom));background:var(--surface);color:var(--ink);overflow:auto}
+#bbAsk[hidden]{display:none}
+.bb-card{width:100%;max-width:440px;margin:auto;display:flex;flex-direction:column;gap:12px;text-align:center;outline:0}
+.bb-panel{display:flex;flex-direction:column;gap:12px}
+.bb-panel[hidden]{display:none}
+.bb-card .rw-emoji{font-size:48px}
+.bb-card .rw-title{font-size:22px}
+.bb-sw{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font-weight:600;font-size:13px;text-align:left;cursor:pointer}
+.bb-sw .trk{position:relative;flex:none;width:44px;height:26px;border-radius:999px;background:#9aa0a6;transition:background .15s}
+.bb-sw .trk::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .15s}
+.bb-sw[aria-checked="true"] .trk{background:#16a34a}
+.bb-sw[aria-checked="true"] .trk::after{transform:translateX(18px)}
+.bb-sw:disabled{opacity:.6;cursor:wait}
+.bb-sw small{display:block;font-weight:400;color:var(--muted);font-size:11.5px;margin-top:2px}
 
 /* phones: compact chrome, week grid fits the screen (no sideways scroll) */
 @media (max-width:600px){
@@ -767,24 +881,6 @@ dialog#forumIntro::backdrop{background:rgba(12,16,32,.55)}
 .fi-actions .fi-later{background:var(--wash);color:var(--ink);border:1px solid var(--line)}
 
 /* ---- study planner bottom nudge + intro ---- */
-.planner-wrap{position:fixed;left:0;right:0;bottom:0;z-index:40;pointer-events:none;display:flex;justify-content:center;padding:0 12px calc(16px + env(safe-area-inset-bottom,0px))}
-.planner-wrap[hidden]{display:none}
-.pn-box{position:relative;display:inline-block;max-width:100%;pointer-events:auto;animation:pnIn .5s ease-out}
-.planner-nudge{display:inline-flex;align-items:center;gap:10px;max-width:100%;padding:11px 16px;border:0;border-radius:16px;color:#fff;text-align:left;cursor:pointer;
-  background:linear-gradient(120deg,#6d28d9,#2563eb,#0ea5e9,#c026d3,#6d28d9);background-size:300% 300%;
-  box-shadow:0 0 0 1px rgba(255,255,255,.25) inset,0 0 16px rgba(99,102,241,.7),0 0 36px rgba(14,165,233,.4),0 10px 28px rgba(8,12,30,.35);
-  animation:ftGrad 5s linear infinite,pnGlow 2.4s ease-in-out infinite}
-.planner-nudge:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
-.planner-nudge .pn-spark{font-size:18px;line-height:1;flex:none}
-.planner-nudge .pn-txt{display:flex;flex-direction:column;gap:1px;min-width:0}
-.planner-nudge .pn-txt b{font-size:13.5px;font-weight:800;line-height:1.2}
-.planner-nudge .pn-txt span{font-size:12px;font-weight:600;opacity:.92;line-height:1.25}
-.planner-nudge .pn-arrow{font-size:18px;line-height:1;flex:none;animation:featureBob 1.4s ease-in-out infinite}
-.pn-close{position:absolute;top:-8px;right:-8px;width:22px;height:22px;padding:0;border:0;border-radius:50%;background:var(--ink);color:var(--surface);font-size:14px;line-height:22px;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.35)}
-@keyframes pnGlow{0%,100%{box-shadow:0 0 0 1px rgba(255,255,255,.25) inset,0 0 12px rgba(99,102,241,.55),0 0 26px rgba(14,165,233,.3),0 10px 28px rgba(8,12,30,.35)}
-  50%{box-shadow:0 0 0 1px rgba(255,255,255,.3) inset,0 0 22px rgba(139,92,246,.95),0 0 46px rgba(14,165,233,.6),0 10px 28px rgba(8,12,30,.35)}}
-@keyframes pnIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.pn-box,.planner-nudge,.planner-nudge .pn-arrow{animation:none}}
 dialog#plannerIntro{padding:0;border:0;margin:auto;background:var(--surface);color:var(--ink);width:min(440px,calc(100vw - 24px));max-width:none;max-height:none;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(8,12,30,.4)}
 dialog#plannerIntro[open]{animation:sheetIn .2s ease-out}
 dialog#plannerIntro::backdrop{background:rgba(12,16,32,.55)}
@@ -870,6 +966,28 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
 .adm-rank .barw{flex:1;height:8px;background:var(--wash);border-radius:99px;overflow:hidden}
 .adm-rank .barf{height:100%;background:var(--ink);border-radius:99px}
 .adm-rank .cnt{flex:0 0 auto;min-width:24px;text-align:right;color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
+/* ---- classes donut chart (admin) ---- */
+.cls-wrap{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
+@media (min-width:560px){.cls-wrap{grid-template-columns:220px minmax(0,1fr)}}
+.cls-pie{width:100%;max-width:220px;margin:0 auto;display:block;overflow:visible}
+.cls-sl{cursor:pointer;stroke:var(--surface);stroke-width:1.5;transition:transform .15s ease,opacity .15s ease}
+.cls-sl:hover{opacity:.85}
+.cls-pie.has-sel .cls-sl:not(.on){opacity:.5}
+.cls-c1{font:800 22px var(--display);fill:var(--ink);text-anchor:middle;pointer-events:none}
+.cls-c2{font:600 9.5px var(--body);fill:var(--muted);text-anchor:middle;pointer-events:none}
+.cls-list{margin:0;padding:0;list-style:none;max-height:236px;overflow:auto;display:flex;flex-direction:column;gap:2px}
+.cls-li{display:flex;width:100%;align-items:center;gap:8px;padding:6px 8px;border:0;border-radius:9px;background:transparent;color:var(--ink);font:600 12.5px var(--body);text-align:left;cursor:pointer;min-height:34px}
+.cls-li:hover{background:var(--wash)}
+.cls-li.on{background:var(--wash);box-shadow:inset 0 0 0 1.5px var(--ink)}
+.cls-li:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.cls-li i{width:10px;height:10px;border-radius:3px;flex:none}
+.cls-li .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cls-li .ct{color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.cls-detail{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.cls-detail h4{margin:0 0 10px;font:800 15px var(--display);display:flex;align-items:center;gap:8px}
+.cls-detail h4 i{width:12px;height:12px;border-radius:4px;flex:none}
+.cls-detail .adm-h{margin:12px 0 6px}
+.cls-hint{margin:12px 0 0;color:var(--muted);font-size:12.5px;text-align:center}
 .adm-grid2{display:grid;grid-template-columns:1fr;gap:18px}
 @media (min-width:560px){.adm-grid2{grid-template-columns:1fr 1fr}}
 
@@ -945,9 +1063,101 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
   .hero,.prog>i{transition:none}
 }
 </style>
+<style id="rrStyle">
+/* ---------- Reminder Ranger (Alpha) ---------- */
+.rr-alpha{display:inline-block;padding:2px 9px;border-radius:99px;background:linear-gradient(135deg,#E5383B,#B84E0F);color:#fff;font-family:var(--body);font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;line-height:1.4;vertical-align:middle}
+.rr-bar{display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap;margin:0 0 12px;padding:10px 12px;border:1px solid var(--line);border-left:4px solid var(--line);border-radius:12px;background:var(--surface)}
+.rr-bar[data-on="1"]{border-left-color:var(--focus)}
+.rr-ic{flex:none;width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:var(--wash);color:var(--muted)}
+.rr-bar[data-on="1"] .rr-ic{background:var(--ink);color:var(--surface)}
+.rr-txt{flex:1 1 200px;min-width:0}
+.rr-t{margin:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-weight:700;font-size:14px}
+.rr-s{margin:2px 0 0;color:var(--muted);font-size:12.5px;line-height:1.4}
+.rr-btns{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rr-btns .chg{margin-top:0}
+.rr-btns .seg button{min-height:36px}
+
+dialog#rrApp{padding:0;border:0;margin:auto;background:var(--surface);color:var(--ink);width:min(580px,calc(100vw - 24px));max-width:none;max-height:none;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(8,12,30,.4)}
+dialog#rrApp[open]{animation:sheetIn .2s ease-out}
+dialog#rrApp::backdrop{background:rgba(12,16,32,.55)}
+@media (prefers-reduced-motion:reduce){dialog#rrApp[open]{animation:none}}
+
+.terms-body .rr-lead{margin:0 0 12px}
+.rr-box{margin:0 0 12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--wash)}
+.rr-box h4{margin:0 0 8px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.terms-body .rr-box p{margin:0 0 8px;font-size:12.5px}
+.rr-box p:last-child{margin-bottom:0}
+.rr-perm{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.rr-perm p{flex:1 1 200px;margin:0!important}
+.rr-btn{min-height:38px;padding:6px 14px;border:1px solid var(--ink);border-radius:10px;background:var(--ink);color:var(--surface);font-weight:600;font-size:13px;cursor:pointer}
+.rr-btn.alt{background:transparent;color:var(--ink);border-color:var(--line)}
+.rr-btn.alt:hover{background:var(--wash)}
+.rr-btn:focus-visible,.rr-sw:focus-visible,.rr-tb:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.rr-set{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 8px}
+.rr-set:last-child{margin-bottom:0}
+.rr-set>span{font-size:13px;font-weight:600;color:var(--ink)}
+.rr-range{flex:1 1 160px;max-width:260px;min-height:32px;accent-color:var(--ink)}
+
+.rr-plan{list-style:none;margin:0;padding:0}
+.rr-plan li{display:flex;align-items:center;gap:10px;padding:7px 0;border-top:1px solid var(--line);font-size:13px}
+.rr-plan li:first-child{border-top:0;padding-top:0}
+.rr-plan .pt{flex:none;width:92px;color:var(--muted);font-weight:600;font-variant-numeric:tabular-nums;font-size:12px}
+.rr-plan .pn{flex:1 1 auto;min-width:0;font-weight:600}
+.rr-plan .pn small{display:block;color:var(--muted);font-weight:500;font-size:11.5px}
+.rr-chip{flex:none;display:inline-flex;align-items:center;gap:6px;padding:2px 9px 2px 7px;border:1.5px solid var(--c);border-radius:99px;font-size:11px;font-weight:700;color:var(--ink);white-space:nowrap}
+.rr-chip i{width:7px;height:7px;border-radius:50%;background:var(--c)}
+
+.rr-lv{margin:0 0 12px;padding:12px;border:1px solid var(--line);border-left:4px solid var(--c);border-radius:12px;background:var(--wash)}
+.rr-lv-h{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:0 0 4px}
+.rr-lv-h b{font-family:var(--display);font-weight:800;font-size:19px;line-height:1.1}
+.terms-body .rr-lv-d{margin:0 0 10px;font-size:12.5px}
+.rr-lv .rr-set{padding-top:8px;border-top:1px solid var(--line)}
+.rr-sw{flex:none;position:relative;width:46px;height:28px;padding:0;border:1.5px solid var(--line);border-radius:99px;background:var(--surface);cursor:pointer;transition:background .15s,border-color .15s}
+.rr-sw::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--muted);transition:transform .15s,background .15s}
+.rr-sw[aria-checked="true"]{background:var(--ink);border-color:var(--ink)}
+.rr-sw[aria-checked="true"]::after{transform:translateX(18px);background:var(--surface)}
+.rr-tone{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.rr-tone select{min-height:38px;max-width:170px;padding:4px 8px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink);font:600 13px var(--body);color-scheme:light dark}
+.rr-tone select:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.rr-lv .seg button{min-width:40px;min-height:32px;padding:3px 10px}
+.rr-msg{min-height:18px;margin:0 0 8px!important;color:var(--muted);font-size:12.5px;font-weight:600}
+.rr-foot{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+
+/* toasts */
+#rrToasts{position:fixed;inset:auto;top:calc(12px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);width:min(94vw,420px);max-height:calc(100dvh - 24px);margin:0;padding:0;border:0;background:transparent;overflow:visible;color:var(--ink);display:flex;flex-direction:column;gap:8px;pointer-events:none;z-index:75}
+#rrToasts[hidden]{display:none}
+#rrToasts[popover]:not(:popover-open){display:none}
+.rr-toast{pointer-events:auto;display:flex;align-items:flex-start;gap:11px;padding:12px 12px 12px 13px;border:1px solid var(--line);border-left:5px solid var(--c);border-radius:14px;background:var(--surface);color:var(--ink);box-shadow:0 14px 40px rgba(8,12,30,.28);animation:rrIn .25s ease-out}
+.rr-toast[data-l="3"]{border-color:var(--c);box-shadow:0 0 0 2px var(--c),0 16px 44px rgba(8,12,30,.34)}
+.rr-toast .ti{flex:none;width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--c);color:#fff}
+.rr-toast[data-l="3"] .ti svg{animation:rrRing 1.1s ease-in-out 3}
+.rr-toast .tb{flex:1 1 auto;min-width:0}
+.rr-toast .tk{margin:0;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.rr-toast[data-l="3"] .tk{color:var(--danger)}
+.rr-toast .tt{margin:1px 0 0;font-family:var(--display);font-weight:800;font-size:20px;line-height:1.1}
+.rr-toast .tm{margin:3px 0 0;font-size:13px;font-weight:600}
+.rr-toast .tw{margin:2px 0 0;color:var(--muted);font-size:12px}
+.rr-toast .ta{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}
+.rr-tb{min-height:36px;padding:4px 14px;border:1px solid var(--ink);border-radius:10px;background:var(--ink);color:var(--surface);font-weight:600;font-size:13px;cursor:pointer}
+.rr-tb.alt{background:transparent;color:var(--ink);border-color:var(--line)}
+.rr-toast.out{opacity:0;transform:translateY(-10px);transition:opacity .2s,transform .2s}
+@keyframes rrIn{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+@keyframes rrRing{0%,100%{transform:rotate(0)}20%{transform:rotate(16deg)}40%{transform:rotate(-14deg)}60%{transform:rotate(9deg)}80%{transform:rotate(-6deg)}}
+@media (prefers-reduced-motion:reduce){.rr-toast,.rr-toast[data-l="3"] .ti svg{animation:none}.rr-toast.out{transition:none}.rr-sw,.rr-sw::after{transition:none}}
+@media (max-width:420px){.rr-plan .pt{width:78px}.rr-tone select{max-width:130px}}
+</style>
 </head>
 <body>
 <div class="app">
+  <div id="installTop" class="inst-top" hidden role="region" aria-label="Install app">
+    <div class="inst-top-ic"><img src="icons/icon-192.png" width="36" height="36" alt=""></div>
+    <div class="inst-top-txt">
+      <p class="inst-top-t">Install the Timetable app</p>
+      <p class="inst-top-s">Opens faster, full-screen, straight from your home screen.</p>
+    </div>
+    <button type="button" class="btn" data-act="install-yes">Install</button>
+    <button type="button" class="inst-top-x" data-act="install-top-x" aria-label="Dismiss">&times;</button>
+  </div>
   <div id="view">
   <header class="top">
     <div>
@@ -967,6 +1177,8 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
     </div>
   </header>
 
+  <div id="chgStrip" hidden role="status" aria-live="polite"></div>
+
   <div class="controls">
     <div class="ctl"><span id="lblB">Lab batch</span>
       <div class="seg" role="group" aria-labelledby="lblB">
@@ -980,6 +1192,21 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
         <button type="button" data-act="fmt" data-v="12" aria-pressed="true">12 h</button>
         <button type="button" data-act="fmt" data-v="24" aria-pressed="false">24 h</button>
       </div>
+    </div>
+  </div>
+
+  <div class="rr-bar" id="rrBar" data-on="0" role="region" aria-label="Reminder Ranger">
+    <div class="rr-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11.5h9l-1.2-1.6V7a3.3 3.3 0 0 0-6.6 0v2.9zM6.6 13.4a1.5 1.5 0 0 0 2.8 0"/></svg></div>
+    <div class="rr-txt">
+      <p class="rr-t">Reminder Ranger <span class="rr-alpha">Alpha</span></p>
+      <p class="rr-s" id="rrStatus" role="status" aria-live="polite">Lecture reminders are off.</p>
+    </div>
+    <div class="rr-btns">
+      <div class="seg" role="group" aria-label="Reminder Ranger on or off">
+        <button type="button" data-rr="off" aria-pressed="true">Off</button>
+        <button type="button" data-rr="on" aria-pressed="false">On</button>
+      </div>
+      <button type="button" class="chg" data-rr="open" aria-haspopup="dialog"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4.5h7M12.5 4.5H14M2 11.5h1.5M7 11.5h7"/><circle cx="10.5" cy="4.5" r="1.6"/><circle cx="5.2" cy="11.5" r="1.6"/></svg> Customize</button>
     </div>
   </div>
 
@@ -1018,16 +1245,14 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
           <p class="feature-desc">Turn your timetable into a daily and week-by-week study plan for the mid-sems, around your own activities and sleep.</p>
           <a class="btn" href="studyPlanner.html" data-act="planner-open">Open Study Planner</a>
         </article>
+        <article class="feature-card" id="rrCard">
+          <div class="feature-card-top"><p class="feature-name">Reminder Ranger <span class="rr-alpha">Alpha</span></p></div>
+          <p class="feature-desc">Ranks every lecture by how easy it is to miss and reminds you accordingly: stark for standalone and language classes, silent for room changes.</p>
+          <button type="button" class="btn" data-rr="open" aria-haspopup="dialog">Open settings</button>
+        </article>
       </div>
     </section>
   </main>
-
-  <div class="planner-wrap" id="plannerWrap" hidden>
-    <div class="pn-box">
-      <button type="button" class="planner-nudge" id="plannerNudge" data-act="planner-nudge"><span class="pn-spark" aria-hidden="true">&#10024;</span><span class="pn-txt"><b>Worried about Mid-Sem?</b><span>Make your study plan now</span></span><span class="pn-arrow" aria-hidden="true">&darr;</span></button>
-      <button type="button" class="pn-close" data-act="planner-nudge-close" aria-label="Dismiss">&times;</button>
-    </div>
-  </div>
 
   <footer class="foot">
     <p id="footTxt"></p>
@@ -1063,9 +1288,37 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
     <div class="tn-card">
       <div class="tn-emoji" aria-hidden="true">&#128226;</div>
       <p class="tn-kicker">Schedule change &middot; today only</p>
-      <p class="tn-title" id="chgTitle">Human Values is cancelled</p>
-      <p class="tn-body">Today&rsquo;s <b>Human Values</b> lecture is <b>cancelled</b>.<br><br>This applies to <b>15/10/2026</b> and <b>CSSE-C</b> only.</p>
+      <p class="tn-title" id="chgTitle">Basics of Engineering is cancelled</p>
+      <p class="tn-body">Today&rsquo;s <b>Basics of Engineering</b> lecture is <b>cancelled</b>.<br><br>This applies to <b>29/10/2026</b> and <b>CSSE-C</b> only.</p>
       <button type="button" class="tn-btn" id="chgNoticeOk">Got it</button>
+    </div>
+  </div>
+  <div id="roomNotice" hidden role="alertdialog" aria-modal="true" aria-labelledby="roomTitle">
+    <div class="tn-card">
+      <div class="tn-emoji" aria-hidden="true">&#128205;</div>
+      <p class="tn-kicker">Room change &middot; Until further notice</p>
+      <p class="tn-title" id="roomTitle">Your lab has moved to C206</p>
+      <p class="tn-body">All labs scheduled in <b>Room E402</b> have been shifted to <b>Room C206</b> until further notice.<br><br>Please take note of the change.</p>
+      <button type="button" class="tn-btn" id="roomNoticeOk">Got it</button>
+    </div>
+  </div>
+  <div id="xtraNotice" hidden role="alertdialog" aria-modal="true" aria-labelledby="xtraTitle">
+    <div class="tn-card">
+      <div class="tn-emoji" aria-hidden="true">&#128208;</div>
+      <p class="tn-kicker">Room &amp; time &middot; today only</p>
+      <p class="tn-title" id="xtraTitle">Basics of Engineering, 4 PM in D301</p>
+      <p class="tn-body">Today&rsquo;s <b>Basics of Engineering (theory)</b> lecture will be held in <b>Room D301</b>, <b>4:00 PM to 5:00 PM</b>.<br><br>This applies to <b>27/10/2026</b> and <b>CSSE-C</b> only.</p>
+      <button type="button" class="tn-btn" id="xtraNoticeOk">Got it</button>
+    </div>
+  </div>
+  <div id="onlNotice" hidden role="alertdialog" aria-modal="true" aria-labelledby="onlTitle">
+    <div class="tn-card">
+      <div class="tn-emoji" aria-hidden="true">&#128187;</div>
+      <p class="tn-kicker">Extra ONLINE sessions &middot; Python Theory</p>
+      <p class="tn-title" id="onlTitle">Online class on Zoom</p>
+      <p class="tn-body">Two separate sessions on <b>two different days</b>, each with its own date and timing. Regular sessions: <b>attendance will be marked in ERP</b>. Dates and timings are <b>final</b>.<br><br>The Zoom link is in the <b>Next up</b> card on the timetable.</p>
+      <ul class="onl-list" id="onlList"></ul>
+      <button type="button" class="tn-btn" id="onlNoticeOk" style="margin-top:8px">Got it</button>
     </div>
   </div>
   <div id="holidayIntro" hidden>
@@ -1092,10 +1345,65 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
     <div class="rw-card">
       <div class="rw-emoji" aria-hidden="true">&#9888;&#65039;</div>
       <p class="rw-title" id="rwTitle">You haven&rsquo;t entered your roll number</p>
-      <p class="rw-body" id="rwBody">If you have a <b>foreign language course</b> (like German), it <b>won&rsquo;t be shown</b> and <b>English</b> will be considered as your language.</p>
+      <p class="rw-body" id="rwBody">If you have a <b>foreign language course</b> (like German or Japanese), it <b>won&rsquo;t be shown</b> and <b>English</b> will be considered as your language.</p>
       <div class="rw-actions">
         <button type="button" class="btn" id="rwSelect">Select roll no</button>
         <button type="button" class="btn2" id="rwContinue">Continue anyway</button>
+      </div>
+    </div>
+  </div>
+  <div id="jpAsk" hidden role="dialog" aria-modal="true" aria-labelledby="jpT1">
+    <div class="jp-card" id="jpCard" tabindex="-1">
+      <div class="jp-panel" id="jpP1">
+        <div class="rw-emoji" aria-hidden="true">&#127471;&#127477;</div>
+        <p class="rw-title" id="jpT1">Have you chosen Japanese as your language?</p>
+        <p class="rw-body">Your timetable currently shows <b>English</b>. If you picked <b>Japanese</b>, tell us so we can add your Japanese classes.</p>
+        <div class="sv-yn" role="group" aria-labelledby="jpT1">
+          <button type="button" data-jp="choice" data-v="1" aria-pressed="false">Yes</button>
+          <button type="button" data-jp="choice" data-v="0" aria-pressed="false">No</button>
+        </div>
+        <div class="rw-actions"><button type="button" class="btn" id="jpSubmit" data-jp="submit1" disabled>Submit</button></div>
+      </div>
+      <div class="jp-panel" id="jpP2" hidden>
+        <div class="rw-emoji" aria-hidden="true">&#128196;</div>
+        <p class="rw-title" id="jpT2">Upload the Japanese student list</p>
+        <p class="rw-body">Please submit the <b>PDF that has the list of students who chose Japanese</b>. It helps us update the timetable for Japanese students.</p>
+        <p class="rw-body jp-priv">&#128274; Student data in this PDF is <b>private</b>. It is stored securely, never made public and <b>never shared with anyone</b>.</p>
+        <label class="jp-file" id="jpFileBox" for="jpFile"><span id="jpFileLbl">Choose PDF</span><input id="jpFile" type="file" accept="application/pdf,.pdf"></label>
+        <p class="jp-err" id="jpErr" role="alert"></p>
+        <div class="rw-actions">
+          <button type="button" class="btn" id="jpUpload" data-jp="upload" disabled>Upload &amp; continue</button>
+          <button type="button" class="btn2" id="jpBack" data-jp="back">Back</button>
+          <button type="button" class="btn2" id="jpSkip" data-jp="skip">Skip for now</button>
+        </div>
+      </div>
+      <div class="jp-panel" id="jpP3" hidden>
+        <div class="rw-emoji" aria-hidden="true">&#9989;</div>
+        <p class="rw-title" id="jpT3">Thank you!</p>
+        <p class="rw-body">We received your list. It will be used only to update the timetable for Japanese students.</p>
+        <div class="rw-actions"><button type="button" class="btn" id="jpDone" data-jp="done">Go to timetable</button></div>
+      </div>
+    </div>
+  </div>
+  <div id="bbAsk" hidden role="dialog" aria-modal="true" aria-labelledby="bbT1">
+    <div class="bb-card" id="bbCard" tabindex="-1">
+      <div class="bb-panel" id="bbP1">
+        <div class="rw-emoji" aria-hidden="true">&#128196;</div>
+        <p class="rw-title" id="bbT1">Submit the Bibwewadi Timetable PDF</p>
+        <p class="rw-body">For <b>Vishwakarandak</b>, please upload the <b>Bibwewadi Timetable PDF</b> if you have it. It helps us keep the Bibwewadi timetable accurate for everyone.</p>
+        <p class="rw-body jp-priv">&#128274; The PDF is stored securely and is <b>never made public</b>.</p>
+        <label class="jp-file" id="bbFileBox" for="bbFile"><span id="bbFileLbl">Choose PDF</span><input id="bbFile" type="file" accept="application/pdf,.pdf"></label>
+        <p class="jp-err" id="bbErr" role="alert"></p>
+        <div class="rw-actions">
+          <button type="button" class="btn" id="bbUpload" data-bb="upload" disabled>Upload PDF</button>
+          <button type="button" class="btn2" id="bbSkip" data-bb="skip">Not now</button>
+        </div>
+      </div>
+      <div class="bb-panel" id="bbP2" hidden>
+        <div class="rw-emoji" aria-hidden="true">&#9989;</div>
+        <p class="rw-title" id="bbT2">Thank you!</p>
+        <p class="rw-body">We received your PDF.</p>
+        <div class="rw-actions"><button type="button" class="btn" id="bbDone" data-bb="done">Go to timetable</button></div>
       </div>
     </div>
   </div>
@@ -1113,10 +1421,11 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
         <div class="pk-g" role="group" aria-labelledby="pkLB"><p class="pk-l" id="pkLB">Branch</p><div class="pk-opts" id="pkBranch"></div></div>
         <div class="pk-g" role="group" aria-labelledby="pkLD"><p class="pk-l" id="pkLD">Division</p><div class="pk-opts" id="pkDiv"></div></div>
         <div class="pk-g" role="group" aria-labelledby="pkLT"><p class="pk-l" id="pkLT">Lab batch</p><div class="pk-opts" id="pkBatch"></div></div>
+        <div class="pk-g" id="pkGDbox" role="group" aria-labelledby="pkLGD" hidden><p class="pk-l" id="pkLGD">German group <span style="font-weight:400">(Bibwewadi, optional)</span></p><div class="pk-opts" id="pkGD"></div></div>
         <div class="pk-g" role="group" aria-labelledby="pkLR">
           <p class="pk-l" id="pkLR">Roll number <span style="font-weight:400">(optional)</span></p>
           <input id="pkRoll" class="pk-roll" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" placeholder="e.g. 346" aria-describedby="pkPriv">
-          <p class="pk-priv" id="pkPriv"><span>Used only for foreign language courses (like German). We don&rsquo;t collect this data &mdash; it stays on your device.</span><button type="button" class="ibtn" data-act="priv-open" aria-label="How your data is kept safe">i</button></p>
+          <p class="pk-priv" id="pkPriv"><span>Used only for foreign language courses (like German or Japanese). We don&rsquo;t collect this data &mdash; it stays on your device.</span><button type="button" class="ibtn" data-act="priv-open" aria-label="How your data is kept safe">i</button></p>
         </div>
         <div class="pk-actions">
           <button type="button" class="btn" id="pkGo" data-act="pk-go" disabled>Show my timetable</button>
@@ -1249,7 +1558,7 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       </div>
       <div class="terms-body">
         <p><span class="bro-tag">Experimental &middot; Beta</span></p>
-        <p>Bro connect is built to answer one question: <b>when are you and a friend both free?</b> Add one or more friends (branch, division, lab batch, and whether they take German) and it lines up all the weekly timetables and highlights the best time slots to hang out. You can leave your own timetable out to compare just two friends, and save everything as a PDF with the floppy-disk button.</p>
+        <p>Bro connect is built to answer one question: <b>when are you and a friend both free?</b> Add one or more friends (branch, division, lab batch, and whether they take German or Japanese) and it lines up all the weekly timetables and highlights the best time slots to hang out. You can leave your own timetable out to compare just two friends, and save everything as a PDF with the floppy-disk button.</p>
         <p>It&rsquo;s a new, experimental feature, so results can be wrong or incomplete. It only compares the regular weekly timetable, so holidays, exams and one-off changes are not considered. Please double-check with your friend.</p>
         <p>Your friends&rsquo; class details, and the PDF you save, stay on this device. Only anonymous usage counts (like how often the feature is opened or used) are recorded, never roll numbers or names.</p>
         <div class="bro-acts"><button type="button" class="btn2" data-act="bro-no">Not now</button><button type="button" class="btn" data-act="bro-ack">Got it, let&rsquo;s try</button></div>
@@ -1302,6 +1611,14 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       </div></div>
   </dialog>
 
+  <dialog id="rrApp" aria-labelledby="rrAppT">
+    <div class="terms"><div class="terms-head"><h3 id="rrAppT">Reminder Ranger <span class="rr-alpha">Alpha</span></h3><button type="button" class="terms-x" data-rr="close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div>
+      <div class="terms-body" id="rrBody"></div></div>
+    <input type="file" id="rrFile" accept="audio/*" hidden>
+  </dialog>
+
+  <div id="rrToasts" hidden aria-live="polite"></div>
+
   <dialog id="teacherDetail" aria-labelledby="teacherDetailName">
     <div class="terms"><div class="terms-head"><h3 id="teacherDetailName">Teacher</h3><button type="button" class="terms-x" data-act="teacher-detail-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div><div class="terms-body" id="teacherDetailBody"></div></div>
   </dialog>
@@ -1342,6 +1659,12 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
       </div>
     </div>
   </div>
+  <div id="jpToast" class="jp-toast" hidden role="status" aria-live="polite">
+    <span class="jp-toast-flag" aria-hidden="true"></span>
+    <div class="jp-toast-txt"><p class="jp-toast-t">Japanese schedule has been updated</p><p class="jp-toast-s" id="jpToastSub"></p></div>
+    <button type="button" class="jp-toast-x" id="jpToastX" aria-label="Dismiss">&times;</button>
+  </div>
+  <button type="button" id="installFab" class="inst-fab" data-act="install-yes" hidden><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v8M4.5 7 8 10.5 11.5 7M3 13.5h10"/></svg>Install app</button>
   <div id="installBar" class="install-bar" hidden role="status" aria-live="polite" aria-label="Install app" aria-describedby="installSub">
     <div class="install-card">
       <div class="install-icon"><img src="icons/icon-192.png" width="44" height="44" alt=""></div>
@@ -1428,7 +1751,7 @@ var MONS=['January','February','March','April','May','June','July','August','Sep
 var START=null, END=null;   // set per class from tt_divisions.effective_from / effective_to
 var inRange=function(d){return START&&END&&d>=START&&d<=END};
 
-/* Supabase project (public, read-only: RLS only grants SELECT on tt_divisions / tt_sessions) */
+/* Supabase project (public, read-only: RLS only grants SELECT on tt_divisions / tt_sessions, and applied rows of tt_changes (safe columns only)) */
 var SUPA_URL='https://fqfzygubyjqkimsphmdn.supabase.co';
 var SUPA_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZxZnp5Z3VieWpxa2ltc3BobWRuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk4NzQwMDYsImV4cCI6MjEwNTQ1MDAwNn0.k0T2HEH8cJlrQvxHWU4lcImLgtcXKGTAaowKyNDg1gI';
 function fetchSupa(path){
@@ -1507,6 +1830,7 @@ var SUBJ_META={
   ES26108A:{short:'English',       color:'#B8357C'},
   ES26109:{short:'Activity',       color:'#5B6478'},
   'LANG-DE':{short:'German',       color:'#C2410C'},
+  'LANG-JA':{short:'Japanese',     color:'#B91C1C'},
   ES26201:{short:'Calculus',       color:'#2F5BD6'},
   ES26205:{short:'Robotics',       color:'#B84E0F'},
   ES26206:{short:'Env. Studies',   color:'#3F7D1E'},
@@ -1517,12 +1841,41 @@ var SUBJ_META={
 var GER_SUBJ='LANG-DE';
 var GER_ROLLS={"AIDS":{"B":{"D8":[201,203,207,213,215,224,227,233,234,235,251,253,254,261]},"E":{"D9":[504,506,511,517,520,523,537,559]},"C":{"D10":[315,321,327,333,341,343,347,358,359,361,364,366]},"A":{"D11":[106,111,112,122,135,142,145,146,148,164,168]},"F":{"D11":[604,605,628,629,630,631,636,638,664,666]},"D":{"D14":[409,410,421,440,441,443,447,459,464]}},"CSCBI":{"B":{"D8":[208,212,226,227,230,232,235,242,256,265]},"C":{"D8":[301,302,321,329,341,348,354]},"A":{"D11":[104,105,106,116,119,124,126,127,128,130,134,135,145,152,155,160]}},"ET":{"A":{"D8":[104,105,108,120,123,126,127,135,136,142,150,151,152,155,160,162,163,165]},"B":{"D9":[203,204,206,209,212,216,221,224,226,232,235,236,240,244,246,248,249,253,267]},"C":{"D9":[301,303,304,305,308,314,332,335,336,339,345,346,347,352,362,366]},"D":{"D9":[416,419,423,432,434,445,447,448,451,455,457,464,468]},"E":{"D10":[505,518,521,530,537,546,551,558,562,565,568]},"F":{"D10":[601,603,608,609,611,621,627,630,633,634,635,637,642,649,650,651,652,657,665,666,667]}},"CSSE":{"C":{"D8":[312,321,322,324,333,335,340,342,351,352,354,363]},"A":{"D12":[104,105,115,120,121,133,136,137,138,144,152,155,157]},"B":{"D12":[202,208,209,212,215,224,230,231,240,251,253,259,264,265,266]}},"CV":{"A":{"D9":[122,126,129,131,154,161,162,163,166]},"B":{"D9":[211,219,236,237,241,265]}},"IC":{"C":{"D10":[308,310,313,321,326,327,332,335,337,338,343,349,364]},"B":{"D12":[213,214,218,224,228,232,233,236,245,247]},"A":{"D14":[105,115,130,133,137,143,151,152,160,161,163]}},"ME":{"F":{"D10":[603,604,605,608,609,611,613,614,622,626,629,635,640,643,646,658,660,662]},"B":{"D12":[206,207,215,217,218,221,223,228,229,230,232,237,248,250,255,257,258,262,263,264,266,267,269,270]},"A":{"D13":[102,104,106,116,125,127,135,136,137,139,142,144,150,154,155,159,161,170]},"C":{"D13":[302,304,305,306,308,309,310,323,324,326,337,338,340,344,346,349,350,351,354,355,357,364,368,369,370]},"D":{"D14":[414,415,416,422,424,428,437,439,441,444,452,457,465,467,469]},"E":{"D14":[501,502,503,506,507,509,513,514,517,518,523,526,527,530,543,552,553,560,561]}},"CSDS":{"A":{"D11":[26,63,103,104,115,119,122,129,130,136,146,161,168]},"B":{"D11":[201,207,209,217,222,225,238,240,242,248,250,252]},"C":{"D13":[303,306,309,314,324,333,340,344,350,352,353,354,359]}}};
 var GER_SLOTS={"D8":[2,480,600,"E312"],"D9":[3,480,600,"E215"],"D10":[4,480,600,"E303"],"D11":[2,960,1080,"E305"],"D12":[3,960,1080,"E304"],"D13":[4,960,1080,"E305"],"D14":[5,960,1080,"E312"]};   // language division -> [weekday, start min, end min, room]
+/* Bibwewadi campus German groups (official Bibwewadi TT, Sem I 2026-27). The PDF lists whole divisions, not roll numbers,
+   so the student picks their group on the home form. Choice stays on this device (tt-gd). Classes: 1125/1107/1124/1001. */
+var BIB_GER={'IT':{'E':['GD1'],'B':['GD1','GD3'],'C':['GD1','GD3'],'A':['GD2','GD4'],'F':['GD5'],'D':['GD5','GD7']},
+  'CSAI':{'C':['GD1'],'E':['GD1'],'B':['GD4'],'F':['GD5','GD7'],'A':['GD6'],'D':['GD6']},
+  'CSAIML':{'D':['GD1'],'F':['GD3'],'C':['GD3'],'B':['GD5'],'A':['GD7'],'E':['GD7']},
+  'CS':{'A':['GD2'],'D':['GD2'],'F':['GD2'],'G':['GD3'],'I':['GD4'],'L':['GD4'],'C':['GD5'],'E':['GD5'],'K':['GD5'],'J':['GD6'],'H':['GD6'],'B':['GD7']}};
+GER_SLOTS.GD1=[2,480,600,'1125'];GER_SLOTS.GD2=[3,480,600,'1107'];GER_SLOTS.GD3=[4,480,600,'1125'];GER_SLOTS.GD4=[5,480,600,'1107'];
+GER_SLOTS.GD5=[2,960,1080,'1124'];GER_SLOTS.GD6=[4,960,1080,'1107'];GER_SLOTS.GD7=[5,960,1080,'1001'];
+function isBibCode(c){ return /^GD\d$/.test(String(c||'')); }
+function bibGroups(branch,div){ var b=BIB_GER[branch]; return (b&&b[div])||[]; }
+function bibGd(branch,div){ var g=store.get('tt-gd',''); return (g&&bibGroups(branch,div).indexOf(g)>-1)?g:null; }
+function gdLabel(c){ var g=GER_SLOTS[c]; return c+' \u00B7 '+['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][g[0]]+' '+(g[1]<720?'8\u201310 am':'4\u20136 pm'); }
 function germanFor(branch,div,roll){
   var b=GER_ROLLS[branch],d=b&&b[div],n=parseInt(roll,10);
   if(!d||!n) return null;
   for(var k in d) if(d[k].indexOf(n)>-1) return k;
   return null;
 }
+/* Japanese list from the official PDF (Sem I, 2026-27): branch -> division -> language division -> roll numbers.
+   Same rules as German: only roll numbers are kept, checked on-device only. All Japanese classes are Saturday 11:00 am to 1:00 pm. */
+var JP_SUBJ='LANG-JA';
+var JP_ROLLS={"AIDS":{"A":{"J-D3":[105,117,126,129,138,140,141,153,156]},"B":{"J-D3":[210,230,239,257]},"C":{"J-D3":[302,305,307,310,316,317,318,319,348]},"D":{"J-D3":[404,456,461]},"E":{"J-D3":[524,528,533,540,544,550,558]},"F":{"J-D4":[616,633,648,662]}},"CSDS":{"B":{"J-D3":[214,232,251]},"C":{"J-D3":[317,320,332,337]},"A":{"J-D4":[112,123,138,139,149,160]}},"CSSE":{"A":{"J-D3":[109,156]},"B":{"J-D3":[205,213,217,238],"J-D4":[249,262,267]}},"CSCBI":{"C":{"J-D3":[308,313,324,327,353]},"A":{"J-D4":[136,142,158,167]},"B":{"J-D4":[241,259,261,266]}},"ET":{"B":{"J-D3":[217,230]},"C":{"J-D3":[320,349,353,355,365]},"E":{"J-D3":[507,550,553,559]},"A":{"J-D4":[115,116,125,129,141,144,153]},"F":{"J-D4":[607,622,624,628,636,639,641,653,656]},"D":{"J-D4":[409,444,449]}},"IC":{"C":{"J-D3":[316,318,327,339,344,345,356]},"A":{"J-D4":[48,49,111,114,118,131]},"B":{"J-D4":[201,204,207,220,223,250,253,259,263]}},"CV":{"A":{"J-D3":[103]},"B":{"J-D4":[210,232,240]}},"ME":{"C":{"J-D4":[319,332]},"A":{"J-D4":[113,158,169]},"B":{"J-D4":[238]},"D":{"J-D4":[427,432,442]},"E":{"J-D4":[519,536,562]},"F":{"J-D4":[634]}}};
+var JP_SLOTS={"J-D3":[6,660,780,"E310"],"J-D4":[6,660,780,"E311"]};   // language division -> [weekday, start min, end min, room]
+function japaneseFor(branch,div,roll){
+  var b=JP_ROLLS[branch],d=b&&b[div],n=parseInt(roll,10);
+  if(!d||!n) return null;
+  for(var k in d) if(d[k].indexOf(n)>-1) return k;
+  return null;
+}
+// one lookup for both lists: returns the language division code ('D8'... for German, 'J-D3'/'J-D4' for Japanese) or null
+function langFor(branch,div,roll){ return germanFor(branch,div,roll)||japaneseFor(branch,div,roll); }
+function isJpCode(c){ return String(c||'').indexOf('J-')===0; }
+function langSlot(c){ return isJpCode(c)?JP_SLOTS[c]:GER_SLOTS[c]; }
+function langName(c){ return isJpCode(c)?'Japanese':'German'; }
+function langSubj(c){ return isJpCode(c)?JP_SUBJ:GER_SUBJ; }
 var PALETTE=['#2F5BD6','#7C4DCB','#0E7C69','#B84E0F','#8F6B00','#3F7D1E','#B8357C','#5B6478','#1E88A8','#C2410C','#6D28D9','#0D9488'];
 function paletteColor(code){ var h=0; for(var i=0;i<code.length;i++) h=(h*31+code.charCodeAt(i))>>>0; return PALETTE[h%PALETTE.length]; }
 function shortName(name){
@@ -1578,12 +1931,41 @@ function loadDivisions(){
       CLASSES=byBranch;
     });
 }
+/* ---------- Vishwakarandak special timetable (Supabase table tt_vishwakarandak_sessions) ----------
+   On these dates it fully replaces tt_sessions for divisions that have rows in it. Fetched once per division, cached on meta.ev. */
+var EV_FROM='2026-11-02', EV_TO='2026-11-05', EV_ID0=500000, EV_LABEL='Vishwakarandak special timetable (2\u20135 Nov)';
+function evFetch(meta){
+  var none=function(){return {has:false,byDate:{},list:[],fac:{}};};
+  if(ymd(new Date())>EV_TO) return Promise.resolve(none());   // event is over: no extra request
+  return fetchSupa('tt_vishwakarandak_sessions?division=eq.'+encodeURIComponent(meta.slug)+
+      '&event_date=gte.'+EV_FROM+'&event_date=lte.'+EV_TO+
+      '&select=event_date,weekday,start_time,end_time,subject_code,subject_name,session_type,room,faculty_initials,faculty_name,faculty_id'+
+      '&order=event_date.asc,start_time.asc')
+    .then(function(rows){
+      var ev=none();
+      (rows||[]).forEach(function(r,i){
+        getSubj(r.subject_code,r.subject_name||r.subject_code);
+        var x={id:EV_ID0+i,d:r.weekday,s:toMin(r.start_time),e:toMin(r.end_time),sub:r.subject_code,
+          type:r.session_type||'Theory',b:undefined,fac:r.faculty_initials||'',room:r.room||'',ev:true};
+        (ev.byDate[r.event_date]=ev.byDate[r.event_date]||[]).push(x);
+        ev.list.push(x);
+        if(r.faculty_name && r.faculty_initials && !ev.fac[r.faculty_initials]){
+          var hn=humanName(r.faculty_name);
+          ev.fac[r.faculty_initials]={name:hn.name,id:r.faculty_id||'',title:hn.title};
+        }
+      });
+      ev.has=ev.list.length>0;
+      return ev;
+    })
+    .catch(function(e){ console.error(e); return none(); });   // request failed: normal timetable is used
+}
 function loadDivisionData(meta){
   if(meta.loaded) return Promise.resolve(meta);
-  return fetchSupa('tt_sessions?division=eq.'+encodeURIComponent(meta.slug)+
+  return Promise.all([fetchSupa('tt_sessions?division=eq.'+encodeURIComponent(meta.slug)+
       '&select=weekday,start_time,end_time,subject_code,subject_name,session_type,batch,room,faculty_initials,faculty_name,faculty_id'+
-      '&order=weekday.asc,start_time.asc')
-    .then(function(rows){
+      '&order=weekday.asc,start_time.asc'),evFetch(meta)])
+    .then(function(res){
+      var rows=res[0];meta.ev=res[1];
       var sess=[],fac={},daySet={};
       rows.forEach(function(r,i){
         getSubj(r.subject_code,r.subject_name);
@@ -1595,6 +1977,7 @@ function loadDivisionData(meta){
           fac[r.faculty_initials]={name:hn.name,id:r.faculty_id||'',title:hn.title};
         }
       });
+      Object.keys(meta.ev.fac).forEach(function(k){ if(!fac[k]) fac[k]=meta.ev.fac[k]; });
       meta.sess=sess;meta.fac=fac;
       daySet[6]=true; // always show Saturday in the week view, even with no classes yet
       meta.days=Object.keys(daySet).map(Number).sort(function(a,b){return a-b});
@@ -1682,14 +2065,162 @@ function dur(ms){
   return h?(r?h+' h '+r+' min':h+' h'):m+' min';
 }
 /* One-day changes (15 Oct 2026): all classes suspended 2 PM-6 PM (Vishwakarandak); CSSE-C Human Values lecture cancelled */
-function dayOverride(list,date){
-  if(!date||ymd(date)!=='2026-10-15') return list;
+function isE402Lab(x){return !!(x&&x.room&&/\bE402\b/.test(x.room)&&(x.b||/lab|pract/i.test(x.type||'')));}
+/* Extra ONLINE Python Theory sessions (Zoom), AIDS-C and CSSE-C only. Regular sessions, attendance in ERP. */
+var ONL=[
+  {id:9031,k:'2026-10-31',s:1020,e:1140,url:'https://us02web.zoom.us/j/82853356412?pwd=1mNn9VFxH89dAPaJL3w1RkDaouXY3j.1',mid:'828 5335 6412',pass:'455174'},
+  {id:9032,k:'2026-11-01',s:1050,e:1170,url:'https://us02web.zoom.us/j/87990279811?pwd=BsSBjGJkYJHwV0xdGJEz3q0xu5EIE8.1',mid:'879 9027 9811',pass:'396342'}
+];
+var ONL_BY_ID={};
+function onlApplies(){return (st.branch==='AIDS'&&st.div==='C')||(st.branch==='CSSE'&&st.div==='C');}
+function onlSess(o,date){
+  if(!SUBJ.EXPYON) SUBJ.EXPYON={code:'EXPYON',name:'Python Theory (Online)',short:'Python (Online)',color:'#0E7C69'};
+  var y={id:o.id,d:date.getDay(),s:o.s,e:o.e,sub:'EXPYON',type:'Online Theory',b:undefined,fac:'\u2014',room:'Online (Zoom)',online:true,url:o.url,mid:o.mid,pass:o.pass};
+  ONL_BY_ID[o.id]=y;return y;
+}
+function dayOverrideStatic(list,date){
+  if(!date) return list;
+  var k=ymd(date);
+  if(onlApplies()) ONL.forEach(function(o){if(o.k===k) list=list.concat([onlSess(o,date)]);});
+  list=list.map(function(x){   // Until further notice: labs in E402 moved to C206 (copies, so the cached timetable is untouched)
+    if(isE402Lab(x)){
+      var y={};for(var q in x) y[q]=x[q];
+      y.room=x.room.replace(/\bE402\b/g,'C206');y.rm=true;return y;
+    }
+    return x;
+  });
+  if(k==='2026-10-26'){
+    if(st.branch==='CSSE'&&st.div==='C'){   // extra Mathematics lecture, CSSE-C only, 9-10 AM in E-209
+      if(!SUBJ.EXMATH) SUBJ.EXMATH={code:'EXMATH',name:'Mathematics (Extra Lecture)',short:'Maths (Extra)',color:'#2F5BD6'};
+      list=list.concat([{id:9026,d:1,s:540,e:600,sub:'EXMATH',type:'Extra Lecture',b:undefined,fac:'\u2014',room:'E-209'}]);
+    }
+    return list;
+  }
+  if(k==='2026-10-29'){   // Basics of Engineering (theory) lecture cancelled, CSSE-C only, today only
+    if(st.branch==='CSSE'&&st.div==='C') list=list.filter(function(x){return !(x.sub==='ES26105'&&x.type==='Theory')});
+    return list;
+  }
+  if(k==='2026-10-27'){   // Basics of Engineering (theory) 4-5 PM in D301, CSSE-C only, today only
+    if(st.branch==='CSSE'&&st.div==='C'){
+      var hit=false;
+      list=list.map(function(x){
+        if(x.sub==='ES26105'&&x.type==='Theory'&&x.s===960){hit=true;var y={};for(var q in x) y[q]=x[q];y.room='D301';y.rm=true;return y;}
+        return x;
+      });
+      if(!hit) list=list.concat([{id:9027,d:2,s:960,e:1020,sub:'ES26105',type:'Theory',b:undefined,fac:'\u2014',room:'D301'}]);
+    }
+    return list;
+  }
+  if(k!=='2026-10-15') return list;
   list=list.filter(function(x){return !(x.s<1080&&x.e>840)});
   if(st.branch==='CSSE'&&st.div==='C') list=list.filter(function(x){return !(x.sub==='ES26106'&&x.type==='Theory')});
   return list;
 }
+/* ---------- Live schedule changes (Supabase table tt_changes, filled from the class WhatsApp groups by the Android helper app) ---------- */
+var CHANGES=[],chgSig='';
+function loadChanges(){
+  var from=ymd(dayStart(new Date(),-1));
+  return fetchSupa('tt_changes?status=eq.applied&or=(date_to.is.null,date_to.gte.'+from+')'+
+      '&select=id,branch,division,batch,change_type,subject_code,session_type,old_start,old_end,old_room,new_start,new_end,new_room,new_faculty,date_from,date_to,title,details&order=id.asc')
+    .then(function(rows){
+      rows=rows||[];
+      var sig=JSON.stringify(rows);
+      if(sig===chgSig) return;            // nothing new: no re-render
+      chgSig=sig;CHANGES=rows;
+      if(CUR) render();
+    }).catch(function(e){ console.error(e); });   // offline / table missing: the normal timetable still works
+}
+function chgApplies(c,k){   // k = 'YYYY-MM-DD'
+  if(c.branch&&c.branch!==st.branch) return false;
+  if(c.division&&c.division!==st.div) return false;
+  if(k<c.date_from) return false;
+  if(c.date_to&&k>c.date_to) return false;
+  return true;
+}
+function roomKey(r){return String(r||'').toUpperCase().replace(/[\s\-]/g,'');}
+function chgMatch(c,x){
+  if(c.subject_code&&x.sub!==c.subject_code) return false;
+  if(c.session_type&&x.type!==c.session_type) return false;
+  if(c.batch&&x.b!==c.batch) return false;
+  if(c.old_start&&x.s!==toMin(c.old_start)) return false;
+  if(c.old_room&&roomKey(x.room)!==roomKey(c.old_room)) return false;
+  return true;
+}
+function chgHasSelector(c){return !!(c.subject_code||c.session_type||c.old_start||c.old_room);}
+function chgClone(x){var y={};for(var q in x) y[q]=x[q];return y;}
+function chgSubj(c){
+  var code=c.subject_code||('CHG'+c.id);
+  if(!SUBJ[code]) SUBJ[code]={code:code,name:c.title,short:String(c.title).slice(0,16),color:'#2F5BD6'};
+  return code;
+}
+function applyDbChanges(list,date){
+  if(!date||!CHANGES.length) return list;
+  var k=ymd(date),dow=date.getDay();
+  CHANGES.forEach(function(c){
+    if(!chgApplies(c,k)) return;
+    var t=c.change_type;
+    if(t==='holiday'||t==='suspend'){
+      var a=c.old_start?toMin(c.old_start):0,b=c.old_end?toMin(c.old_end):1440;
+      list=list.filter(function(x){return !(x.s<b&&x.e>a&&(!c.subject_code||x.sub===c.subject_code)&&(!c.batch||x.b===c.batch));});
+    }else if(t==='cancel'){
+      if(!chgHasSelector(c)) return;   // never cancel the whole day from a vague change
+      list=list.filter(function(x){return !chgMatch(c,x);});
+    }else if(t==='room_change'||t==='time_change'||t==='reschedule'||t==='faculty_change'){
+      if(!chgHasSelector(c)) return;
+      var hit=false;
+      list=list.map(function(x){
+        if(!chgMatch(c,x)) return x;
+        hit=true;var y=chgClone(x);
+        if(c.new_start){var d0=x.e-x.s;y.s=toMin(c.new_start);y.e=c.new_end?toMin(c.new_end):y.s+d0;}
+        if(c.new_room){y.room=c.new_room;y.rm=true;}
+        if(c.new_faculty) y.fac=c.new_faculty;
+        return y;
+      });
+      if(!hit&&t==='reschedule'&&c.new_start&&c.new_end&&c.subject_code){   // moved in from another day: add it here
+        list=list.concat([{id:900000+c.id,d:dow,s:toMin(c.new_start),e:toMin(c.new_end),sub:chgSubj(c),type:c.session_type||'Theory',b:c.batch||undefined,fac:c.new_faculty||'\u2014',room:c.new_room||''}]);
+      }
+    }else if(t==='extra_class'){
+      if(!c.new_start||!c.new_end) return;
+      list=list.concat([{id:900000+c.id,d:dow,s:toMin(c.new_start),e:toMin(c.new_end),sub:chgSubj(c),type:c.session_type||'Extra Lecture',b:c.batch||undefined,fac:c.new_faculty||'\u2014',room:c.new_room||''}]);
+    }
+  });
+  return list;
+}
+function dayOverride(list,date){return applyDbChanges(dayOverrideStatic(list,date),date);}
+function renderChgStrip(){
+  var el=$('#chgStrip');if(!el) return;
+  if(!CUR||!CHANGES.length){el.hidden=true;el.innerHTML='';return;}
+  var base=dayStart(nowFloor(),0),items=[];
+  CHANGES.forEach(function(c){
+    if(c.change_type==='other'&&!c.title) return;
+    for(var i=0;i<3;i++){ if(chgApplies(c,ymd(dayStart(base,i)))){ items.push({c:c,i:i}); break; } }
+  });
+  if(!items.length){el.hidden=true;el.innerHTML='';return;}
+  var lbl=function(it){
+    if(!it.c.date_to) return 'Until further notice';
+    return it.i===0?'Today':it.i===1?'Tomorrow':DAYS[dayStart(base,it.i).getDay()];
+  };
+  var h='<b class="hd">Updates from your class groups</b><ul>'+items.slice(0,4).map(function(it){
+    return '<li>'+escHtml(it.c.title)+' <span class="w">\u00b7 '+escHtml(lbl(it))+'</span></li>';
+  }).join('')+'</ul>';
+  if(items.length>4) h+='<p class="more">+'+(items.length-4)+' more</p>';
+  el.innerHTML=h;el.hidden=false;
+}
+function evDay(date){   // special-timetable rows for this date (possibly empty = free day), or null when the normal timetable applies
+  if(!date||!CUR||!CUR.ev||!CUR.ev.has) return null;
+  var k=ymd(date);
+  if(k<EV_FROM||k>EV_TO) return null;
+  return CUR.ev.byDate[k]||[];
+}
+function evNoteHTML(){return '<div class="ev-note" role="note">'+EV_LABEL+'</div>';}
+function sessById(sid){
+  if(ONL_BY_ID[sid]) return ONL_BY_ID[sid];
+  if(sid>=EV_ID0&&sid<EV_ID0+100000&&CUR&&CUR.ev){ var h=CUR.ev.list.filter(function(x){return x.id===sid})[0]; if(h) return h; }
+  return SESS[sid];
+}
 function forDay(dow,b,date){
-  var l=SESS.filter(function(x){return x.d===dow&&(!x.b||x.b===b)});
+  var evl=evDay(date);
+  var l=evl?evl.slice():SESS.filter(function(x){return x.d===dow&&(!x.b||x.b===b)});
   return dayOverride(l,date).sort(function(a,c){return a.s-c.s||(c.ger?1:0)-(a.ger?1:0)});
 }
 function typeLine(x){return x.b?x.type+', batch '+x.b:x.type}
@@ -1708,16 +2239,16 @@ function setClass(b,d){
   }).catch(function(e){ console.error(e); return false; });
 }
 
-// adds the German slot (and dims English) for a student found in the foreign-language list.
+// adds the German or Japanese slot (and dims English) for a student found in the foreign-language list.
 // Works on a copy so the cached timetable for the division is never changed.
 function applyGerman(){
-  st.lang=germanFor(st.branch,st.div,st.roll);
+  st.lang=langFor(st.branch,st.div,st.roll)||bibGd(st.branch,st.div);
   if(!st.lang) return;
   // anonymous count only: no roll number, class or language is sent; once per browser session
   try{ if(!sessionStorage.getItem('tt-fl')){ sessionStorage.setItem('tt-fl','1'); logVisit('foreign_lang',{}); } }catch(e){ logVisit('foreign_lang',{}); }
-  var g=GER_SLOTS[st.lang];
-  getSubj(GER_SUBJ,'German');
-  SESS=SESS.concat([{id:SESS.length,d:g[0],s:g[1],e:g[2],sub:GER_SUBJ,type:'Foreign Language',b:undefined,fac:'',room:g[3],ger:true,langDiv:st.lang}]);
+  var g=langSlot(st.lang);
+  getSubj(langSubj(st.lang),langName(st.lang));
+  SESS=SESS.concat([{id:SESS.length,d:g[0],s:g[1],e:g[2],sub:langSubj(st.lang),type:'Foreign Language',b:undefined,fac:'',room:g[3],ger:true,lk:isJpCode(st.lang)?'jp':'de',langDiv:st.lang}]);
   if(WEEK.indexOf(g[0])<0) WEEK=WEEK.concat([g[0]]).sort(function(a,b){return a-b});
 }
 function isEng(x){ return !!st.lang&&!x.ger&&(x.sub==='ES26108A'||/english/i.test((SUBJ[x.sub]||{}).name||'')); }
@@ -1823,8 +2354,12 @@ function heroModel(now,occ,cur,nxt){
     var kind=after.type==='Theory'?'':' '+after.type.toLowerCase();
     html+='<p class="then">Then '+whenWord(after)+': '+as.name+kind+', room '+after.room+'.</p>';
   }
+  if(evDay(focus.date)) html+='<p class="then">'+EV_LABEL+'</p>';
+  var onl=focus.online?focus:(after&&after.online?after:null);
+  if(onl) html+='<p class="then"><b>Online class (Zoom)</b>'+(onl===focus?'':' &middot; '+shortDate(onl.date||focus.date)+', '+fmtRange(onl.s,onl.e))+'<br>Meeting ID '+onl.mid+' &middot; Passcode '+onl.pass+'</p>'+
+    '<a class="hero-btn onl-hero" href="'+onl.url+'" target="_blank" rel="noopener">Join Zoom meeting</a>';
   html+='<button type="button" class="hero-btn" aria-haspopup="dialog" data-act="open" data-sid="'+focus.id+'" data-date="'+focus.date.getTime()+'" data-key="hero-open">Details and other batches</button>';
-  return {color:sub.color,state:cur?'live':'next',html:html};
+  return {color:sub.color,state:cur?'live':'next',html:html,flag:focus.ger?focus.lk:''};
 }
 
 /* ---------- Timeline blocks ---------- */
@@ -1841,7 +2376,7 @@ function blockHTML(x,o){
     '<button type="button" class="blk-btn" aria-haspopup="dialog" data-act="open" data-sid="'+x.id+'" data-date="'+(o.date||0)+'" data-key="'+key+'-'+(o.date||0)+'">'+
     '<span class="sr">'+fmtRange(x.s,x.e)+', </span>'+
     (o.sm?'<span class="blk-name" title="'+sub.name+'"><span aria-hidden="true">'+sub.short+'</span><span class="sr">'+sub.name+'</span></span>':'<span class="blk-name">'+sub.name+'</span>')+
-    '<span class="blk-meta"><b>'+x.room+'</b><span>'+x.type+'</span>'+(x.ger?'':'<span>'+x.fac+'</span>')+'</span></button>'+chip+'</li>';
+    '<span class="blk-meta"><b>'+x.room+'</b><span>'+x.type+'</span>'+(x.ger||x.online?'':'<span>'+x.fac+'</span>')+'</span></button>'+chip+'</li>';
 }
 
 function timelineHTML(list,isToday,now,date){
@@ -1900,6 +2435,7 @@ function panelHTML(now,occ,sel){
       '<p class="hol-sub">As per the <a href="'+CAL_URL+'" target="_blank" rel="noopener">FY Academic Calendar 2026-27</a></p>'+
       '</div></div>';
   }
+  if(inRange(sd)&&evDay(sd)) strip+=evNoteHTML();
   var body;
   if(special&&special.kind==='holiday'){
     head+='</div>';
@@ -1945,6 +2481,7 @@ function weekHTML(now){
   if(!all.length) return '';
   var h0=Math.floor(Math.min.apply(null,all.map(function(x){return x.s}))/60);
   var h1=Math.ceil(Math.max.apply(null,all.map(function(x){return x.e}))/60);
+  if(cols.some(function(c){return inRange(c.d)&&evDay(c.d);})&&h1<13) h1=13;   // room for the "Vishwakarandak event" block after 12:00
   var rows=h1-h0,nowM=mins(now);
   var y=function(m){return 'calc(var(--hrw)*'+((m-h0*60)/60).toFixed(4)+')'};
   var gut='';
@@ -1960,6 +2497,7 @@ function weekHTML(now){
       if(isT){ if(x.e<=nowM) state='past'; else if(x.s<=nowM) state='live'; }
       return blockHTML(x,{ci:lay[i].ci,cn:lay[i].cn,state:state,sm:true,date:c.d.getTime(),top:'calc('+y(x.s)+' + 2px)',h:'calc(var(--hrw)*'+((x.e-x.s)/60).toFixed(4)+' - 4px)'});
     }).join('');
+    if(inRange(c.d)&&evDay(c.d)&&h1*60>720) blks+='<li class="ev-after" style="top:calc('+y(720)+' + 2px);height:calc(var(--hrw)*'+((h1*60-720)/60).toFixed(4)+' - 4px)">Vishwakarandak event</li>';
     var colCls='wk-col'+(isT?' today':'')+(sp?sp.kind==='holiday'?' hol':' exam-day':'');
     var label=sp?'<div class="wk-hol-label">'+(sp.kind==='holiday'?'Holiday':'Exams')+'</div>':'';
     body+='<div class="'+colCls+'">'+label+'<ol class="blks">'+(sp&&sp.kind==='holiday'?'':blks)+'</ol></div>';
@@ -1969,10 +2507,11 @@ function weekHTML(now){
     line='<div class="wk-now"><div class="now" style="top:'+y(nowM)+'"><span class="now-t">'+fmtT(nowM).replace(/ [ap]m$/,'')+'</span></div></div>';
   }
   var tot={Theory:0,Lab:0,Tutorial:0};
-  for(var w=0;w<wd.length;w++) forDay(wd[w],st.batch).forEach(function(x){if(tot[x.type]!==undefined) tot[x.type]+=(x.e-x.s)/60});
+  for(var w=0;w<wd.length;w++) (evDay(cols[w]&&cols[w].d)?cols[w].list:forDay(wd[w],st.batch)).forEach(function(x){if(tot[x.type]!==undefined) tot[x.type]+=(x.e-x.s)/60});
   var title=(dow===0||dow>last||rolled)?'Next week':'This week';
   var offDays=forDay(6,st.batch).length?'Sunday has':'Saturday and Sunday have';
   return '<div class="weekp-head"><h2>'+title+'</h2><p>'+shortDate(cols[0].d)+' to '+shortDate(cols[cols.length-1].d)+', batch '+st.batch+'</p></div>'+
+    (cols.some(function(c){return inRange(c.d)&&evDay(c.d);})?evNoteHTML():'')+
     '<div class="wk-scroll"><div class="wk'+(wd.length>5?' six':'')+'" style="--rows:'+rows+';--nc:'+wd.length+'">'+head+
     '<div class="wk-gut" aria-hidden="true">'+gut+'</div>'+body+line+'</div></div>'+
     '<p class="week-note">Each week for batch '+st.batch+': '+tot.Theory+' h of theory, '+tot.Lab+' h of labs and '+tot.Tutorial+' h of tutorials. '+offDays+' no classes.</p>';
@@ -1981,6 +2520,7 @@ function weekHTML(now){
 /* ---------- Render ---------- */
 function render(){
   if(!CUR||$('#view').hidden) return;
+  renderChgStrip();
   var ae=document.activeElement,key=ae&&ae.getAttribute?ae.getAttribute('data-key'):null;
   var sc={};['days','wk-scroll'].forEach(function(c){var el=$('.'+c);if(el)sc[c]=el.scrollLeft});
 
@@ -2002,8 +2542,8 @@ function render(){
   $('#h1').textContent=headTitle;
   document.title=headTitle+' timetable';
   $('#campusLine').innerHTML='<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 14.5S13 10.2 13 6.5a5 5 0 10-10 0C3 10.2 8 14.5 8 14.5z"/><circle cx="8" cy="6.5" r="1.8"/></svg><span>'+campusFor(st.branch)+'</span>';
-  var lb=$('#latestBadge');if(lb){$('#latestTxt').textContent='Latest schedule \u00b7 '+CUR.version+' \u00b7 from '+fmtDateLong(CUR.effFrom);lb.hidden=false;}
-  $('#subLine').textContent='First year, semester 1. Timetable version '+CUR.version+', valid '+fmtDateLong(CUR.effFrom)+' to '+fmtDateLong(CUR.effTo)+'.'+(st.lang?' German ('+st.lang+') is added from the foreign language list.':'');
+  var lb=$('#latestBadge');if(lb){if(ymd(now)<=EV_TO){$('#latestTxt').textContent='Vishwakarandak';lb.hidden=false;}else lb.hidden=true;}   // badge shows the event until 5 Nov, then disappears
+  $('#subLine').textContent='First year, semester 1. Timetable version '+CUR.version+', valid '+fmtDateLong(CUR.effFrom)+' to '+fmtDateLong(CUR.effTo)+'.'+(st.lang?' '+langName(st.lang)+' ('+st.lang+') is added from the foreign language list.':'');
   $('#footTxt').textContent="Built from timetable Form FF957 for First Year "+CUR.pdf+", version "+CUR.version+", effective "+fmtDateLong(CUR.effFrom)+" to "+fmtDateLong(CUR.effTo)+". Class blocks show faculty initials; tap a class for full names from the faculty list on page 2 of the PDF, pulled live from the TimeTable_VIT database. Holidays and exam windows follow the FY Academic Calendar 2026-27, Sem I.";
   $('#clockTime').textContent=fmtT(mins(now));
   $('#clockDate').textContent=DAYS[now.getDay()]+', '+now.getDate()+' '+MONS[now.getMonth()]+' '+now.getFullYear();
@@ -2012,6 +2552,7 @@ function render(){
 
   var hm=heroModel(now,heroOcc,cur,nxt);
   var hero=$('#hero');
+  hero.className='hero'+(hm.flag?' flag-'+hm.flag:'');   // Japanese / German class in the big card gets the flag look
   hero.style.setProperty('--c',hm.color);
   hero.setAttribute('data-state',hm.state);
   hero.innerHTML=hm.html;
@@ -2063,8 +2604,8 @@ function detailHTML(x,dateMs,now){
       '<dt>When</dt><dd>'+DAYS[x.d]+(date?', '+shortDate(date):'')+'</dd>'+
       '<dt>Time</dt><dd>'+fmtRange(x.s,x.e)+' ('+dur((x.e-x.s)*60000)+')</dd>'+
       '<dt>Room</dt><dd>'+x.room+'</dd>'+
-      '<dt>Type</dt><dd>Foreign language, language division '+x.langDiv+'</dd></dl></section>'+
-      '<section class="sec"><p class="sh-note">From the Kondhwa campus German list. It repeats every week.</p></section></div>';
+      '<dt>Type</dt><dd>Foreign language ('+(x.lk==='jp'?'Japanese':'German')+'), language division '+x.langDiv+'</dd></dl></section>'+
+      '<section class="sec"><p class="sh-note">From the '+(isBibCode(x.langDiv)?'Bibwewadi':'Kondhwa')+' campus '+(x.lk==='jp'?'Japanese':'German')+' list. It repeats every week.</p></section></div>';
   }
   var engBox=isEng(x)?'<section class="sec"><p class="lang-box">'+ENG_NOTE+'</p></section>':'';
   // 1. this class
@@ -2073,6 +2614,9 @@ function detailHTML(x,dateMs,now){
     '<dt>When</dt><dd>'+when+'</dd>'+
     '<dt>Time</dt><dd>'+fmtRange(x.s,x.e)+' ('+dur((x.e-x.s)*60000)+')</dd>'+
     '<dt>Room</dt><dd>'+x.room+'</dd>'+
+    (x.online?'<dt>Join</dt><dd><a class="onl-join" href="'+x.url+'" target="_blank" rel="noopener">Join Zoom meeting</a></dd>'+
+      '<dt>Meeting ID</dt><dd>'+x.mid+'</dd><dt>Passcode</dt><dd>'+x.pass+'</dd>'+
+      '<dt>Attendance</dt><dd>Marked in ERP (regular session)</dd>':'')+
     '<dt>Type</dt><dd>'+x.type+(x.b?', batch '+x.b:', whole division')+'</dd>'+
     '<dt>Faculty</dt><dd>'+esc(facLabel(x.fac))+'</dd></dl></section>';
 
@@ -2093,7 +2637,7 @@ function detailHTML(x,dateMs,now){
   }
 
   // 3. faculty for this subject (full names are typed in by the student)
-  var all=SESS.filter(function(y){return y.sub===x.sub}).sort(byTime);
+  var all=(x.ev?CUR.ev.list:SESS).filter(function(y){return y.sub===x.sub}).sort(byTime);
   var order=[x.fac],roles={};
   all.forEach(function(y){
     if(order.indexOf(y.fac)<0) order.push(y.fac);
@@ -2125,7 +2669,7 @@ function detailHTML(x,dateMs,now){
   var others=BATCHES.filter(function(b){return b!==st.batch}).map(function(b){
     return group('Batch '+b,all.filter(function(y){return y.b===b}),x,false);
   }).join('');
-  var sec4='<section class="sec"><h3 class="sh-h">All '+esc(sub.name)+' classes <small>Batch '+st.batch+' has '+hrTxt+' a week</small></h3>'+
+  var sec4='<section class="sec"><h3 class="sh-h">All '+esc(sub.name)+' classes <small>'+(x.ev?hrTxt+' during Vishwakarandak (2\u20135 Nov)':'Batch '+st.batch+' has '+hrTxt+' a week')+'</small></h3>'+
     group('Whole division',whole,x,false)+group('Batch '+st.batch,mine,x,true)+
     (others?'<details class="more"><summary>Other batches</summary>'+others+'</details>':'')+'</section>';
 
@@ -2134,10 +2678,10 @@ function detailHTML(x,dateMs,now){
 
 function fillSheet(){
   if(!openCtx) return;
-  $('#sheetBody').innerHTML=detailHTML(SESS[openCtx.sid],openCtx.dateMs,nowFloor());
+  $('#sheetBody').innerHTML=detailHTML(sessById(openCtx.sid),openCtx.dateMs,nowFloor());
 }
 function openDetail(sid,dateMs,key){
-  if(!SESS[sid]) return;
+  if(!sessById(sid)) return;
   openCtx={sid:sid,dateMs:dateMs,key:key};
   fillSheet();
   var dlg=$('#sheet');
@@ -2172,7 +2716,7 @@ $('#sheet').addEventListener('cancel',function(){/* Esc closes natively */});
 
 
 /* ---------- Class picker ---------- */
-var pk={branch:'',div:'',batch:''},rawBatch='';
+var pk={branch:'',div:'',batch:'',gd:''},rawBatch='';
 function fixDiv(){                                   // a branch with a single division needs no extra tap
   var ds=pk.branch?Object.keys(CLASSES[pk.branch].divs):[];
   if(ds.indexOf(pk.div)<0) pk.div=ds.length===1?ds[0]:'';
@@ -2187,6 +2731,10 @@ function renderPicker(){
   var ds=pk.branch?Object.keys(CLASSES[pk.branch].divs):[];
   $('#pkDiv').innerHTML=ds.length?optBtns('pk-div',ds.map(function(k){return {v:k,t:k}}),pk.div):'<p class="pk-hint">Pick a branch first.</p>';
   $('#pkBatch').innerHTML=optBtns('pk-batch',BATCHES.map(function(k){return {v:k,t:k}}),pk.batch);
+  var gs=bibGroups(pk.branch,pk.div);
+  if(gs.indexOf(pk.gd)<0) pk.gd='';
+  $('#pkGDbox').hidden=!gs.length;
+  $('#pkGD').innerHTML=gs.length?optBtns('pk-gd',[{v:'',t:'No German'}].concat(gs.map(function(k){return {v:k,t:gdLabel(k)}})),pk.gd):'';
   $('#pkGo').disabled=!(pk.branch&&pk.div&&pk.batch);
 }
 // msg='' shows the form; a non-empty msg hides the form and shows msg instead (loading / error states)
@@ -2202,6 +2750,7 @@ function openPicker(cancelable){
   pk.div=CUR?st.div:(pk.branch&&CLASSES[pk.branch].divs[sd]?sd:'');
   pk.batch=CUR?st.batch:rawBatch;
   $('#pkRoll').value=st.roll||'';
+  pk.gd=store.get('tt-gd','');
   fixDiv();
   showPickerStatus('');
   $('#pkCancel').hidden=!cancelable;
@@ -2216,14 +2765,44 @@ function closePicker(fromBoot){
   if(fromBoot){
     stopLoadScreen();
     maybeShowHolidayIntro();
-    maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();
+    maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();maybeShowRoomNotice();maybeShowExtraNotice();maybeShowOnlineNotice();
   }
   scheduleSurvey();
   scheduleInstallToast();
+  maybeShowJpToast();
+  bbMaybeAsk();
   var c=document.querySelector('.chg');
   if(c) c.focus({preventScroll:true});
 }
+/* One-time toast the first time a Japanese student sees their timetable with the Japanese slot in it */
+var jpToastTimer=null;
+function maybeShowJpToast(){
+  if(!st.lang||!isJpCode(st.lang)) return;
+  if(store.get('tt-jp-toast','')==='1') return;
+  store.set('tt-jp-toast','1');
+  var g=JP_SLOTS[st.lang],t=$('#jpToast');
+  $('#jpToastSub').textContent=DAYS[g[0]]+', '+fmtRange(g[1],g[2])+', room '+g[3]+' is now in your timetable.';
+  clearTimeout(jpToastTimer);
+  jpToastTimer=setTimeout(function(){
+    t.hidden=false;
+    requestAnimationFrame(function(){ t.classList.add('in'); });
+    jpToastTimer=setTimeout(closeJpToast,7000);
+  },700);
+}
+function closeJpToast(){
+  clearTimeout(jpToastTimer);
+  var t=$('#jpToast'); t.classList.remove('in');
+  setTimeout(function(){ t.hidden=true; },250);
+}
+$('#jpToastX').addEventListener('click',closeJpToast);
 function submitPicker(){
+  if(!(pk.branch&&pk.div&&pk.batch)) return;
+  var typedRoll=$('#pkRoll').value.replace(/\D/g,'').slice(0,4);
+  store.set('tt-gd',bibGroups(pk.branch,pk.div).indexOf(pk.gd)>-1?pk.gd:'');   // German group: this device only
+  // English (no foreign language found): ask once whether they actually chose Japanese
+  jpGate(pk.branch,pk.div,pk.batch,typedRoll,submitPickerNow);
+}
+function submitPickerNow(){
   if(!(pk.branch&&pk.div&&pk.batch)) return;
   var goBranch=pk.branch,goDiv=pk.div,goBatch=pk.batch;
   var goRoll=$('#pkRoll').value.replace(/\D/g,'').slice(0,4),prevRoll=st.roll;
@@ -2237,7 +2816,7 @@ function submitPicker(){
     store.set('tt-roll',goRoll);store.set('tt-rollq','1');   // roll number: localStorage only
     closePicker();
     maybeShowHolidayIntro();
-    maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();
+    maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();maybeShowRoomNotice();maybeShowExtraNotice();maybeShowOnlineNotice();
   });
 }
 function openRollWarn(){
@@ -2258,19 +2837,230 @@ $('#rwContinue').addEventListener('click',function(){
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'&&!$('#rollWarn').hidden) closeRollWarn();
 });
+/* ---------- Japanese list popup ----------
+   Shown once per device to anyone who ends up on English (not found in the German list (Japanese students are asked too)).
+   No  -> straight to the timetable.  Yes -> asks for the PDF student list; the PDF goes to the japanese-pdf
+   edge function, which stores it on ImageKit as a private file. The admin panel opens it via a signed link. */
+var JP={step:1,choice:null,file:null,busy:false,cb:null,ctx:null,opener:null,timer:null};
+var JP_MAX=10*1024*1024;
+function jpForced(){ return /[?&]jp=1\b/.test(location.search); }   // ?jp=1 re-shows it for testing
+function jpAnswered(){
+  var v=store.get('tt-jp','');
+  if(!v) return false;
+  if(v.indexOf('skip:')===0){ var t=+v.slice(5); return !!t&&Date.now()-t<3*864e5; }   // skipped: ask again after 3 days
+  return true;
+}
+function jpGate(branch,div,batch,roll,proceed){
+  proceed(); return;   // Japanese PDF popup removed: Japanese is now found by roll number only
+  if(!jpForced()&&(jpAnswered()||germanFor(branch,div,roll)||bibGd(branch,div))){ proceed(); return; }   // German found: skip. Japanese found: still ask (once)
+  JP.cb=proceed; JP.ctx={branch:branch,div:div,batch:batch};
+  JP.step=1; JP.choice=null; JP.file=null; JP.busy=false;
+  $('#jpFile').value=''; $('#jpErr').textContent='';
+  jpRender();
+  JP.opener=document.activeElement;
+  $('#jpAsk').hidden=false; document.documentElement.classList.add('lock');
+  $('#jpCard').scrollTop=0;
+  var f=document.querySelector('#jpP1 [data-jp="choice"]'); if(f) f.focus({preventScroll:true});
+}
+function jpClose(){
+  if(JP.timer){ clearTimeout(JP.timer); JP.timer=null; }
+  $('#jpAsk').hidden=true; document.documentElement.classList.remove('lock');
+  try{ if(JP.opener&&JP.opener.focus) JP.opener.focus({preventScroll:true}); }catch(e){}
+  var cb=JP.cb; JP.cb=null;
+  if(cb) cb();
+}
+function jpFmtSize(n){ return n>=1048576?(n/1048576).toFixed(1)+' MB':Math.max(1,Math.round(n/1024))+' KB'; }
+function jpRender(){
+  $('#jpP1').hidden=JP.step!==1; $('#jpP2').hidden=JP.step!==2; $('#jpP3').hidden=JP.step!==3;
+  $('#jpAsk').setAttribute('aria-labelledby','jpT'+JP.step);
+  document.querySelectorAll('#jpP1 [data-jp="choice"]').forEach(function(b){
+    b.setAttribute('aria-pressed',String(JP.choice!==null&&JP.choice===+b.getAttribute('data-v')));
+  });
+  $('#jpSubmit').disabled=JP.choice===null;
+  var has=!!JP.file;
+  $('#jpFileBox').classList.toggle('has',has);
+  $('#jpFileLbl').textContent=has?(JP.file.name+' ('+jpFmtSize(JP.file.size)+')'):'Choose PDF';
+  $('#jpUpload').disabled=!has||JP.busy; $('#jpUpload').textContent=JP.busy?'Uploading\u2026':'Upload & continue';
+  $('#jpBack').disabled=JP.busy; $('#jpSkip').disabled=JP.busy; $('#jpFile').disabled=JP.busy;
+}
+function jpCheckFile(f){
+  if(!f) return 'Choose a PDF file.';
+  if(!(f.type==='application/pdf'||/\.pdf$/i.test(f.name))) return 'That is not a PDF. Please choose the PDF file.';
+  if(f.size>JP_MAX) return 'That file is too large (max 10 MB).';
+  if(f.size<100) return 'That file looks empty.';
+  return '';
+}
+function jpUpload(){
+  if(JP.busy||!JP.file) return;
+  var err=jpCheckFile(JP.file); if(err){ $('#jpErr').textContent=err; return; }
+  JP.busy=true; $('#jpErr').textContent=''; jpRender();
+  var c=JP.ctx||{},fd=new FormData();
+  fd.append('file',JP.file,JP.file.name);
+  fd.append('visitor_id',visitorId);
+  fd.append('branch',c.branch||''); fd.append('division',c.div||''); fd.append('batch',c.batch||'');
+  fetch(SUPA_URL+'/functions/v1/japanese-pdf',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY},body:fd})
+    .then(function(res){ return res.json().catch(function(){return {};}).then(function(j){return {ok:res.ok,j:j||{}};}); })
+    .then(function(r){
+      JP.busy=false;
+      if(!r.ok||!r.j.ok){
+        var m={not_pdf:'That file is not a valid PDF.',too_large:'That file is too large (max 10 MB).',rate_limited:'You have uploaded a few files already today. Please try again tomorrow.',busy:'Too many uploads right now. Please try again in a little while.'};
+        $('#jpErr').textContent=m[r.j.error]||'Could not upload. Please try again.';
+        jpRender(); return;
+      }
+      store.set('tt-jp','yes');
+      JP.step=3; jpRender();
+      var d=$('#jpDone'); if(d) d.focus({preventScroll:true});
+      JP.timer=setTimeout(jpClose,2600);
+    })
+    .catch(function(){ JP.busy=false; $('#jpErr').textContent='Could not upload. Check your connection and try again.'; jpRender(); });
+}
+$('#jpFile').addEventListener('change',function(){
+  var f=this.files&&this.files[0]; JP.file=null; $('#jpErr').textContent='';
+  if(f){ var e=jpCheckFile(f); if(e){ $('#jpErr').textContent=e; this.value=''; } else JP.file=f; }
+  jpRender();
+});
+$('#jpAsk').addEventListener('click',function(e){
+  var b=e.target.closest&&e.target.closest('[data-jp]'); if(!b||b.disabled) return;
+  var a=b.getAttribute('data-jp');
+  if(a==='choice'){ JP.choice=+b.getAttribute('data-v'); jpRender(); }
+  else if(a==='submit1'){
+    if(JP.choice===null) return;
+    if(JP.choice===0){ store.set('tt-jp','no'); jpClose(); return; }
+    JP.step=2; jpRender(); $('#jpCard').scrollTop=0;
+    var f=$('#jpFile'); if(f) f.focus({preventScroll:true});
+  }
+  else if(a==='upload'){ jpUpload(); }
+  else if(a==='back'){ JP.step=1; $('#jpErr').textContent=''; jpRender(); }
+  else if(a==='skip'){ store.set('tt-jp','skip:'+Date.now()); jpClose(); }
+  else if(a==='done'){ jpClose(); }
+});
+document.addEventListener('keydown',function(e){
+  var el=$('#jpAsk'); if(!el||el.hidden) return;
+  if(e.key==='Escape'){ if(!JP.busy){ e.preventDefault(); jpClose(); } return; }   // Esc: carry on to the timetable, nothing saved
+  if(e.key!=='Tab') return;
+  var f=[].slice.call(el.querySelectorAll('button:not([disabled]),input:not([disabled])')).filter(function(x){return x.offsetParent!==null||x.id==='jpFile';});
+  if(!f.length) return;
+  var first=f[0],last=f[f.length-1],ae=document.activeElement;
+  if(e.shiftKey&&(ae===first||ae===$('#jpCard'))){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey&&ae===last){ e.preventDefault(); first.focus(); }
+});
+/* ---------- Bibwewadi timetable PDF request (full screen) ----------
+   Shown to Bibwewadi students (CS, IT, CSAIML, CSAI) when the timetable opens, while the admin switch is ON.
+   The switch is re-read from the database every time (public.bib_tt_window_open), so turning it OFF hides it for everyone.
+   Upload -> bibwewadi-tt-pdf edge function -> private ImageKit file -> listed in the admin panel.
+   "Not now" hides it on this device for 1 day; a successful upload hides it for good. ?bb=1 re-shows it for testing. */
+var BB={file:null,busy:false,open:false,checking:false,timer:null,opener:null};
+var BB_MAX=10*1024*1024, BB_SNOOZE_MS=864e5;
+function bbForced(){ return /[?&]bb=1\b/.test(location.search); }
+function bbSnoozed(){
+  if(bbForced()) return false;
+  var v=store.get('tt-bb','');
+  if(v==='done') return true;
+  if(v.indexOf('skip:')===0){ var t=+v.slice(5); return !!t&&Date.now()-t<BB_SNOOZE_MS; }
+  return false;
+}
+function bbMaybeAsk(){
+  if(BB.open||BB.checking) return;
+  if(BIBWEWADI.indexOf(st.branch)<0||bbSnoozed()) return;
+  BB.checking=true;
+  admRpc('bib_tt_window_open',{},8000).then(function(r){
+    BB.checking=false;
+    if(r.ok&&r.j===true&&!BB.open&&BIBWEWADI.indexOf(st.branch)>-1&&!bbSnoozed()) bbShow();
+  },function(){ BB.checking=false; });   // network problem: stay out of the way
+}
+function bbShow(){
+  BB.open=true; BB.file=null; BB.busy=false;
+  $('#bbFile').value=''; $('#bbErr').textContent='';
+  $('#bbP1').hidden=false; $('#bbP2').hidden=true;
+  $('#bbAsk').setAttribute('aria-labelledby','bbT1');
+  bbRender();
+  BB.opener=document.activeElement;
+  $('#bbAsk').hidden=false; document.documentElement.classList.add('lock');
+  $('#bbAsk').scrollTop=0;
+  $('#bbCard').focus({preventScroll:true});
+}
+function bbClose(){
+  if(BB.timer){ clearTimeout(BB.timer); BB.timer=null; }
+  $('#bbAsk').hidden=true; BB.open=false;
+  document.documentElement.classList.remove('lock');
+  try{ if(BB.opener&&BB.opener.focus) BB.opener.focus({preventScroll:true}); }catch(e){}
+}
+function bbRender(){
+  var has=!!BB.file;
+  $('#bbFileBox').classList.toggle('has',has);
+  $('#bbFileLbl').textContent=has?(BB.file.name+' ('+jpFmtSize(BB.file.size)+')'):'Choose PDF';
+  $('#bbUpload').disabled=!has||BB.busy; $('#bbUpload').textContent=BB.busy?'Uploading\u2026':'Upload PDF';
+  $('#bbSkip').disabled=BB.busy; $('#bbFile').disabled=BB.busy;
+}
+function bbCheckFile(f){
+  if(!f) return 'Choose a PDF file.';
+  if(!(f.type==='application/pdf'||/\.pdf$/i.test(f.name))) return 'That is not a PDF. Please choose the PDF file.';
+  if(f.size>BB_MAX) return 'That file is too large (max 10 MB).';
+  if(f.size<100) return 'That file looks empty.';
+  return '';
+}
+function bbUpload(){
+  if(BB.busy||!BB.file) return;
+  var err=bbCheckFile(BB.file); if(err){ $('#bbErr').textContent=err; return; }
+  BB.busy=true; $('#bbErr').textContent=''; bbRender();
+  var fd=new FormData();
+  fd.append('file',BB.file,BB.file.name);
+  fd.append('visitor_id',visitorId);
+  fd.append('branch',st.branch||''); fd.append('division',st.div||''); fd.append('batch',st.batch||'');
+  fetch(SUPA_URL+'/functions/v1/bibwewadi-tt-pdf',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY},body:fd})
+    .then(function(res){ return res.json().catch(function(){return {};}).then(function(j){return {ok:res.ok,j:j||{}};}); })
+    .then(function(r){
+      BB.busy=false;
+      if(!r.ok||!r.j.ok){
+        if(r.j.error==='closed'){ bbClose(); return; }   // admin switched the window off while this was open
+        var m={not_pdf:'That file is not a valid PDF.',too_large:'That file is too large (max 10 MB).',rate_limited:'You have uploaded a few files already today. Please try again tomorrow.',busy:'Too many uploads right now. Please try again in a little while.'};
+        $('#bbErr').textContent=m[r.j.error]||'Could not upload. Please try again.';
+        bbRender(); return;
+      }
+      store.set('tt-bb','done');
+      $('#bbP1').hidden=true; $('#bbP2').hidden=false;
+      $('#bbAsk').setAttribute('aria-labelledby','bbT2');
+      var d=$('#bbDone'); if(d) d.focus({preventScroll:true});
+      BB.timer=setTimeout(bbClose,2400);
+    })
+    .catch(function(){ BB.busy=false; $('#bbErr').textContent='Could not upload. Check your connection and try again.'; bbRender(); });
+}
+$('#bbFile').addEventListener('change',function(){
+  var f=this.files&&this.files[0]; BB.file=null; $('#bbErr').textContent='';
+  if(f){ var e=bbCheckFile(f); if(e){ $('#bbErr').textContent=e; this.value=''; } else BB.file=f; }
+  bbRender();
+});
+$('#bbAsk').addEventListener('click',function(e){
+  var b=e.target.closest&&e.target.closest('[data-bb]'); if(!b||b.disabled) return;
+  var a=b.getAttribute('data-bb');
+  if(a==='upload') bbUpload();
+  else if(a==='skip'){ store.set('tt-bb','skip:'+Date.now()); bbClose(); }
+  else if(a==='done') bbClose();
+});
+document.addEventListener('keydown',function(e){
+  var el=$('#bbAsk'); if(!el||el.hidden) return;
+  if(e.key==='Escape'){ if(!BB.busy&&!$('#bbP1').hidden){ e.preventDefault(); store.set('tt-bb','skip:'+Date.now()); bbClose(); } return; }
+  if(e.key!=='Tab') return;
+  var f=[].slice.call(el.querySelectorAll('button:not([disabled]),input:not([disabled])')).filter(function(x){return x.offsetParent!==null||x.id==='bbFile';});
+  if(!f.length) return;
+  var first=f[0],last=f[f.length-1],ae=document.activeElement;
+  if(e.shiftKey&&(ae===first||ae===$('#bbCard'))){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey&&ae===last){ e.preventDefault(); first.focus(); }
+});
 function pickerAct(a,b){
   var v=b.getAttribute('data-v');
   if(a==='pk-cancel'){ if(CUR) closePicker(); return; }
   if(a==='pk-go'){
     if(!(pk.branch&&pk.div&&pk.batch)) return;
     var typed=$('#pkRoll').value.replace(/\D/g,'').slice(0,4);
-    if(!typed){ openRollWarn(); return; }   // no roll number: warn first
+    if(!typed&&!pk.gd){ openRollWarn(); return; }   // no roll number: warn first
     submitPicker();
     return;
   }
   if(a==='pk-branch'){ if(pk.branch!==v){pk.branch=v;pk.div='';} fixDiv(); }
   else if(a==='pk-div') pk.div=v;
   else if(a==='pk-batch') pk.batch=v;
+  else if(a==='pk-gd') pk.gd=v;
   renderPicker();
   var again=document.querySelector('#picker [data-act="'+a+'"][data-v="'+v+'"]');   // keep keyboard focus after the redraw
   if(again) again.focus({preventScroll:true});
@@ -2380,29 +3170,32 @@ document.addEventListener('click',function(e){
   if(a==='about-close'){closeAbout();return;}
   if(a==='priv-open'){openPriv(b);return;}
   if(a==='priv-close'){closePriv();return;}
-  if(a==='planner-nudge'){plannerNudgeClick(b);return;}
-  if(a==='planner-nudge-close'){dismissPlannerNudge();return;}
   if(a==='planner-intro-close'){closePlannerIntro();return;}
   if(a==='forum-tip'){openForumIntro(b);return;}
   if(a==='forum-intro-close'){closeForumIntro();return;}
   if(a==='forum-open-intro'){forumLog('open_forum');return;}
   if(a==='forum-open'&&!forumIntroSeen()){e.preventDefault();openForumIntro(b);return;}
-  if(a==='planner-open'){markFeatureUsed();try{store.set('tt-planner-used','1');}catch(e){}hidePlannerNudge();logVisit('open_study_planner',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});return;}
+  if(a==='planner-open'){markFeatureUsed();try{store.set('tt-planner-used','1');}catch(e){}logVisit('open_study_planner',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});return;}
   if(a==='forum-open'){logVisit('open_forum',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});return;}
   if(a==='ext-link'){logVisit('click_link',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch,link:b.getAttribute('data-label')});return;}
   if(a==='admin-diwali'){toggleDiwaliPreview();return;}
   if(a==='admin-close'){closeAdmin();return;}
   if(a==='admin-lock'){lockAdmin();return;}
   if(a==='admin-refresh'){loadAdmin();return;}
+  if(a==='admin-jp-view'){openJpPdf(b);return;}
+  if(a==='admin-bb-view'){openJpPdf(b,'bibwewadi-tt-pdf');return;}
+  if(a==='admin-bb-toggle'){toggleBbWindow();return;}
+  if(a==='admin-cls'){admPickClass(b.getAttribute('data-i'));return;}
   if(a==='admin-range'){ADM.range=b.getAttribute('data-v');renderAdmin();return;}
   if(a==='install-yes'){installNow();return;}
   if(a==='install-no'){dismissInstall();return;}
+  if(a==='install-top-x'){store.set('tt-install-dismissed',String(Date.now()));refreshInstallUI();return;}
   if(a==='install-ok'){closeInstallToast();return;}
   if(a==='change'){openPicker(true);return;}
   if(a.indexOf('pk-')===0){pickerAct(a,b);return;}
   if(a==='open'){openDetail(+b.getAttribute('data-sid'),+b.getAttribute('data-date')||0,b.getAttribute('data-key'));return;}
   if(a==='close'){closeSheet();return;}
-  if(a==='batch'){st.batch=b.getAttribute('data-v');store.set('tt-batch',st.batch);maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();}
+  if(a==='batch'){st.batch=b.getAttribute('data-v');store.set('tt-batch',st.batch);maybeShowLabNotice();maybeShowChangeNotice();maybeShowSuspendNotice();maybeShowRoomNotice();maybeShowExtraNotice();maybeShowOnlineNotice();}
   else if(a==='fmt'){st.fmt=b.getAttribute('data-v');store.set('tt-fmt',st.fmt);}
   else if(a==='day'){st.dayMs=dayStart(nowFloor(),+b.getAttribute('data-off')).getTime();centerTab=true;}
   render();
@@ -2412,8 +3205,9 @@ var lastK=minuteKey();
 function tick(){var k=minuteKey();if(k!==lastK){lastK=k;render();}}
 
 /* ---------- Install app (Android/desktop: native prompt; iOS: manual steps) ---------- */
-var deferredInstall=null;
-var DISMISS_DAYS=14;
+var deferredInstall=window.__bip||null;
+var installWaiting=false;
+var DISMISS_HOURS=12;
 function isStandaloneApp(){
   return window.matchMedia && window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true;
 }
@@ -2422,7 +3216,7 @@ function isIOSDevice(){
 }
 function installDismissedRecently(){
   var t=+store.get('tt-install-dismissed','0');
-  return t && (Date.now()-t) < DISMISS_DAYS*86400000;
+  return t && (Date.now()-t) < DISMISS_HOURS*3600000;
 }
 var ttShownForInstall=false, installToastTimer=null, installHideTimer=null;
 function isAndroidDevice(){ return /android/i.test(navigator.userAgent); }
@@ -2434,36 +3228,58 @@ function setInstallState(state,title,sub){
   $('#installSub').textContent=sub;
   var idle=state==='idle';
   $('#installNo').hidden=!idle;
-  $('#installYes').hidden=!idle || isIOSDevice();
+  $('#installYes').hidden=!idle || isIOSDevice() || !deferredInstall;
   $('#installOk').hidden=idle;
   bar.hidden=false;
+  refreshInstallUI();
 }
 function showInstallBar(){
-  if(isStandaloneApp()||installDismissedRecently()) return;
-  if(!ttShownForInstall) return;                      // only once the timetable is on screen
+  if(isStandaloneApp()) return;
   var isIOS=isIOSDevice();
-  if(!isIOS && !deferredInstall) return;              // no install prompt available in this browser
   setInstallState('idle','Install Timetable app',isIOS
     ? 'Tap the Share icon, then "Add to Home Screen" \u2014 opens full-screen next time, no browser bars.'
-    : 'Open your timetable in one tap from your app drawer. Faster, full-screen, no browser bars.');
-  $('#installNo').textContent=isIOS?'Got it':'Not now';
+    : (deferredInstall
+        ? 'Open your timetable in one tap from your app drawer. Faster, full-screen, no browser bars.'
+        : 'Open your browser menu (\u22EE or Share) and choose "Install app" or "Add to Home Screen".'));
+  $('#installNo').textContent=isIOS||!deferredInstall?'Got it':'Not now';
+}
+/* top banner + bottom button: website only, hidden inside the installed app */
+function appIsInstalled(){ return isStandaloneApp() || store.get('tt-installed','')==='1'; }
+function refreshInstallUI(){
+  var top=$('#installTop'), fab=$('#installFab'), bar=$('#installBar');
+  if(!top||!fab) return;
+  var on=ttShownForInstall && !appIsInstalled();
+  var sheetOpen=!bar.hidden;
+  top.hidden=!(on && !installDismissedRecently() && !sheetOpen);
+  fab.hidden=!(on && !sheetOpen);
 }
 /* called when the timetable becomes visible: show the toast a moment later, once */
 function scheduleInstallToast(){
   if(ttShownForInstall||isStandaloneApp()) return;
   ttShownForInstall=true;
-  installToastTimer=setTimeout(showInstallBar,2500);
+  installToastTimer=setTimeout(refreshInstallUI,1200);
+  if(navigator.getInstalledRelatedApps){navigator.getInstalledRelatedApps().then(function(l){if(l&&l.length){store.set('tt-installed','1');refreshInstallUI();}}).catch(function(){});}
 }
 function closeInstallToast(){
   clearTimeout(installHideTimer);
   $('#installBar').hidden=true;
+  refreshInstallUI();
 }
 function dismissInstall(){
   store.set('tt-install-dismissed',String(Date.now()));
   closeInstallToast();
 }
 function installNow(){
-  if(!deferredInstall){ closeInstallToast(); return; }
+  if(!deferredInstall && !isIOSDevice() && !installWaiting){
+    /* browser hasn't offered the install prompt yet: wait up to 3s for it, then fall back to manual steps */
+    installWaiting=true;
+    var done=false;
+    var finish=function(){ if(done) return; done=true; installWaiting=false; window.__bipCb=null; installNow(); };
+    window.__bipCb=function(e){ deferredInstall=e; finish(); };
+    setTimeout(function(){ if(!done){ done=true; installWaiting=false; window.__bipCb=null; showInstallBar(); } },3000);
+    return;
+  }
+  if(!deferredInstall){ showInstallBar(); return; }   // iOS / unsupported browser: show manual steps
   $('#installYes').disabled=true;
   var ev=deferredInstall;
   ev.prompt();
@@ -2471,6 +3287,7 @@ function installNow(){
     deferredInstall=null;
     $('#installYes').disabled=false;
     if(c&&c.outcome==='accepted'){
+      store.set('tt-installed','1');
       setInstallState('busy','Installing Timetable\u2026',
         'Installation is in progress and will finish in the background in about 2\u20133 minutes. You can keep using the timetable. Then open it directly from your '+(isAndroidDevice()?'app drawer':'apps list')+'.');
       clearTimeout(installHideTimer);
@@ -2484,10 +3301,11 @@ function installNow(){
 window.addEventListener('beforeinstallprompt',function(e){
   e.preventDefault();
   deferredInstall=e;
-  if(ttShownForInstall) showInstallBar();             // timetable already visible: show now
+  refreshInstallUI();
 });
 window.addEventListener('appinstalled',function(){
   deferredInstall=null;
+  store.set('tt-installed','1');
   store.set('tt-install-dismissed',String(Date.now()));
   setInstallState('done','Timetable installed \u2713','Open it anytime from your '+(isAndroidDevice()?'app drawer':'apps list')+'.');
   clearTimeout(installHideTimer);
@@ -2510,7 +3328,7 @@ document.addEventListener('click',function(e){
   if(taps.length>TAP_NEEDED){ taps=[]; openAdmin(); }
 },true);
 
-var ADM={pin:'',data:null,busy:false,range:'24h',survey:null,surveyErr:false};
+var ADM={pin:'',data:null,cls:null,busy:false,range:'24h',survey:null,surveyErr:false,jp:null,jpErr:false,bb:null,bbErr:false,bbBusy:false};
 function escHtml(s){
   return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
 }
@@ -2520,7 +3338,6 @@ function openAdmin(){
   clearHolidaySeen();   // opening the admin panel resets the 'holiday message already shown' memory
   /* Reset the Study Planner nudge so it can be re-tested: it shows again and the first-click intro replays. */
   try{localStorage.removeItem('tt-planner-used');localStorage.removeItem('tt-planner-intro');}catch(e){}
-  plannerNudgeDismissed=false;
   var dlg=$('#admin');
   if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open','');
   if(ADM.pin) loadAdmin(); else renderPinForm();
@@ -2529,7 +3346,7 @@ function closeAdmin(){
   var dlg=$('#admin');
   if(typeof dlg.close==='function') dlg.close(); else dlg.removeAttribute('open');
 }
-function lockAdmin(){ ADM.pin='';ADM.data=null;ADM.survey=null;ADM.surveyErr=false;renderPinForm(); }
+function lockAdmin(){ admStopTick();ADM.busy=false;ADM.refreshing=false;ADM.pin='';ADM.data=null;ADM.survey=null;ADM.surveyErr=false;ADM.jp=null;ADM.jpErr=false;ADM.bb=null;ADM.bbErr=false;ADM.bbBusy=false;ADM.cls=null;renderPinForm(); }
 function renderPinForm(msg){
   $('#admBody').innerHTML=
     '<form id="admPinForm" class="adm-pinform" autocomplete="off">'+
@@ -2540,30 +3357,157 @@ function renderPinForm(msg){
     '</form>';
   var inp=$('#admPinInput'); if(inp) setTimeout(function(){inp.focus();},50);
 }
+/* RPC helper: hard client-side timeout, always resolves with {ok,status,j} for HTTP replies */
+function admRpc(name,body,ms){
+  var ctl=(typeof AbortController!=='undefined')?new AbortController():null;
+  var timer=setTimeout(function(){ if(ctl) ctl.abort(); },ms||30000);
+  return fetch(SUPA_URL+'/rest/v1/rpc/'+name,{
+    method:'POST',
+    headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify(body),
+    signal:ctl?ctl.signal:undefined
+  }).then(function(res){
+    return res.json().then(function(j){return {ok:res.ok,status:res.status,j:j};},function(){return {ok:res.ok,status:res.status,j:{}};});
+  }).then(function(r){clearTimeout(timer);return r;},function(e){clearTimeout(timer);throw e;});
+}
+var admTick=0;
+function admStopTick(){ if(admTick){clearInterval(admTick);admTick=0;} }
+function renderAdminError(msg){
+  $('#admBody').innerHTML='<p class="adm-empty">'+escHtml(msg)+'</p>'+
+    '<div class="adm-actions"><button type="button" class="btn2" data-act="admin-refresh">Try again</button><button type="button" class="btn2" data-act="admin-lock">Lock</button></div>';
+}
 function loadAdmin(){
   if(ADM.busy) return;
   ADM.busy=true;
-  $('#admBody').innerHTML='<p class="adm-empty">Loading\u2026</p>';
+  var pin=ADM.pin;
+  if(ADM.data){
+    /* refresh: keep showing the previous numbers instead of blanking the panel */
+    ADM.refreshing=true; renderAdmin();
+  }else{
+    $('#admBody').innerHTML='<p class="adm-empty" id="admLoadMsg">Loading\u2026</p>';
+    var t0=Date.now();
+    admStopTick();
+    admTick=setInterval(function(){
+      var el=document.getElementById('admLoadMsg');
+      if(!el){ admStopTick(); return; }
+      var s=Math.round((Date.now()-t0)/1000);
+      if(s>=3) el.textContent='Crunching the numbers\u2026 '+s+'s';
+    },1000);
+  }
   var tz=(Intl.DateTimeFormat().resolvedOptions()||{}).timeZone||'Asia/Kolkata';
-  fetch(SUPA_URL+'/rest/v1/rpc/admin_traffic_stats',{
-    method:'POST',
-    headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
-    body:JSON.stringify({p_pin:ADM.pin,p_tz:tz})
-  }).then(function(res){ return res.json().then(function(j){return {ok:res.ok,j:j};}); })
-    .then(function(r){
-      ADM.busy=false;
+  function done(){ ADM.busy=false; ADM.refreshing=false; admStopTick(); }
+  function fail(status,code){
+    done();
+    if(ADM.data){ renderAdmin(); return; }   // keep the old numbers on screen
+    renderAdminError(code==='57014'
+      ? 'The database timed out while counting. Tap Try again.'
+      : 'Could not load traffic'+(status?' ('+status+')':'')+'. Tap Try again.');
+  }
+  function attempt(n){
+    admRpc('admin_traffic_stats',{p_pin:pin,p_tz:tz},30000).then(function(r){
+      if(ADM.pin!==pin){ done(); return; }   // locked / closed while waiting
       if(!r.ok){
-        ADM.pin='';
         var msg=r.j&&r.j.message;
-        if(msg==='locked'){ renderPinForm(r.j.hint||'Too many wrong PINs.'); return; }
-        if(msg==='denied'){ renderPinForm('Wrong PIN.'); return; }
-        renderPinForm('Could not load traffic.');
+        if(msg==='locked'){ done(); ADM.pin='';ADM.data=null; renderPinForm(r.j.hint||'Too many wrong PINs.'); return; }
+        if(msg==='denied'){ done(); ADM.pin='';ADM.data=null; renderPinForm('Wrong PIN.'); return; }
+        /* timeout / server hiccup: retry once automatically (the second run is usually warm), keep the PIN */
+        if(n<2){ setTimeout(function(){ attempt(n+1); },1500); return; }
+        fail(r.status,r.j&&r.j.code);
         return;
       }
-      ADM.data=r.j;ADM.survey=null;ADM.surveyErr=false;
+      done();
+      ADM.data=r.j;ADM.survey=null;ADM.surveyErr=false;ADM.jp=null;ADM.jpErr=false;ADM.bb=null;ADM.bbErr=false;
       renderAdmin();
       loadSurveyAdmin();
-    }).catch(function(){ ADM.busy=false; ADM.pin=''; renderPinForm('Could not reach the server.'); });
+      loadJpAdmin();
+      loadBbAdmin();
+    }).catch(function(){
+      if(ADM.pin!==pin){ done(); return; }
+      if(n<2){ setTimeout(function(){ attempt(n+1); },1500); return; }
+      fail(0,'');
+    });
+  }
+  attempt(1);
+}
+/* ---------- Japanese student lists in the admin panel (PIN-checked RPC; PDFs open through a short-lived signed ImageKit link) ---------- */
+function loadJpAdmin(){
+  var pin=ADM.pin; if(!pin) return;
+  fetch(SUPA_URL+'/rest/v1/rpc/admin_japanese_uploads',{
+    method:'POST',
+    headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({p_pin:pin})
+  }).then(function(res){ if(!res.ok) throw new Error('jp '+res.status); return res.json(); })
+    .then(function(j){ if(!ADM.pin||!ADM.data) return; ADM.jp=j;ADM.jpErr=false;renderAdmin(); })
+    .catch(function(){ if(!ADM.pin||!ADM.data) return; ADM.jpErr=true;renderAdmin(); });
+}
+function jpAdminHTML(){
+  var h='<p class="adm-h">Japanese student lists <span style="font-weight:400;color:var(--muted)">(private PDFs)</span></p>';
+  if(ADM.jpErr) return h+'<p class="adm-empty">Could not load the uploaded lists.</p>';
+  if(!ADM.jp) return h+'<p class="adm-empty">Loading\u2026</p>';
+  var items=ADM.jp.items||[];
+  if(!items.length) return h+'<p class="adm-empty">No Japanese lists uploaded yet.</p>';
+  return h+'<div class="adm-recent">'+items.map(function(r){
+    var cls=[r.branch,r.division,r.batch].filter(Boolean).join(' ');
+    return '<div class="adm-row"><span class="t">'+escHtml(fmtAdmTime(r.created_at))+'</span><span class="d adm-jp">'+
+      '<span>'+(cls?'<b>'+escHtml(cls)+'</b> \u00b7 ':'')+escHtml(r.file_name||'list.pdf')+' \u00b7 '+escHtml(jpFmtSize(r.file_size||0))+'</span>'+
+      '<button type="button" class="btn2" data-act="admin-jp-view" data-id="'+escHtml(r.id)+'">View PDF</button></span></div>';
+  }).join('')+'</div>';
+}
+/* ---------- Bibwewadi timetable PDFs in the admin panel: on/off switch + private PDF list ---------- */
+function loadBbAdmin(){
+  var pin=ADM.pin; if(!pin) return;
+  admRpc('admin_bib_tt_uploads',{p_pin:pin},30000).then(function(r){
+    if(!ADM.pin||!ADM.data) return;
+    if(!r.ok) throw new Error('bb '+r.status);
+    ADM.bb=r.j;ADM.bbErr=false;renderAdmin();
+  }).catch(function(){ if(!ADM.pin||!ADM.data) return; ADM.bbErr=true;renderAdmin(); });
+}
+function bbAdminHTML(){
+  var h='<p class="adm-h">Bibwewadi timetable PDFs <span style="font-weight:400;color:var(--muted)">(Vishwakarandak \u00b7 private PDFs)</span></p>';
+  if(ADM.bbErr) return h+'<p class="adm-empty">Could not load the Bibwewadi submissions.</p><div class="adm-actions"><button type="button" class="btn2" data-act="admin-refresh">Try again</button></div>';
+  if(!ADM.bb) return h+'<p class="adm-empty">Loading\u2026</p>';
+  var on=ADM.bb.open!==false;
+  h+='<button type="button" class="bb-sw" role="switch" aria-checked="'+on+'" data-act="admin-bb-toggle"'+(ADM.bbBusy?' disabled':'')+'>'+
+     '<span class="trk" aria-hidden="true"></span>'+
+     '<span>Submission pop-up: '+(on?'ON':'OFF')+
+     '<small>'+(on?'Shown to Bibwewadi students (CS, IT, CSAIML, CSAI). Tap to turn it off for everyone.':'Hidden for everyone. Tap to turn it back on.')+'</small></span></button>';
+  var items=ADM.bb.items||[];
+  if(!items.length) return h+'<p class="adm-empty">No Bibwewadi timetable PDFs submitted yet.</p>';
+  return h+'<p class="adm-empty">'+(ADM.bb.total||items.length)+' submitted</p><div class="adm-recent">'+items.map(function(r){
+    var cls=[r.branch,r.division,r.batch].filter(Boolean).join(' ');
+    return '<div class="adm-row"><span class="t">'+escHtml(fmtAdmTime(r.created_at))+'</span><span class="d adm-jp">'+
+      '<span>'+(cls?'<b>'+escHtml(cls)+'</b> \u00b7 ':'')+escHtml(r.file_name||'timetable.pdf')+' \u00b7 '+escHtml(jpFmtSize(r.file_size||0))+'</span>'+
+      '<button type="button" class="btn2" data-act="admin-bb-view" data-id="'+escHtml(r.id)+'">View PDF</button></span></div>';
+  }).join('')+'</div>';
+}
+function toggleBbWindow(){
+  if(!ADM.pin||!ADM.bb||ADM.bbBusy) return;
+  var want=!(ADM.bb.open!==false);
+  ADM.bbBusy=true; renderAdmin();
+  admRpc('admin_set_bib_tt_window',{p_pin:ADM.pin,p_open:want},20000).then(function(r){
+    ADM.bbBusy=false;
+    if(r.ok&&r.j&&typeof r.j.open==='boolean') ADM.bb.open=r.j.open;
+    else window.alert('Could not change the switch. Please try again.');
+    renderAdmin();
+  },function(){ ADM.bbBusy=false; window.alert('Could not change the switch. Check your connection.'); renderAdmin(); });
+}
+function openJpPdf(btn,fn){
+  var id=btn.getAttribute('data-id'); if(!id||!ADM.pin) return;
+  var w=window.open('about:blank','_blank');   // opened straight from the click so pop-up blockers allow it
+  if(!w){ btn.textContent='Allow pop-ups'; return; }
+  try{ w.opener=null; }catch(e){}
+  var label='View PDF'; btn.disabled=true; btn.textContent='Opening\u2026';
+  var fail=function(msg){ try{w.close();}catch(e){} btn.disabled=false; btn.textContent=msg; setTimeout(function(){btn.textContent=label;},2500); };
+  fetch(SUPA_URL+'/functions/v1/'+(fn||'japanese-pdf'),{
+    method:'POST',
+    headers:{apikey:SUPA_KEY,Authorization:'Bearer '+SUPA_KEY,'Content-Type':'application/json'},
+    body:JSON.stringify({action:'view',pin:ADM.pin,id:id})
+  }).then(function(res){ return res.json().catch(function(){return {};}).then(function(j){return {ok:res.ok,j:j||{}};}); })
+    .then(function(r){
+      if(!r.ok||!r.j.url){ fail(r.j.error==='denied'||r.j.error==='locked'?'PIN rejected':'Failed'); return; }
+      w.location.href=r.j.url; btn.disabled=false; btn.textContent=label;
+    })
+    .catch(function(){ fail('Failed'); });
 }
 function fmtAdmTime(iso){
   var d=new Date(iso);
@@ -2641,6 +3585,75 @@ function surveyAdminHTML(){
   }).join('')+'</div>';
   return out;
 }
+/* ---------- Classes donut chart: every class, tap a slice (or a list row) for details ---------- */
+function clsRows(){
+  var rows=((ADM.data||{}).classes||[]).filter(function(r){return (r.n||0)>0;});
+  rows.sort(function(a,b){return (b.n||0)-(a.n||0)||String(a.k).localeCompare(String(b.k));});
+  return rows;
+}
+function clsColor(i){ return 'hsl('+Math.round((i*137.508)%360)+' 62% '+(44+(i%3)*8)+'%)'; }
+function clsPt(a,r){ return (100+r*Math.cos(a)).toFixed(2)+' '+(100+r*Math.sin(a)).toFixed(2); }
+function clsSlice(a0,a1){
+  var R=92,r=54;
+  if(a1-a0>=Math.PI*2-0.0005){
+    return 'M100 '+(100-R)+'A'+R+' '+R+' 0 1 1 100 '+(100+R)+'A'+R+' '+R+' 0 1 1 100 '+(100-R)+'Z'+
+           'M100 '+(100-r)+'A'+r+' '+r+' 0 1 0 100 '+(100+r)+'A'+r+' '+r+' 0 1 0 100 '+(100-r)+'Z';
+  }
+  var big=(a1-a0>Math.PI)?1:0;
+  return 'M'+clsPt(a0,R)+'A'+R+' '+R+' 0 '+big+' 1 '+clsPt(a1,R)+'L'+clsPt(a1,r)+'A'+r+' '+r+' 0 '+big+' 0 '+clsPt(a0,r)+'Z';
+}
+function clsPct(n,total){ var p=total?(n/total*100):0; return (p>=10?p.toFixed(0):p.toFixed(1))+'%'; }
+function clsInner(){
+  var rows=clsRows();
+  if(!rows.length) return '<p class="adm-empty">No data yet.</p>';
+  var total=0; rows.forEach(function(r){ total+=r.n||0; });
+  var sel=-1; rows.forEach(function(r,i){ if(ADM.cls!==null&&r.k===ADM.cls) sel=i; });
+  var a=-Math.PI/2, paths='';
+  rows.forEach(function(r,i){
+    var a0=a, a1=a+(r.n/total)*Math.PI*2; a=a1;
+    var mid=(a0+a1)/2, dx=0, dy=0;
+    if(i===sel&&rows.length>1){ dx=Math.cos(mid)*5; dy=Math.sin(mid)*5; }
+    paths+='<path class="cls-sl'+(i===sel?' on':'')+'" d="'+clsSlice(a0,a1)+'" fill="'+clsColor(i)+'" fill-rule="evenodd" data-act="admin-cls" data-i="'+i+'" transform="translate('+dx.toFixed(1)+' '+dy.toFixed(1)+')"><title>'+escHtml(r.k)+': '+r.n+' visits ('+clsPct(r.n,total)+')</title></path>';
+  });
+  var c1=sel>=0?rows[sel].n:total, c2=sel>=0?clsPct(rows[sel].n,total)+' of visits':rows.length+' classes \u00b7 '+total+' visits';
+  var pie='<svg class="cls-pie'+(sel>=0?' has-sel':'')+'" viewBox="-8 -8 216 216" role="img" aria-label="Visits by class, last 30 days">'+paths+
+    '<text class="cls-c1" x="100" y="102">'+c1+'</text><text class="cls-c2" x="100" y="118">'+escHtml(c2)+'</text></svg>';
+  var list='<ul class="cls-list">'+rows.map(function(r,i){
+    return '<li><button type="button" class="cls-li'+(i===sel?' on':'')+'" data-act="admin-cls" data-i="'+i+'" aria-pressed="'+(i===sel)+'">'+
+      '<i style="background:'+clsColor(i)+'"></i><span class="nm">'+escHtml(r.k)+'</span><span class="ct">'+r.n+' \u00b7 '+clsPct(r.n,total)+'</span></button></li>';
+  }).join('')+'</ul>';
+  return '<div class="cls-wrap"><div>'+pie+'</div><div>'+list+'</div></div>'+clsDetail(rows,sel,total);
+}
+function clsDetail(rows,sel,total){
+  if(sel<0) return '<p class="cls-hint">Tap a slice or a class to see its details.</p>';
+  var r=rows[sel], u=r.u||0;
+  var kp=[
+    {l:'Visits',n:r.n||0,u:'30 days'},
+    {l:'Share',n:clsPct(r.n||0,total),u:'of all visits'},
+    {l:'Unique',n:u,u:'visitors'},
+    {l:'Per visitor',n:u?((r.n||0)/u).toFixed(1):'-',u:'visits each'},
+    {l:'Rank',n:'#'+(sel+1),u:'of '+rows.length}
+  ];
+  if(r.v_24h!=null) kp.push({l:'24 hours',n:r.v_24h,u:'visits'});
+  if(r.v_7d!=null) kp.push({l:'7 days',n:r.v_7d,u:'visits'});
+  var h='<div class="cls-detail"><h4><i style="background:'+clsColor(sel)+'"></i>'+escHtml(r.k)+'</h4>'+
+    '<div class="adm-kpis">'+kp.map(function(k){
+      return '<div class="adm-kpi"><span class="n">'+k.n+'</span><span class="u">'+k.u+'</span><span class="l">'+k.l+'</span></div>';
+    }).join('')+'</div>';
+  if(r.last_at) h+='<p class="adm-sub" style="margin-top:10px">Last visit '+escHtml(fmtAdmTime(r.last_at))+'</p>';
+  if(r.mobile!=null||r.desktop!=null||r.tablet!=null){
+    h+='<p class="adm-h">Devices &amp; app</p>'+rankList([
+      {k:'Mobile',n:r.mobile||0},{k:'Desktop',n:r.desktop||0},{k:'Tablet',n:r.tablet||0},{k:'Installed app',n:r.app||0}
+    ],'k','n');
+  }
+  return h+'</div>';
+}
+function admPickClass(i){
+  var rows=clsRows(), r=rows[+i];
+  if(!r) return;
+  ADM.cls=(ADM.cls===r.k)?null:r.k;
+  var el=$('#admCls'); if(el) el.innerHTML=clsInner();
+}
 function renderAdmin(){
   var d=ADM.data||{},t=d.totals||{},ret=d.returning||{},inst=d.install_share||{};
   var kpis=[
@@ -2652,7 +3665,7 @@ function renderAdmin(){
     {l:'All time',n:t.v_all||0,u:(t.u_all||0)+' uniq'}
   ];
   var html='';
-  html+='<div class="adm-toolbar"><p class="adm-sub">Updated '+escHtml(fmtAdmTime(d.generated_at))+'</p>'+
+  html+='<div class="adm-toolbar"><p class="adm-sub">Updated '+escHtml(fmtAdmTime(d.generated_at))+(ADM.refreshing?' \u00b7 refreshing\u2026':'')+'</p>'+
     '<div class="seg" role="group" aria-label="Chart range">'+
       '<button type="button" data-act="admin-range" data-v="24h" aria-pressed="'+(ADM.range==='24h')+'">24h</button>'+
       '<button type="button" data-act="admin-range" data-v="30d" aria-pressed="'+(ADM.range==='30d')+'">30d</button>'+
@@ -2752,8 +3765,10 @@ function renderAdmin(){
     '<div><p class="adm-h">Browsers</p>'+rankList(d.browsers,'k','n')+'</div>'+
     '<div><p class="adm-h">Referrers</p>'+rankList(d.referrers,'k','n')+'</div>'+
   '</div>';
-  html+='<p class="adm-h">Classes</p>'+rankList(d.classes,'k','n');
+  html+='<p class="adm-h">Classes <span style="font-weight:400;color:var(--muted)">(30d \u00b7 tap a slice for details)</span></p><div id="admCls">'+clsInner()+'</div>';
   html+='<p class="adm-h">Link clicks <span style="font-weight:400;color:var(--muted)">(30d)</span></p>'+rankList(d.link_clicks,'k','n');
+  html+=bbAdminHTML();
+  html+=jpAdminHTML();
   html+=surveyAdminHTML();
   html+='<p class="adm-h">Latest visits</p>';
   var recent=d.recent||[];
@@ -2796,7 +3811,7 @@ function broLog(ev,link){logVisit(ev,{branch:st.branch||store.get('tt-branch',''
 function broSave(){store.set('tt-bro',JSON.stringify({me:BRO.me,friends:BRO.friends.map(function(f){return {n:f.n,b:f.b,d:f.d,t:f.t,de:f.de};})}));}
 function broOpts(list,cur,ph){return '<option value="">'+ph+'</option>'+list.map(function(o){return '<option value="'+esc(o.v)+'"'+(o.v===cur?' selected':'')+'>'+esc(o.t)+'</option>';}).join('');}
 function broDivs(b){return b&&CLASSES[b]?Object.keys(CLASSES[b].divs).map(function(k){return {v:k,t:k};}):[];}
-function broYou(){return branchLabel(st.branch)+'-'+st.div+' · batch '+st.batch+(st.lang?' · German':'');}
+function broYou(){return branchLabel(st.branch)+'-'+st.div+' · batch '+st.batch+(st.lang?' · '+langName(st.lang):'');}
 function broFriendHTML(f,i){
   if(f.b&&!CLASSES[f.b]){f.b='';f.d='';}
   if(f.d&&!(CLASSES[f.b]&&CLASSES[f.b].divs[f.d])) f.d='';
@@ -2810,7 +3825,7 @@ function broFriendHTML(f,i){
       '<label class="bro-f"><span>Division</span><select data-bro="d" data-i="'+i+'">'+broOpts(broDivs(f.b),f.d,'Select')+'</select></label>'+
       '<label class="bro-f"><span>Lab batch</span><select data-bro="t" data-i="'+i+'">'+broOpts(bts,f.t,'Select')+'</select></label>'+
     '</div>'+
-    '<label class="bro-chk"><input type="checkbox" data-bro="de" data-i="'+i+'"'+(f.de?' checked':'')+'> Has a foreign language (German)</label>'+
+    '<label class="bro-chk"><input type="checkbox" data-bro="de" data-i="'+i+'"'+(f.de?' checked':'')+'> Has a foreign language (German or Japanese)</label>'+
     '<label class="bro-f bro-roll"'+(f.de?'':' hidden')+'><span>Roll number</span><input type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="e.g. 346" data-bro="roll" data-i="'+i+'" value="'+esc(f.roll)+'"></label>'+
   '</fieldset>';
 }
@@ -2833,7 +3848,7 @@ function broFormHTML(){
     '</div>'+
     '<p class="bro-msg" id="broMsg" role="status" aria-live="polite"></p>'+
     '<div id="broOut"></div>'+
-    '<p class="bro-note">Compares the regular weekly timetable only. Holidays and exam weeks are not considered. Roll numbers are only used on this device to find the German slot.</p>';
+    '<p class="bro-note">Compares the regular weekly timetable only. Holidays and exam weeks are not considered. Roll numbers are only used on this device to find the German or Japanese slot.</p>';
 }
 function showBro(){
   if(!CUR) return;
@@ -2917,16 +3932,18 @@ function broGo(){
     var notes=[],list=fr.map(function(f,i){
       var meta=CLASSES[f.b].divs[f.d],label=(f.n||'').trim()||('Person '+(i+1)),lang=null;
       if(f.de){
-        if(!f.roll) notes.push(label+': German was ticked but no roll number was entered, so the German slot is not included.');
-        else{lang=germanFor(f.b,f.d,f.roll);if(!lang) notes.push(label+': that roll number was not found in the German list for this division, so no German slot is included.');}
+        if(!f.roll) notes.push(label+': a foreign language was ticked but no roll number was entered, so that slot is not included.');
+        else{lang=langFor(f.b,f.d,f.roll);if(!lang) notes.push(label+': that roll number was not found in the German or Japanese list for this division, so no foreign language slot is included.');}
       }
       var sess=meta.sess.filter(function(x){return !x.b||x.b===f.t;});
-      if(lang){var g=GER_SLOTS[lang];sess=sess.concat([{d:g[0],s:g[1],e:g[2],sub:GER_SUBJ,type:'Foreign Language',room:g[3],ger:true}]);}
+      if(lang){var g=langSlot(lang);getSubj(langSubj(lang),langName(lang));sess=sess.concat([{d:g[0],s:g[1],e:g[2],sub:langSubj(lang),type:'Foreign Language',room:g[3],ger:true,lk:isJpCode(lang)?'jp':'de'}]);}
+      sess=broEvApply(meta,sess);
       return {label:label,b:f.b,d:f.d,t:f.t,lang:lang,sess:sess};
     });
+    if(broEvWeek()&&(fr.some(function(f){var m=CLASSES[f.b].divs[f.d];return m.ev&&m.ev.has;})||(BRO.me&&CUR&&CUR.ev&&CUR.ev.has))) notes.push(EV_LABEL+' is included for this week.');
     BRO.cmp={friends:list,notes:notes};
     broRecompute();broPaint();
-    broLog('bro_compare','bro:'+list.map(function(p){return p.b+'-'+p.d+'-'+p.t+(p.lang?'+DE':'');}).join(',')+(BRO.me?'+me':''));
+    broLog('bro_compare','bro:'+list.map(function(p){return p.b+'-'+p.d+'-'+p.t+(p.lang?(isJpCode(p.lang)?'+JA':'+DE'):'');}).join(',')+(BRO.me?'+me':''));
     var dk=$('#broDisk');if(dk) dk.disabled=false;
     done();
   }).catch(function(){
@@ -2934,8 +3951,18 @@ function broGo(){
     broMsg('Could not load a timetable. Check your connection and try again.');
   });
 }
-function broKey(){return [st.fmt,st.branch,st.div,st.batch,st.lang||'',BRO.me?1:0].join('|');}
-function broMine(){return SESS.filter(function(x){return !x.b||x.b===st.batch;});}
+function broEvWeek(){   // Buddy Connect compares the current week (Sunday shows the coming one); true when that week is the Vishwakarandak week
+  var t=dayStart(new Date(),0),dw=t.getDay();
+  return ymd(dayStart(t,dw===0?1:1-dw))===EV_FROM;
+}
+function broEvApply(meta,sess){   // special timetable replaces the event weekdays (Mon-Thu) for divisions that have it
+  if(!broEvWeek()||!meta||!meta.ev||!meta.ev.has) return sess;
+  var wd=[],d=parseISODate(EV_FROM),e=parseISODate(EV_TO);
+  for(;d<=e;d=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1)) wd.push(d.getDay());
+  return sess.filter(function(x){return wd.indexOf(x.d)<0;}).concat(meta.ev.list);
+}
+function broKey(){return [st.fmt,st.branch,st.div,st.batch,st.lang||'',BRO.me?1:0,broEvWeek()?'ev':''].join('|');}
+function broMine(){return broEvApply(CUR,SESS.filter(function(x){return !x.b||x.b===st.batch;}));}
 function broPeople(includeMe){
   var out=[];
   if(includeMe) out.push({label:'You',b:st.branch,d:st.div,t:st.batch,lang:st.lang,sess:broMine(),me:true,color:'#1B2340'});
@@ -2986,7 +4013,7 @@ function broBestPicks(r){
   return {picks:picks,idle:idle};
 }
 function broWho(n){return n===2?'both of you':(n===3?'all three of you':'all '+n+' of you');}
-function broCls(p){return branchLabel(p.b)+'-'+p.d+' · batch '+p.t+(p.lang?' · German '+p.lang:'');}
+function broCls(p){return branchLabel(p.b)+'-'+p.d+' · batch '+p.t+(p.lang?' · '+langName(p.lang)+' '+p.lang:'');}
 function broResultHTML(r){
   var ppl=BRO.people,n=ppl.length,dn=nowFloor().getDay(),bp=broBestPicks(r),picks=bp.picks,idle=bp.idle,html='';
   if(picks.length){
@@ -3443,7 +4470,8 @@ function roomBuild(rows){
     roomSplit(r.room).forEach(function(n){addOcc(camp,n,+r.weekday,toMin(r.start_time),toMin(r.end_time),sub,r.division,r.batch);});
   });
   /* the German (foreign language) slots are not in tt_sessions; they sit in fixed Kondhwa rooms */
-  Object.keys(GER_SLOTS).forEach(function(k){var g=GER_SLOTS[k];addOcc('Kondhwa Campus',String(g[3]).toUpperCase(),g[0],g[1],g[2],'German','',null);});
+  Object.keys(GER_SLOTS).forEach(function(k){var g=GER_SLOTS[k];addOcc(isBibCode(k)?'Bibwewadi Campus':'Kondhwa Campus',String(g[3]).toUpperCase(),g[0],g[1],g[2],'German','',null);});
+  Object.keys(JP_SLOTS).forEach(function(k){var g=JP_SLOTS[k];addOcc('Kondhwa Campus',String(g[3]).toUpperCase(),g[0],g[1],g[2],'Japanese','',null);});
   ROOM.camps=camps;
   ROOM.eff={};
   Object.keys(CLASSES).forEach(function(b){Object.keys(CLASSES[b].divs).forEach(function(d){var m=CLASSES[b].divs[d];ROOM.eff[m.slug]={f:m.effFrom||'',t:m.effTo||''};});});
@@ -3589,42 +4617,12 @@ window.addEventListener('scroll',updateFeatureNudge,{passive:true});
 setTimeout(updateFeatureNudge,0);
 
 
-/* ---------- Study Planner bottom nudge: shows at the top of the page, scrolls to the card, explains it on first click ---------- */
-var plannerNudgeDismissed=false;
-function hidePlannerNudge(){var w=$('#plannerWrap');if(w)w.hidden=true;}
-function updatePlannerNudge(){
-  var w=$('#plannerWrap');if(!w)return;
-  var pk=$('#picker');
-  var show=!plannerNudgeDismissed&&!store.get('tt-planner-used','')&&window.scrollY<=120&&!document.querySelector('dialog[open]')&&!!CUR&&!(pk&&!pk.hidden);
-  w.hidden=!show;
-}
-function dismissPlannerNudge(){plannerNudgeDismissed=true;hidePlannerNudge();}
+/* ---------- Study Planner intro ---------- */
 function plannerLog(a){try{logVisit(a,{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});}catch(e){}}
-function plannerNudgeClick(){
-  plannerLog('click_planner_nudge');
-  plannerNudgeDismissed=true;hidePlannerNudge();
-  var card=$('#plannerCard');
-  if(card){
-    var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
-    card.scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});
-    card.classList.remove('pn-flash');void card.offsetWidth;card.classList.add('pn-flash');
-  }
-  if(!store.get('tt-planner-intro','')){
-    store.set('tt-planner-intro','1');
-    setTimeout(function(){
-      var dlg=$('#plannerIntro');
-      if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open','');
-      plannerLog('open_planner_intro');
-    },600);
-  }
-}
 function closePlannerIntro(){
   var dlg=$('#plannerIntro');
   if(typeof dlg.close==='function') dlg.close(); else dlg.removeAttribute('open');
 }
-window.addEventListener('scroll',updatePlannerNudge,{passive:true});
-setInterval(updatePlannerNudge,800);
-setTimeout(updatePlannerNudge,0);
 
 /* ---------- Boot loading screen ---------- */
 var LOAD_QUOTES=[
@@ -3860,12 +4858,67 @@ function maybeShowSuspendNotice(){
   }catch(e){}
 }
 
+var xtraShown=false;
+var XTRA_UNTIL=new Date('2026-10-28T00:00:00+05:30').getTime();
+function maybeShowExtraNotice(){
+  try{
+    if(xtraShown) return;
+    if(st.branch!=='CSSE'||st.div!=='C') return;
+    if(Date.now()>=XTRA_UNTIL||ymd(nowFloor())!=='2026-10-27') return;
+    var el=$('#xtraNotice');if(!el) return;
+    xtraShown=true;
+    el.classList.remove('out');el.hidden=false;
+    $('#xtraNoticeOk').addEventListener('click',function(){
+      el.classList.add('out');setTimeout(function(){el.hidden=true;},420);
+    },{once:true});
+  }catch(e){}
+}
+
+var onlShown=false;
+var ONL_END={'2026-10-31':new Date('2026-10-31T19:00:00+05:30').getTime(),'2026-11-01':new Date('2026-11-01T19:30:00+05:30').getTime()};
+function maybeShowOnlineNotice(){
+  try{
+    if(onlShown||!onlApplies()) return;
+    var today=ymd(nowFloor());
+    var cur=ONL.filter(function(o){return o.k===today;})[0];
+    if(!cur||Date.now()>=ONL_END[today]) return;
+    if(store.get('tt-onl-seen','')===today) return;   // once a day
+    var el=$('#onlNotice');if(!el) return;
+    onlShown=true;store.set('tt-onl-seen',today);
+    var fmt=function(o){var d=parseISODate(o.k);return '<li><b>'+DAYS[d.getDay()]+', '+d.getDate()+' '+MONS[d.getMonth()]+' 2026</b><span>'+fmtRange(o.s,o.e)+' &middot; Online (Zoom)</span></li>';};
+    $('#onlList').innerHTML=ONL.map(fmt).join('');
+    el.classList.remove('out');el.hidden=false;
+    $('#onlNoticeOk').addEventListener('click',function(){
+      el.classList.add('out');setTimeout(function(){el.hidden=true;},420);
+    },{once:true});
+  }catch(e){}
+}
+
+var roomShown=false;
+function hasE402Lab(){   // does this student's batch have a lab in E402 on any day of the week?
+  return SESS.some(function(x){return (!x.b||x.b===st.batch)&&isE402Lab(x);});
+}
+function maybeShowRoomNotice(){
+  try{
+    if(roomShown) return;
+    if(!hasE402Lab()) return;   // only students with a lab in E402 at any point in the week
+    var today=ymd(nowFloor());
+    if(store.get('tt-room-seen','')===today) return;   // full-screen notice: once a day
+    var el=$('#roomNotice');if(!el) return;
+    roomShown=true;store.set('tt-room-seen',today);
+    el.classList.remove('out');el.hidden=false;
+    $('#roomNoticeOk').addEventListener('click',function(){
+      el.classList.add('out');setTimeout(function(){el.hidden=true;},420);
+    },{once:true});
+  }catch(e){}
+}
+
 var chgShown=false;
 function maybeShowChangeNotice(){
   try{
     if(chgShown) return;
     if(st.branch!=='CSSE'||st.div!=='C') return;
-    if(ymd(nowFloor())!=='2026-10-15') return;
+    if(ymd(nowFloor())!=='2026-10-29') return;
     var el=$('#chgNotice');if(!el) return;
     chgShown=true;
     el.classList.remove('out');el.hidden=false;
@@ -3882,7 +4935,7 @@ var SV={ans:{q1:null,qh:null,q2:0,q3:null,q4:null},shown:false,sending:false,tim
 function svForced(){ return /[?&]survey=1\b/.test(location.search); }   // ?survey=1 re-shows it for testing
 function svDone(){ return store.get('tt-survey-done','')==='1'; }
 function svBlocked(){   // wait while a notice, splash or dialog is on screen
-  var ids=['labNotice','chgNotice','susNotice','holidayIntro','loadScreen'];
+  var ids=['labNotice','chgNotice','susNotice','roomNotice','xtraNotice','onlNotice','holidayIntro','loadScreen'];
   for(var i=0;i<ids.length;i++){ var el=document.getElementById(ids[i]); if(el&&!el.hidden) return true; }
   if(document.querySelector('dialog[open]')) return true;
   return !!$('#view').hidden;
@@ -3981,6 +5034,7 @@ document.addEventListener('keydown',function(e){
 });
 
 function boot(){
+  loadChanges();   // schedule changes (tt_changes), in parallel with the class list
   initForumTip();
   $('#view').hidden=true;$('#picker').hidden=true;$('#pkCancel').hidden=true;
   // saved choice: branch + division + batch. If we already know it, show the animated
@@ -3997,7 +5051,7 @@ function boot(){
     if(BATCHES.indexOf(rawBatch)<0) rawBatch='';
     if(rawBatch&&rollAsked){
       return setClass(sBr,sDv).then(function(ok){
-        if(ok){ st.batch=rawBatch; closePicker(true); }
+        if(ok){ st.batch=rawBatch; jpGate(sBr,sDv,rawBatch,st.roll,function(){ closePicker(true); }); }
         else { stopLoadScreen(); $('#picker').hidden=false; openPicker(false); }
       });
     }
@@ -4011,10 +5065,382 @@ function boot(){
     showPickerStatus('Could not load the class list. Check your connection and reload the page.');
   }).then(function(){
     setInterval(tick,1000);
-    document.addEventListener('visibilitychange',tick);
+    setInterval(loadChanges,180000);   // pick up new changes every 3 min
+    document.addEventListener('visibilitychange',function(){ tick(); if(!document.hidden) loadChanges(); });
     window.addEventListener('focus',tick);
   });
 }
+/* ---------- Reminder Ranger (Alpha): lecture reminders ranked by how easy a lecture is to miss ----------
+   Level 3: standalone lectures (a gap of 2 h or more from the previous class) and language classes (German, Japanese, English) -> stark
+   Level 2: back-to-back lecture in a different room -> silent heads-up
+   Level 1: back-to-back lecture in the same room -> cannot be missed, no reminder by default
+   Runs entirely on this device. Works while the app is open (or running in the background on your phone). */
+var RR_STORE='tt-rr',RR_FIRED='tt-rr-fired';
+var RR_TONES=[['chime','Chime'],['bell','Soft bell'],['drop','Droplet'],['pluck','Pluck'],['pulse','Pulse']];
+var RR_LEADS=[5,10,15,30],RR_GAPS=[60,90,120,180],RR_MAX_SND=700*1024;
+var RR_LV={
+  1:{name:'Level 1',tag:'Cannot be missed',kick:'FYI',c:'var(--muted)',desc:'Back-to-back lectures in the same room. You are already there, so no reminder by default.'},
+  2:{name:'Level 2',tag:'Room change',kick:'Heads-up',c:'var(--focus)',desc:'Back-to-back lectures in a different room. A silent nudge so you can head over.'},
+  3:{name:'Level 3',tag:'Easy to miss',kick:'Don\u2019t miss this',c:'var(--now)',desc:'Standalone lectures (2 hours or more from your other classes) and language classes: German, Japanese and English. A stark reminder.'}
+};
+var RR_BELL='<svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 11.5h9l-1.2-1.6V7a3.3 3.3 0 0 0-6.6 0v2.9zM6.6 13.4a1.5 1.5 0 0 0 2.8 0"/></svg>';
+function rrDefaults(){return {on:false,gap:120,vol:70,lvl:{
+  1:{snd:false,sil:false,lead:5,tone:'chime'},
+  2:{snd:false,sil:true,lead:5,tone:'chime'},
+  3:{snd:true,sil:true,lead:15,tone:'chime'}}};}
+function rrLoad(){
+  var d=rrDefaults(),s=null;
+  try{s=JSON.parse(store.get(RR_STORE,'')||'null');}catch(e){}
+  if(!s||typeof s!=='object') return d;
+  d.on=!!s.on;
+  if(RR_GAPS.indexOf(+s.gap)>-1) d.gap=+s.gap;
+  if(s.vol!=null&&+s.vol>=0&&+s.vol<=100) d.vol=+s.vol;
+  [1,2,3].forEach(function(l){
+    var a=s.lvl&&s.lvl[l],t=d.lvl[l];if(!a) return;
+    if(typeof a.snd==='boolean') t.snd=a.snd;
+    if(typeof a.sil==='boolean') t.sil=a.sil;
+    if(RR_LEADS.indexOf(+a.lead)>-1) t.lead=+a.lead;
+    if(a.tone==='custom'||RR_TONES.some(function(x){return x[0]===a.tone;})) t.tone=a.tone;
+  });
+  return d;
+}
+var RR=rrLoad();
+function rrSave(){store.set(RR_STORE,JSON.stringify(RR));}
+function rrGet(k){try{return localStorage.getItem(k)||'';}catch(e){return '';}}
+function rrCustom(l){return rrGet('tt-rr-snd-'+l);}
+function rrToneOk(l){return RR.lvl[l].tone!=='custom'||!!rrCustom(l);}
+
+/* ----- sound: small synthesised tones, nothing to download ----- */
+var rrCtx=null;
+function rrAudio(){
+  try{
+    if(!rrCtx){var C=window.AudioContext||window.webkitAudioContext;if(!C) return null;rrCtx=new C();}
+    if(rrCtx.state==='suspended') rrCtx.resume();
+    return rrCtx;
+  }catch(e){return null;}
+}
+function rrNote(ctx,t0,f,dur,vol,type,sweepTo){
+  var o=ctx.createOscillator(),g=ctx.createGain();
+  o.type=type||'sine';o.frequency.setValueAtTime(f,t0);
+  if(sweepTo) o.frequency.exponentialRampToValueAtTime(sweepTo,t0+dur*0.8);
+  g.gain.setValueAtTime(0.0001,t0);
+  g.gain.exponentialRampToValueAtTime(Math.max(vol,0.0003),t0+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);
+  o.connect(g);g.connect(ctx.destination);o.start(t0);o.stop(t0+dur+0.05);
+}
+function rrSynth(name,vol){   // returns the length in seconds
+  var ctx=rrAudio();if(!ctx) return 0;
+  var t=ctx.currentTime+0.02,v=vol*0.5;
+  if(name==='bell'){rrNote(ctx,t,660,1.4,v);rrNote(ctx,t,990,1,v*0.35);rrNote(ctx,t,1320,0.6,v*0.15);return 1.5;}
+  if(name==='drop'){rrNote(ctx,t,1250,0.22,v,'sine',480);return 0.3;}
+  if(name==='pluck'){[523.25,659.25,783.99].forEach(function(f,i){rrNote(ctx,t+i*0.11,f,0.45,v,'triangle');});return 0.9;}
+  if(name==='pulse'){[0,0.2,0.4].forEach(function(o){rrNote(ctx,t+o,740,0.12,v,'triangle');});return 0.7;}
+  rrNote(ctx,t,880,0.6,v);rrNote(ctx,t+0.14,1318.5,0.9,v*0.9);return 1.1;   // chime (default)
+}
+function rrPlay(l,times){
+  var cfg=RR.lvl[l],vol=RR.vol/100,n=times||1,i=0,custom=(cfg.tone==='custom')?rrCustom(l):'';
+  (function once(){
+    var d;
+    if(custom){
+      try{var a=new Audio(custom);a.volume=vol;var p=a.play();if(p&&p.catch)p.catch(function(){});setTimeout(function(){try{a.pause();}catch(e){}},8000);}catch(e){}
+      d=2;
+    }else d=rrSynth(cfg.tone,vol);
+    i++;if(i<n) setTimeout(once,Math.max(900,(d||1)*1000+350));
+  })();
+}
+
+/* ----- system notifications ----- */
+function rrPerm(){return ('Notification' in window)?Notification.permission:'unsupported';}
+function rrAsk(cb){
+  var done=false,fin=function(p){if(done) return;done=true;if(cb) cb(p);};
+  if(!('Notification' in window)){fin('unsupported');return;}
+  if(Notification.permission!=='default'){fin(Notification.permission);return;}
+  try{var r=Notification.requestPermission(fin);if(r&&r.then) r.then(fin);}catch(e){fin('denied');}
+}
+function rrSystem(title,body,tag,silent,stark){
+  if(rrPerm()!=='granted') return;
+  var o={body:body,tag:tag,silent:!!silent,icon:'icons/icon-192.png',badge:'icons/icon-32.png',requireInteraction:!!stark};
+  try{new Notification(title,o);return;}catch(e){}
+  try{if(navigator.serviceWorker&&navigator.serviceWorker.ready) navigator.serviceWorker.ready.then(function(r){r.showNotification(title,o);});}catch(e){}
+}
+
+/* ----- ranking ----- */
+function rrIsLang(x){
+  var n=((SUBJ[x.sub]||{}).name)||'';
+  return !!x.ger||x.type==='Foreign Language'||/^LANG-/.test(x.sub||'')||x.sub==='ES26108A'||/english|german|japanese|french|foreign/i.test(n);
+}
+function rrPlan(date){
+  var l=forDay(date.getDay(),st.batch,date).filter(function(x){return x&&x.e>x.s;});
+  var lang=l.filter(function(x){return x.ger;});
+  l=l.filter(function(x){   // students who take German/Japanese do not have English in that slot
+    return !(st.lang&&isEng(x)&&lang.some(function(g){return g.s<x.e&&g.e>x.s;}));
+  });
+  return l.map(function(x){
+    var prev=null;
+    l.forEach(function(y){if(y!==x&&y.s<x.s&&(!prev||y.e>prev.e)) prev=y;});
+    var gap=prev?Math.max(0,x.s-prev.e):null,lvl,why;
+    if(rrIsLang(x)){lvl=3;why='lang';}
+    else if(!prev||gap>=RR.gap){lvl=3;why='solo';}
+    else if(roomKey(prev.room)&&roomKey(prev.room)===roomKey(x.room)){lvl=1;why='same';}
+    else{lvl=2;why='move';}
+    return {x:x,lvl:lvl,why:why,gap:gap,prev:prev};
+  });
+}
+function rrName(x){var s=SUBJ[x.sub]||{};return s.short||s.name||x.sub||'Lecture';}
+function rrWhy(p){
+  if(p.why==='lang') return 'Language class, so this one gets a stark reminder.';
+  if(p.why==='solo') return p.prev?'Standalone: '+dur(p.gap*60000)+' after your previous class.':'Standalone: no class before it.';
+  if(p.why==='same') return 'Same room as the previous lecture ('+(p.x.room||'')+').';
+  return 'Room change: '+(p.prev.room||'?')+' to '+(p.x.room||'?')+'.';
+}
+function rrActive(l){var c=RR.lvl[l];return c.snd||c.sil;}
+
+/* ----- toasts (shown on top of everything, even over open dialogs) ----- */
+function rrToastBox(){
+  var b=$('#rrToasts');if(!b) return null;
+  if(b.showPopover&&!b.hasAttribute('popover')){b.removeAttribute('hidden');b.setAttribute('popover','manual');}
+  return b;
+}
+function rrToastTop(b){
+  if(b.showPopover){try{if(b.matches(':popover-open')) b.hidePopover();b.showPopover();}catch(e){}}
+  else b.hidden=false;
+}
+function rrToastDrop(el){
+  if(!el||!el.parentNode) return;
+  var b=el.parentNode;
+  el.classList.add('out');
+  setTimeout(function(){
+    if(el.parentNode) el.parentNode.removeChild(el);
+    if(!b.children.length){if(b.hidePopover&&b.hasAttribute('popover')){try{b.hidePopover();}catch(e){}}else b.hidden=true;}
+  },210);
+}
+function rrToast(o){
+  var b=rrToastBox();if(!b) return;
+  var el=document.createElement('div');
+  el.className='rr-toast';el.setAttribute('data-l',o.l);el.style.setProperty('--c',RR_LV[o.l].c);
+  el.setAttribute('role',o.l===3?'alert':'status');
+  el.innerHTML='<div class="ti">'+RR_BELL+'</div><div class="tb"><p class="tk">'+esc(o.kick)+'</p><p class="tt">'+esc(o.title)+'</p><p class="tm">'+esc(o.body)+'</p>'+
+    (o.why?'<p class="tw">'+esc(o.why)+'</p>':'')+
+    '<div class="ta"><button type="button" class="rr-tb" data-rr="toast-ok">Got it</button>'+(o.snooze?'<button type="button" class="rr-tb alt" data-rr="toast-snooze">Snooze 5 min</button>':'')+'</div></div>';
+  el._snooze=o.snooze||null;
+  b.appendChild(el);rrToastTop(b);
+  if(o.ttl) setTimeout(function(){rrToastDrop(el);},o.ttl);
+}
+
+/* ----- firing ----- */
+function rrFire(p,mLeft,test){
+  var cfg=RR.lvl[p.lvl],l=p.lvl,x=p.x,name=p.name||rrName(x);
+  var title=(l===3?'Don\u2019t miss: ':'Up next: ')+name;
+  var when=mLeft>0?'starts in '+mLeft+' min':'starting now';
+  var body=fmtRange(x.s,x.e)+(x.room?' \u00B7 '+x.room:'')+' \u00B7 '+when;
+  var why=test&&!cfg.snd&&!cfg.sil?'Sound and silent are both off for this level, so a real one would not alert you.':rrWhy(p);
+  var hidden=document.hidden;
+  if(cfg.snd){
+    rrPlay(l,l===3?3:1);
+    if(l===3&&navigator.vibrate){try{navigator.vibrate([220,110,220,110,420]);}catch(e){}}
+  }
+  if(cfg.sil||(cfg.snd&&hidden)) rrSystem(title,body+'\n'+why,'rr-'+(test?'test':x.sub+x.s),!(cfg.snd&&hidden),l===3);
+  var endIn=test?0:Math.max(0,(x.s-mins(nowFloor()))*60000+60000);
+  rrToast({l:l,kick:test?RR_LV[l].kick+' \u00B7 test':RR_LV[l].kick,title:title,body:body,why:why,
+    ttl:l===3?(test?20000:endIn||60000):(l===2?10000:7000),
+    snooze:(l===3&&!test)?function(){setTimeout(function(){var left=x.s-mins(nowFloor());if(left>0) rrFire(p,left,false);},5*60000);}:null});
+}
+function rrFiredMap(){try{return JSON.parse(store.get(RR_FIRED,'{}'))||{};}catch(e){return {};}}
+function rrCheck(){
+  if(!RR.on||!CUR||$('#view').hidden) return;
+  var now=nowFloor(),d=dayStart(now,0);
+  if(!inRange(d)||holidayFor(d)) return;
+  var nm=mins(now),dk=ymd(d),fm=rrFiredMap(),dirty=false;
+  Object.keys(fm).forEach(function(k){if(k.indexOf(dk)!==0){delete fm[k];dirty=true;}});
+  rrPlan(d).forEach(function(p){
+    if(!rrActive(p.lvl)) return;
+    var x=p.x,at=x.s-RR.lvl[p.lvl].lead;
+    if(nm<at||nm>=x.s) return;
+    var fk=dk+'|'+x.sub+'|'+x.s+'|'+(x.b||'')+'|'+x.type;
+    if(fm[fk]) return;
+    fm[fk]=1;dirty=true;
+    rrFire(p,x.s-nm,false);
+  });
+  if(dirty) store.set(RR_FIRED,JSON.stringify(fm));
+}
+
+/* ----- status line on the bar ----- */
+function rrNext(){
+  var now=nowFloor(),nm=mins(now);
+  for(var i=0;i<7;i++){
+    var d=dayStart(now,i);
+    if(!inRange(d)||holidayFor(d)) continue;
+    var l=rrPlan(d).filter(function(p){return rrActive(p.lvl)&&(i>0||p.x.s>nm);});
+    if(l.length) return {p:l[0],off:i,d:d};
+  }
+  return null;
+}
+function rrStatusText(){
+  if(!RR.on) return 'Lecture reminders are off. Switch on to get alerts before your lectures.';
+  if(!CUR) return 'On.';
+  var perm=rrPerm(),n=rrNext(),s;
+  if(!n) s='On. No upcoming reminders this week.';
+  else{
+    var day=n.off===0?'today':(n.off===1?'tomorrow':DAYS[n.d.getDay()]);
+    s='On. Next: '+rrName(n.p.x)+' '+day+' at '+fmtT(n.p.x.s)+' (level '+n.p.lvl+').';
+  }
+  if(perm==='default') s+=' Tap Customize to allow notifications.';
+  else if(perm==='denied') s+=' Notifications are blocked, so you will only see in-app banners.';
+  return s;
+}
+var rrLastStatus='';
+function rrBarSync(force){
+  var bar=$('#rrBar');if(!bar) return;
+  var t=rrStatusText(),key=t+'|'+RR.on;
+  if(!force&&key===rrLastStatus) return;
+  rrLastStatus=key;
+  bar.setAttribute('data-on',RR.on?'1':'0');
+  $('#rrStatus').textContent=t;
+  Array.prototype.forEach.call(bar.querySelectorAll('[data-rr="on"],[data-rr="off"]'),function(b){
+    b.setAttribute('aria-pressed',String((b.getAttribute('data-rr')==='on')===RR.on));
+  });
+}
+
+/* ----- customise dialog ----- */
+function rrSw(k,on,label){return '<button type="button" class="rr-sw" role="switch" aria-checked="'+on+'" aria-label="'+esc(label)+'" data-rr="sw" data-k="'+k+'"></button>';}
+function rrPlanDay(){
+  var now=nowFloor();
+  for(var i=0;i<7;i++){
+    var d=dayStart(now,i);
+    if(!inRange(d)||holidayFor(d)) continue;
+    var p=rrPlan(d);
+    if(p.length) return {d:d,off:i,list:p};
+  }
+  return null;
+}
+function rrPaint(){
+  var body=$('#rrBody');if(!body) return;
+  var ae=document.activeElement,fk=ae&&ae.getAttribute?ae.getAttribute('data-k'):null,sc=body.scrollTop;
+  var perm=rrPerm(),h='';
+  h+='<p class="rr-lead">Reminders ranked by how easy a lecture is to miss. This is an alpha: it works while the app is open or running in the background on your device, and nothing leaves this device.</p>';
+  // permission
+  var pt=perm==='granted'?'Notifications are allowed.':perm==='default'?'Allow notifications to get banners when the app is in the background.':perm==='denied'?'Notifications are blocked in your browser settings. In-app banners and sounds still work.':'This browser does not support system notifications. In-app banners and sounds still work.';
+  h+='<div class="rr-box"><div class="rr-perm"><p>'+pt+'</p>'+(perm==='default'?'<button type="button" class="rr-btn" data-rr="perm">Allow notifications</button>':'')+'</div></div>';
+  // today's plan
+  var pd=rrPlanDay();
+  h+='<div class="rr-box"><h4>'+(pd?(pd.off===0?'Today':pd.off===1?'Tomorrow':DAYS[pd.d.getDay()])+' \u00B7 how your lectures rank':'How your lectures rank')+'</h4>';
+  if(!pd) h+='<p>No lectures coming up this week.</p>';
+  else{
+    h+='<ul class="rr-plan">'+pd.list.map(function(p){
+      return '<li><span class="pt">'+esc(fmtRange(p.x.s,p.x.e))+'</span><span class="pn">'+esc(rrName(p.x))+'<small>'+esc((p.x.room||'')+(p.x.room?' \u00B7 ':'')+rrWhy(p))+'</small></span><span class="rr-chip" style="--c:'+RR_LV[p.lvl].c+'"><i></i>L'+p.lvl+'</span></li>';
+    }).join('')+'</ul>';
+  }
+  h+='</div>';
+  // general
+  h+='<div class="rr-box"><h4>General</h4>'+
+    '<div class="rr-set"><span id="rrGapL">Standalone when the gap is at least</span><div class="seg" role="group" aria-labelledby="rrGapL">'+RR_GAPS.map(function(g){return '<button type="button" data-rr="gap" data-v="'+g+'" aria-pressed="'+(RR.gap===g)+'">'+(g%60===0?(g/60)+' h':g+' min')+'</button>';}).join('')+'</div></div>'+
+    '<div class="rr-set"><label for="rrVol">Volume</label><input type="range" class="rr-range" id="rrVol" min="0" max="100" step="5" value="'+RR.vol+'" data-k="vol"></div></div>';
+  h+='<p class="rr-msg" id="rrMsg" role="status" aria-live="polite"></p>';
+  // levels
+  [3,2,1].forEach(function(l){
+    var c=RR.lvl[l],V=RR_LV[l];
+    var opts=RR_TONES.map(function(t){return '<option value="'+t[0]+'"'+(c.tone===t[0]?' selected':'')+'>'+t[1]+'</option>';}).join('');
+    if(rrCustom(l)) opts+='<option value="custom"'+(c.tone==='custom'?' selected':'')+'>'+esc(rrGet('tt-rr-sndn-'+l)||'Your sound')+'</option>';
+    opts+='<option value="__upload">Upload your own\u2026</option>';
+    h+='<section class="rr-lv" style="--c:'+V.c+'" aria-label="'+V.name+'">'+
+      '<div class="rr-lv-h"><b>'+V.name+'</b><span class="rr-chip" style="--c:'+V.c+'"><i></i>'+V.tag+'</span></div>'+
+      '<p class="rr-lv-d">'+V.desc+'</p>'+
+      '<div class="rr-set"><span>Sound reminder</span>'+rrSw('snd'+l,c.snd,V.name+' sound reminder')+'</div>'+
+      '<div class="rr-set"><span>Silent notification</span>'+rrSw('sil'+l,c.sil,V.name+' silent notification')+'</div>'+
+      '<div class="rr-set"><span id="rrLeadL'+l+'">Remind me</span><div class="seg" role="group" aria-labelledby="rrLeadL'+l+'">'+RR_LEADS.map(function(m){return '<button type="button" data-rr="lead" data-l="'+l+'" data-v="'+m+'" aria-pressed="'+(c.lead===m)+'">'+m+' min</button>';}).join('')+'</div></div>'+
+      '<div class="rr-set"><label for="rrTone'+l+'">Ringtone</label><div class="rr-tone"><select id="rrTone'+l+'" data-rr-tone="'+l+'" data-k="tone'+l+'">'+opts+'</select><button type="button" class="rr-btn alt" data-rr="preview" data-l="'+l+'">Preview</button><button type="button" class="rr-btn alt" data-rr="test" data-l="'+l+'">Test</button></div></div>'+
+      '</section>';
+  });
+  h+='<div class="rr-foot"><button type="button" class="rr-btn alt" data-rr="reset">Reset to defaults</button></div>';
+  body.innerHTML=h;
+  body.scrollTop=sc;
+  if(fk){var nf=body.querySelector('[data-k="'+fk+'"]');if(nf) nf.focus({preventScroll:true});}
+}
+function rrMsg(t){var m=$('#rrMsg');if(m) m.textContent=t||'';}
+function rrCommit(){rrSave();rrBarSync(true);}
+
+function rrSetOn(on){
+  RR.on=on;rrSave();
+  if(on){
+    rrAudio();
+    rrAsk(function(){rrBarSync(true);if($('#rrApp').open) rrPaint();});
+  }
+  rrBarSync(true);
+}
+function rrPreview(l){rrAudio();rrPlay(l,1);}
+function rrTest(l){
+  rrAudio();
+  var now=nowFloor(),m=mins(now);
+  var x={sub:'__rr',type:'Theory',s:Math.min(1380,m+RR.lvl[l].lead),e:Math.min(1439,m+RR.lvl[l].lead+60),room:'D301'};
+  var p={x:x,lvl:l,why:l===3?'solo':l===2?'move':'same',gap:l===3?150:10,prev:{room:l===2?'E212':'D301'},name:'Sample lecture'};
+  var run=function(){rrFire(p,RR.lvl[l].lead,true);};
+  if(RR.lvl[l].sil&&rrPerm()==='default') rrAsk(function(){run();rrPaint();}); else run();
+}
+function rrAct(a,b){
+  if(a==='open'){markFeatureUsed();rrPaint();teacherDialog('#rrApp',true);}
+  else if(a==='close') teacherDialog('#rrApp',false);
+  else if(a==='on') rrSetOn(true);
+  else if(a==='off') rrSetOn(false);
+  else if(a==='perm') rrAsk(function(){rrBarSync(true);rrPaint();});
+  else if(a==='sw'){
+    var k=b.getAttribute('data-k'),l=+k.slice(3),f=k.slice(0,3);
+    RR.lvl[l][f]=!RR.lvl[l][f];rrCommit();
+    if(RR.lvl[l].snd) rrAudio();
+    if(RR.lvl[l].sil&&RR.on&&rrPerm()==='default') rrAsk(function(){rrBarSync(true);rrPaint();});
+    rrPaint();
+  }
+  else if(a==='lead'){RR.lvl[+b.getAttribute('data-l')].lead=+b.getAttribute('data-v');rrCommit();rrPaint();}
+  else if(a==='gap'){RR.gap=+b.getAttribute('data-v');rrCommit();rrPaint();}
+  else if(a==='preview') rrPreview(+b.getAttribute('data-l'));
+  else if(a==='test') rrTest(+b.getAttribute('data-l'));
+  else if(a==='reset'){
+    var keep=RR.on;RR=rrDefaults();RR.on=keep;
+    [1,2,3].forEach(function(l){try{localStorage.removeItem('tt-rr-snd-'+l);localStorage.removeItem('tt-rr-sndn-'+l);}catch(e){}});
+    rrCommit();rrPaint();rrMsg('Back to the default settings.');
+  }
+  else if(a==='toast-ok'){rrToastDrop(b.closest('.rr-toast'));}
+  else if(a==='toast-snooze'){var t=b.closest('.rr-toast');if(t&&t._snooze) t._snooze();rrToastDrop(t);}
+}
+var rrUploadFor=0;
+document.addEventListener('click',function(e){
+  if(e.target&&e.target.id==='rrApp'){rrAct('close');return;}
+  var b=e.target.closest&&e.target.closest('[data-rr]');if(!b) return;
+  rrAct(b.getAttribute('data-rr'),b);
+});
+document.addEventListener('change',function(e){
+  var t=e.target;if(!t) return;
+  if(t.hasAttribute&&t.hasAttribute('data-rr-tone')){
+    var l=+t.getAttribute('data-rr-tone');
+    if(t.value==='__upload'){rrUploadFor=l;var f=$('#rrFile');if(f){f.value='';f.click();}rrPaint();return;}
+    RR.lvl[l].tone=t.value;rrCommit();rrPreview(l);rrPaint();
+  }else if(t.id==='rrFile'){
+    var file=t.files&&t.files[0],lv=rrUploadFor;if(!file||!lv) return;
+    if(file.size>RR_MAX_SND){rrMsg('That file is too large. Please pick a clip under 700 KB.');return;}
+    var fr=new FileReader();
+    fr.onload=function(){
+      try{
+        localStorage.setItem('tt-rr-snd-'+lv,String(fr.result));
+        localStorage.setItem('tt-rr-sndn-'+lv,file.name.replace(/\.[^.]+$/,'').slice(0,24));
+        RR.lvl[lv].tone='custom';rrCommit();rrPaint();rrMsg('Ringtone saved for level '+lv+'. Only the first 8 seconds will play.');rrPreview(lv);
+      }catch(err){rrMsg('Could not save that sound on this device. Try a shorter clip.');}
+    };
+    fr.onerror=function(){rrMsg('Could not read that file.');};
+    fr.readAsDataURL(file);
+  }
+});
+document.addEventListener('input',function(e){
+  if(e.target&&e.target.id==='rrVol'){RR.vol=+e.target.value;rrSave();}
+});
+document.addEventListener('pointerdown',function(){if(RR.on) rrAudio();},{passive:true});
+function rrTick(){rrCheck();rrBarSync(false);}
+(function(){
+  rrBarSync(true);
+  var rrB=$('#rrToasts');if(rrB&&rrB.showPopover){rrB.removeAttribute('hidden');rrB.setAttribute('popover','manual');}
+  setInterval(rrTick,5000);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden) rrTick();});
+  window.addEventListener('focus',rrTick);
+})();
+
 boot();
 })();
 </script>
