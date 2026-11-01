@@ -1001,6 +1001,15 @@ dialog#admin::backdrop{background:rgba(12,16,32,.6)}
 
 .adm-actions{display:flex;gap:8px;margin-top:16px}
 .adm-actions .btn2{flex:1;min-height:40px;padding:6px 12px;font-size:12.5px}
+.adm-push{display:flex;flex-direction:column;gap:8px}
+.adm-push input,.adm-push textarea{width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--wash);color:var(--ink);font:500 16px var(--body)}
+.adm-push textarea{resize:vertical;min-height:76px}
+.adm-push input:focus-visible,.adm-push textarea:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.adm-push input[readonly],.adm-push textarea[readonly]{opacity:.65}
+.adm-push .adm-actions{margin-top:0}
+.adm-push-msg{margin:0;font-size:12.5px;font-weight:600;text-align:center}
+.adm-push-msg.ok{color:#0E7C69}.adm-push-msg.bad{color:#B3261E}
+.adm-push-cnt{margin:-4px 2px 0;color:var(--muted);font-size:11.5px;text-align:right}
 
 
 /* ---- quick survey popup (almost full screen) + its admin block ---- */
@@ -3185,6 +3194,9 @@ document.addEventListener('click',function(e){
   if(a==='admin-jp-view'){openJpPdf(b);return;}
   if(a==='admin-bb-view'){openJpPdf(b,'bibwewadi-tt-pdf');return;}
   if(a==='admin-bb-toggle'){toggleBbWindow();return;}
+  if(a==='admin-push-next'){admPushNext();return;}
+  if(a==='admin-push-cancel'){ADM.push.step=0;ADM.push.msg='';renderAdmin();return;}
+  if(a==='admin-push-send'){admPushSend();return;}
   if(a==='admin-cls'){admPickClass(b.getAttribute('data-i'));return;}
   if(a==='admin-range'){ADM.range=b.getAttribute('data-v');renderAdmin();return;}
   if(a==='install-yes'){installNow();return;}
@@ -3328,7 +3340,7 @@ document.addEventListener('click',function(e){
   if(taps.length>TAP_NEEDED){ taps=[]; openAdmin(); }
 },true);
 
-var ADM={pin:'',data:null,cls:null,busy:false,range:'24h',survey:null,surveyErr:false,jp:null,jpErr:false,bb:null,bbErr:false,bbBusy:false};
+var ADM={push:{t:'',b:'',step:0,busy:false,msg:'',ok:false},pin:'',data:null,cls:null,busy:false,range:'24h',survey:null,surveyErr:false,jp:null,jpErr:false,bb:null,bbErr:false,bbBusy:false};
 function escHtml(s){
   return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
 }
@@ -3346,7 +3358,7 @@ function closeAdmin(){
   var dlg=$('#admin');
   if(typeof dlg.close==='function') dlg.close(); else dlg.removeAttribute('open');
 }
-function lockAdmin(){ admStopTick();ADM.busy=false;ADM.refreshing=false;ADM.pin='';ADM.data=null;ADM.survey=null;ADM.surveyErr=false;ADM.jp=null;ADM.jpErr=false;ADM.bb=null;ADM.bbErr=false;ADM.bbBusy=false;ADM.cls=null;renderPinForm(); }
+function lockAdmin(){ admStopTick();ADM.busy=false;ADM.refreshing=false;ADM.pin='';ADM.data=null;ADM.survey=null;ADM.surveyErr=false;ADM.jp=null;ADM.jpErr=false;ADM.bb=null;ADM.bbErr=false;ADM.bbBusy=false;ADM.push={t:'',b:'',step:0,busy:false,msg:'',ok:false};ADM.cls=null;renderPinForm(); }
 function renderPinForm(msg){
   $('#admBody').innerHTML=
     '<form id="admPinForm" class="adm-pinform" autocomplete="off">'+
@@ -3767,6 +3779,7 @@ function renderAdmin(){
   '</div>';
   html+='<p class="adm-h">Classes <span style="font-weight:400;color:var(--muted)">(30d \u00b7 tap a slice for details)</span></p><div id="admCls">'+clsInner()+'</div>';
   html+='<p class="adm-h">Link clicks <span style="font-weight:400;color:var(--muted)">(30d)</span></p>'+rankList(d.link_clicks,'k','n');
+  html+=pushAdminHTML();
   html+=bbAdminHTML();
   html+=jpAdminHTML();
   html+=surveyAdminHTML();
@@ -3782,6 +3795,63 @@ function renderAdmin(){
   html+='<div class="adm-actions"><button type="button" class="btn2" data-act="admin-diwali">'+(diwaliPreview()?'Disable Diwali mode':'Enable Diwali mode')+'</button><button type="button" class="btn2" data-act="admin-refresh">Refresh</button><button type="button" class="btn2" data-act="admin-lock">Lock</button></div>';
   $('#admBody').innerHTML=html;
 }
+
+/* ---------- Admin: send a custom push notification to every device with Reminder Ranger on ----------
+   Needs the admin PIN (already held for this session) AND the PIN typed backwards. Both are checked on the
+   server (admin_push_broadcast); nothing secret lives in this file. */
+function pushAdminHTML(){
+  var P=ADM.push,lock=P.busy||P.step===1;
+  var h='<p class="adm-h">Send a notification <span style="font-weight:400;color:var(--muted)">(to every device with Reminder Ranger on)</span></p><div class="adm-push">'+
+    '<input type="text" id="admPushT" maxlength="60" autocomplete="off" placeholder="Title" aria-label="Notification title" value="'+escHtml(P.t)+'"'+(lock?' readonly':'')+'>'+
+    '<textarea id="admPushB" maxlength="240" rows="3" placeholder="Message" aria-label="Notification message"'+(lock?' readonly':'')+'>'+escHtml(P.b)+'</textarea>'+
+    '<p class="adm-push-cnt" id="admPushCnt">'+P.b.length+'/240</p>';
+  if(P.step===1){
+    h+='<p class="adm-empty" style="padding:4px 0">To send, type your PIN <b>backwards</b>.</p>'+
+      '<input type="password" id="admPushPin" class="adm-pin-input" inputmode="numeric" autocomplete="off" maxlength="12" aria-label="PIN typed backwards"'+(P.busy?' readonly':'')+'>'+
+      '<div class="adm-actions"><button type="button" class="btn2" data-act="admin-push-cancel"'+(P.busy?' disabled':'')+'>Cancel</button>'+
+      '<button type="button" class="btn2" data-act="admin-push-send"'+(P.busy?' disabled':'')+'>'+(P.busy?'Sending\u2026':'Send to everyone')+'</button></div>';
+  }else{
+    h+='<div class="adm-actions"><button type="button" class="btn2" data-act="admin-push-next">Review and send</button></div>';
+  }
+  if(P.msg) h+='<p class="adm-push-msg '+(P.ok?'ok':'bad')+'" role="status">'+escHtml(P.msg)+'</p>';
+  return h+'</div>';
+}
+function admPushNext(){
+  var P=ADM.push;
+  if(!P.t.trim()||!P.b.trim()){ P.msg='Add a title and a message first.';P.ok=false;renderAdmin();return; }
+  P.step=1;P.msg='';renderAdmin();
+  var i=$('#admPushPin'); if(i) i.focus();
+}
+function admPushSend(){
+  var P=ADM.push; if(P.busy||!ADM.pin) return;
+  var inp=$('#admPushPin'),c=inp?inp.value:'';
+  if(!c){ P.msg='Type your PIN backwards.';P.ok=false;renderAdmin();var i2=$('#admPushPin');if(i2)i2.focus();return; }
+  P.busy=true;P.msg='';renderAdmin();
+  admRpc('admin_push_broadcast',{p_pin:ADM.pin,p_confirm:c,p_title:P.t.trim(),p_body:P.b.trim()},20000).then(function(r){
+    P.busy=false;var j=r.j||{};
+    if(r.ok&&j.ok){
+      P.ok=true;P.step=0;P.t='';P.b='';
+      P.msg=j.queued?('Sent to '+j.queued+' device'+(j.queued===1?'':'s')+'. It arrives within about a minute.'):'Nobody has Reminder Ranger notifications on yet.';
+    }else{
+      P.ok=false;
+      if(j.error==='denied'){ P.step=1;P.msg='Wrong PIN. Nothing was sent.'; }
+      else if(j.error==='locked'){ P.step=0;P.msg=j.hint||'Too many wrong PINs. Try again later.'; }
+      else if(j.error==='wait'){ P.step=0;P.msg='Please wait 20 seconds before sending another.'; }
+      else if(j.error==='bad_title'||j.error==='bad_body'){ P.step=0;P.msg='Title (1-60) and message (1-240) are required.'; }
+      else { P.step=0;P.msg='Could not send. Please try again.'; }
+    }
+    renderAdmin();
+    if(P.step===1){var i3=$('#admPushPin');if(i3)i3.focus();}
+  },function(){ P.busy=false;P.ok=false;P.msg='Could not send. Check your connection.';renderAdmin(); });
+}
+document.addEventListener('input',function(e){
+  var t=e.target; if(!t||!t.id) return;
+  if(t.id==='admPushT') ADM.push.t=t.value;
+  else if(t.id==='admPushB'){ ADM.push.b=t.value; var c=document.getElementById('admPushCnt'); if(c) c.textContent=t.value.length+'/240'; }
+});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&e.target&&e.target.id==='admPushPin'){ e.preventDefault(); admPushSend(); }
+});
 document.addEventListener('submit',function(e){
   if(e.target&&e.target.id==='admPinForm'){
     e.preventDefault();
