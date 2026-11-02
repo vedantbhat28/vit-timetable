@@ -1251,8 +1251,8 @@ dialog#settings::backdrop{background:rgba(12,16,32,.55)}
 .pv-material::after{inset:12px 14px;border-radius:99px;background:#6750A4}
 .pv-glass{background:linear-gradient(135deg,#8FB3FF,#FFB3D1)}
 .pv-glass::after{border:1px solid rgba(255,255,255,.7);border-radius:8px;background:rgba(255,255,255,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-.pv-liquid{background:linear-gradient(135deg,#6FD3FF,#C79BFF 60%,#FFB3D1)}
-.pv-liquid::after{border-radius:14px;background:linear-gradient(135deg,rgba(255,255,255,.55),rgba(255,255,255,.08));box-shadow:inset 0 1px 1px rgba(255,255,255,.9),inset 0 -1px 1px rgba(255,255,255,.3)}
+.pv-liquid{background:linear-gradient(135deg,#B9C3D4,#CBC3D6)}
+.pv-liquid::after{border-radius:14px;background:linear-gradient(135deg,rgba(255,255,255,.4),rgba(255,255,255,.1));box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
 .cu-val{flex:none;font-size:12.5px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
 .cu-range{flex:1 1 100%;width:100%;margin:2px 0 0;accent-color:var(--focus)}
 #cuHMore .st-set{border-top:1px solid var(--line)}
@@ -1288,9 +1288,9 @@ dialog#settings::backdrop{background:rgba(12,16,32,.55)}
 :root[data-fx]{--g-bg:rgba(255,255,255,.55);--g-bgd:rgba(255,255,255,.74);--g-bd:rgba(255,255,255,.7);--g-sh:0 8px 32px rgba(31,38,135,.16);--g1:#8FB3FF;--g2:#FFB3D1;--g3:#A8F0D4;--g-o:.75;--l-hi:.6}
 :root[data-fx][data-eff="dark"]{--g-bg:rgba(32,40,74,.5);--g-bgd:rgba(22,28,54,.72);--g-bd:rgba(255,255,255,.14);--g-sh:0 8px 32px rgba(0,0,0,.38);--g1:#3B4FD8;--g2:#8A2FBE;--g3:#0E8A8A;--g-o:.85;--l-hi:.28}
 :root[data-fx][data-eff="midnight"]{--g-bg:rgba(20,22,36,.5);--g-bgd:rgba(10,12,22,.74);--g-bd:rgba(255,255,255,.1);--g-sh:0 8px 32px rgba(0,0,0,.6);--g1:#1B2A7A;--g2:#4B1B7A;--g3:#0B5560;--g-o:.9;--l-hi:.2}
-:root[data-style="liquid"]{--g-bg:rgba(255,255,255,.28)}
-:root[data-style="liquid"][data-eff="dark"]{--g-bg:rgba(40,50,92,.3)}
-:root[data-style="liquid"][data-eff="midnight"]{--g-bg:rgba(30,34,56,.3)}
+:root[data-style="liquid"]{--g-bg:rgba(255,255,255,.34);--g1:#C3CCDB;--g2:#D3CCDB;--g3:#C6D4D8;--g-o:.6;--l-hi:.32;--g-bd:rgba(255,255,255,.55)}
+:root[data-style="liquid"][data-eff="dark"]{--g-bg:rgba(44,52,80,.34);--g1:#232C48;--g2:#2A2342;--g3:#1B3440;--g-o:.7;--l-hi:.13;--g-bd:rgba(255,255,255,.1)}
+:root[data-style="liquid"][data-eff="midnight"]{--g-bg:rgba(30,34,52,.34);--g1:#121830;--g2:#1B1430;--g3:#0E2229;--g-o:.75;--l-hi:.09;--g-bd:rgba(255,255,255,.08)}
 :root[data-fx] body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:var(--g-o);background:radial-gradient(60vmax 60vmax at 12% 8%,var(--g1),transparent 60%),radial-gradient(55vmax 55vmax at 92% 30%,var(--g2),transparent 60%),radial-gradient(60vmax 60vmax at 40% 100%,var(--g3),transparent 60%)}
 :root[data-fx] :is(.panel,.weekp,#chgStrip,.ev-note,.bro,.rr-toast,.rr-bar,.jp-toast,.install-card,.pk-card,.feature-card,.tp-card,.rw-card,.jp-card,.sv-card,.set-btn,.chg,.seg,.st-box,.rr-box,.terms-x){background-color:var(--g-bg)!important;border-top-color:var(--g-bd)!important;border-right-color:var(--g-bd)!important;border-bottom-color:var(--g-bd)!important;-webkit-backdrop-filter:blur(var(--blur)) saturate(1.6);backdrop-filter:blur(var(--blur)) saturate(1.6)}
 :root[data-fx] :is(.panel,.weekp,.bro,.rr-toast,.jp-toast,.rr-bar,.install-card,.feature-card){box-shadow:var(--g-sh),inset 0 1px 0 rgba(255,255,255,.3)}
@@ -1298,12 +1298,23 @@ dialog#settings::backdrop{background:rgba(12,16,32,.55)}
 :root[data-fx] dialog::backdrop{background:rgba(12,16,32,.28)!important}
 :root[data-fx] :is(#labNotice,#chgNotice,#susNotice,#roomNotice,#xtraNotice,#onlNotice){background-color:var(--g-bgd)!important;-webkit-backdrop-filter:blur(var(--blur)) saturate(1.6);backdrop-filter:blur(var(--blur)) saturate(1.6)}
 /* liquid: stronger refraction feel, specular rim, rounder shapes */
-:root[data-style="liquid"] :is(.panel,.weekp,#chgStrip,.ev-note,.bro,.rr-toast,.rr-bar,.jp-toast,.install-card,.pk-card,.feature-card,.tp-card,.rw-card,.jp-card,.sv-card,.set-btn,.chg,.seg,.st-box,.rr-box,.terms-x){-webkit-backdrop-filter:blur(var(--blur)) saturate(1.9) brightness(1.06);backdrop-filter:blur(var(--blur)) saturate(1.9) brightness(1.06);background-image:linear-gradient(135deg,rgba(255,255,255,var(--l-hi)),rgba(255,255,255,0) 42%,rgba(255,255,255,calc(var(--l-hi) * .4)) 100%);box-shadow:inset 0 1px 1px rgba(255,255,255,var(--l-hi)),inset 0 -1px 1px rgba(255,255,255,calc(var(--l-hi) * .3)),inset 0 0 18px rgba(255,255,255,calc(var(--l-hi) * .15)),0 10px 28px rgba(0,0,0,.14)}
+:root[data-style="liquid"] :is(.panel,.weekp,#chgStrip,.ev-note,.bro,.rr-toast,.rr-bar,.jp-toast,.install-card,.pk-card,.feature-card,.tp-card,.rw-card,.jp-card,.sv-card,.set-btn,.chg,.seg,.st-box,.rr-box,.terms-x){-webkit-backdrop-filter:blur(var(--blur)) saturate(1.2);backdrop-filter:blur(var(--blur)) saturate(1.2);background-image:linear-gradient(135deg,rgba(255,255,255,var(--l-hi)),rgba(255,255,255,0) 42%,rgba(255,255,255,calc(var(--l-hi) * .25)) 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,var(--l-hi)),0 8px 24px rgba(0,0,0,.1)}
 :root[data-style="liquid"] :is(.hero,.panel,.weekp,.bro,.st-box,.rw-card,.jp-card,.pk-card,.tp-card,.feature-card,.install-card,.sv-card,.rr-box){border-radius:26px}
 :root[data-style="liquid"] :is(#chgStrip,.ev-note,.rr-toast,.jp-toast,.rr-bar){border-radius:22px}
 :root[data-style="liquid"] :is(.seg,.chg){border-radius:999px}
 :root[data-style="liquid"] .seg button{border-radius:999px}
-:root[data-style="liquid"] dialog[id]{border-radius:30px!important;box-shadow:inset 0 1px 1px rgba(255,255,255,var(--l-hi)),0 24px 70px rgba(8,12,30,.4)!important}
+:root[data-style="liquid"] dialog[id]{border-radius:30px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,var(--l-hi)),0 24px 70px rgba(8,12,30,.4)!important}
+/* hero: same glass treatment, subject colour kept (just slightly see-through) */
+:root[data-fx] .hero{background-color:color-mix(in srgb,var(--c) 86%,transparent)!important;border:1px solid rgba(255,255,255,.18);-webkit-backdrop-filter:blur(var(--blur)) saturate(1.2);backdrop-filter:blur(var(--blur)) saturate(1.2);box-shadow:var(--g-sh),inset 0 1px 0 rgba(255,255,255,.25)}
+:root[data-style="liquid"] .hero{background-image:linear-gradient(135deg,rgba(255,255,255,.14),rgba(255,255,255,0) 45%);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 10px 28px rgba(0,0,0,.14)}
+
+/* "NEW" nudge on the settings button */
+.set-btn.cu-new{border-color:var(--focus);box-shadow:0 0 14px color-mix(in srgb,var(--focus) 55%,transparent);animation:cuGlow 2.2s ease-in-out infinite}
+.set-btn.cu-new::after{content:"NEW";position:absolute;top:-8px;right:-5px;padding:1px 6px;border-radius:99px;background:var(--now);color:#fff;font-size:9.5px;font-weight:800;letter-spacing:.04em;line-height:1.5;pointer-events:none}
+@keyframes cuGlow{0%,100%{box-shadow:0 0 8px color-mix(in srgb,var(--focus) 45%,transparent),0 0 0 0 color-mix(in srgb,var(--focus) 50%,transparent)}50%{box-shadow:0 0 20px color-mix(in srgb,var(--focus) 75%,transparent),0 0 0 9px transparent}}
+@media (prefers-reduced-motion:reduce){.set-btn.cu-new{animation:none}}
+.cu-pill{flex:none;padding:3px 9px;border-radius:99px;background:var(--now);color:#fff;font-size:11px;font-weight:800;letter-spacing:.05em}
+#cuNewToast{cursor:pointer}
 
 </style>
 </head>
@@ -6156,6 +6167,41 @@ function rrTick(){rrCheck();rrBarSync(false);if(RRP.want&&!RRP.boot&&CUR){RRP.bo
   $('#cuBlur').addEventListener('input',function(){
     store.set('tt-blur',this.value);window.__cuApply();$('#cuBlurV').textContent=this.value+' px';
   });
+
+  /* first-visit nudge: glowing gear with a NEW badge, plus a one-time toast, until Settings is opened */
+  var gear=document.querySelector('.set-btn');
+  function seen(){return store.get('tt-cu-seen','')==='1';}
+  if(gear&&!seen()){
+    gear.classList.add('cu-new');
+    new MutationObserver(function(){
+      if(dlg.hasAttribute('open')){store.set('tt-cu-seen','1');gear.classList.remove('cu-new');closeNew();}
+    }).observe(dlg,{attributes:true,attributeFilter:['open']});
+  }
+  var nt=null,ntT=null;
+  function closeNew(){
+    clearTimeout(ntT);if(!nt) return;
+    var t=nt;nt=null;t.classList.remove('in');setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},300);
+  }
+  function showNew(tries){
+    if(seen()||store.get('tt-cu-toast','')==='1'||!gear) return;
+    var busy=['labNotice','chgNotice','susNotice','roomNotice','xtraNotice','onlNotice','holidayIntro','loadScreen','loadScr'].some(function(id){
+      var e=document.getElementById(id);return e&&!e.hidden&&e.offsetParent!==null;
+    })||document.querySelector('dialog[open]')||($('#jpToast')&&!$('#jpToast').hidden);
+    if(busy){if(tries<12) setTimeout(function(){showNew(tries+1);},2500);return;}
+    store.set('tt-cu-toast','1');
+    var t=document.createElement('div');
+    t.id='cuNewToast';t.className='jp-toast';t.setAttribute('role','status');t.setAttribute('aria-live','polite');
+    t.innerHTML='<span class="cu-pill">NEW</span><div class="jp-toast-txt"><p class="jp-toast-t">Customize your timetable</p><p class="jp-toast-s">Themes, glass styles and haptics are in Settings.</p></div><button type="button" class="jp-toast-x" aria-label="Dismiss">&times;</button>';
+    document.body.appendChild(t);nt=t;t.hidden=false;
+    requestAnimationFrame(function(){requestAnimationFrame(function(){t.classList.add('in');});});
+    fire('info');
+    t.addEventListener('click',function(e){
+      if(e.target.closest('.jp-toast-x')){closeNew();return;}
+      closeNew();gear.click();
+    });
+    ntT=setTimeout(closeNew,9000);
+  }
+  if(gear&&!seen()) setTimeout(function(){showNew(0);},3000);
 })();
 
 boot();
