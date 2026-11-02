@@ -2311,6 +2311,19 @@ var centerTab=true;
 // one 'visit' row per page load; uses whatever class is already remembered locally, if any
 logVisit('visit',{branch:store.get('tt-branch',''),div:store.get('tt-div',''),batch:st.batch});
 
+// Themes / customize traffic (admin panel > Themes). theme_use: once per session, the visitor's current look. theme_set: every change.
+function cuLog(link){logVisit('theme_set',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch,link:String(link).slice(0,40)});}
+function cuUseLog(){
+  try{
+    if(sessionStorage.getItem('tt-theme-logged')) return;
+    sessionStorage.setItem('tt-theme-logged','1');
+  }catch(e){}
+  var t=store.get('tt-theme','auto');if(['light','dark','midnight'].indexOf(t)<0) t='auto';
+  var sy=store.get('tt-style','default');if(['material','glass','liquid'].indexOf(sy)<0) sy='default';
+  logVisit('theme_use',{branch:store.get('tt-branch',''),div:store.get('tt-div',''),batch:st.batch,link:'t:'+t+'|s:'+sy+'|h:'+(store.get('tt-haptics','0')==='1'?'1':'0')});
+}
+cuUseLog();
+
 // ?at=2026-09-21T13:50 previews the dashboard at a chosen moment (handy for checking)
 var skew=0;
 try{var at=new URLSearchParams(location.search).get('at');if(at){var tv=new Date(at).getTime();if(!isNaN(tv))skew=tv-Date.now();}}catch(e){}
@@ -3642,7 +3655,7 @@ document.addEventListener('click',function(e){
   if(taps.length>TAP_NEEDED){ taps=[]; openAdmin(); }
 },true);
 
-var ADM={push:{t:'',b:'',step:0,busy:false,msg:'',ok:false},pin:'',data:null,cls:null,busy:false,range:'24h',survey:null,surveyErr:false,jp:null,jpErr:false,bb:null,bbErr:false,bbBusy:false};
+var ADM={push:{t:'',b:'',step:0,busy:false,msg:'',ok:false},pin:'',data:null,cls:null,busy:false,range:'24h',survey:null,surveyErr:false,jp:null,jpErr:false,bb:null,bbErr:false,bbBusy:false,th:null,thErr:false};
 function escHtml(s){
   return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});
 }
@@ -3730,8 +3743,9 @@ function loadAdmin(){
         return;
       }
       done();
-      ADM.data=r.j;ADM.survey=null;ADM.surveyErr=false;ADM.jp=null;ADM.jpErr=false;ADM.bb=null;ADM.bbErr=false;
+      ADM.data=r.j;ADM.survey=null;ADM.surveyErr=false;ADM.jp=null;ADM.jpErr=false;ADM.bb=null;ADM.bbErr=false;ADM.th=null;ADM.thErr=false;
       renderAdmin();
+      loadThemeAdmin();
       loadSurveyAdmin();
       loadJpAdmin();
       loadBbAdmin();
@@ -3766,6 +3780,58 @@ function jpAdminHTML(){
       '<span>'+(cls?'<b>'+escHtml(cls)+'</b> \u00b7 ':'')+escHtml(r.file_name||'list.pdf')+' \u00b7 '+escHtml(jpFmtSize(r.file_size||0))+'</span>'+
       '<button type="button" class="btn2" data-act="admin-jp-view" data-id="'+escHtml(r.id)+'">View PDF</button></span></div>';
   }).join('')+'</div>';
+}
+/* ---------- Themes / customize traffic in the admin panel (own RPC, own numbers: theme_use + theme_set events) ---------- */
+function loadThemeAdmin(){
+  var pin=ADM.pin; if(!pin) return;
+  admRpc('admin_theme_stats',{p_pin:pin},30000).then(function(r){
+    if(!ADM.pin||!ADM.data) return;
+    if(!r.ok) throw new Error('th '+r.status);
+    ADM.th=r.j;ADM.thErr=false;renderAdmin();
+  }).catch(function(){ if(!ADM.pin||!ADM.data) return; ADM.thErr=true;renderAdmin(); });
+}
+var TH_NAMES={auto:'Auto',light:'Light',dark:'Dark',midnight:'Midnight',default:'Classic',material:'Material',glass:'Glass',liquid:'Liquid glass'};
+function thBars(rows,total){
+  rows=rows||[];
+  if(!rows.length) return '<p class="adm-empty">No data yet.</p>';
+  return '<div class="adm-recent">'+rows.map(function(r){
+    var n=r.u||0,pc=total?Math.round(n/total*100):0;
+    return '<div class="adm-row"><span class="t" style="min-width:84px">'+escHtml(TH_NAMES[r.k]||r.k)+'</span><span class="d" style="display:flex;align-items:center;gap:8px">'+
+      '<span style="flex:1;height:8px;border-radius:4px;background:var(--wash);overflow:hidden"><i style="display:block;height:100%;width:'+Math.max(pc,n?2:0)+'%;background:var(--focus)"></i></span>'+
+      '<b>'+n+'</b> <span style="color:var(--muted)">'+pc+'%</span></span></div>';
+  }).join('')+'</div>';
+}
+function themeAdminHTML(){
+  var h='<p class="adm-h">Themes &amp; customize <span style="font-weight:400;color:var(--muted)">(own traffic, separate from visits)</span></p>';
+  if(ADM.thErr) return h+'<p class="adm-empty">Could not load theme stats.</p>';
+  if(!ADM.th) return h+'<p class="adm-empty">Loading\u2026</p>';
+  var t=ADM.th,c=t.changes||{},act=t.active_30d||0,cu=t.customized_30d||0;
+  h+='<div class="adm-kpis">'+[
+    {l:'Live now',n:c.live_5m||0,u:'unique'},
+    {l:'1 hour',n:c.v_1h||0,u:(c.u_1h||0)+' uniq'},
+    {l:'24 hours',n:c.v_24h||0,u:(c.u_24h||0)+' uniq'},
+    {l:'7 days',n:c.v_7d||0,u:(c.u_7d||0)+' uniq'},
+    {l:'30 days',n:c.v_30d||0,u:(c.u_30d||0)+' uniq'},
+    {l:'All time',n:c.v_all||0,u:(c.u_all||0)+' uniq'}
+  ].map(function(k){return '<div class="adm-kpi"><span class="n">'+k.n+'</span><span class="u">'+k.u+'</span><span class="l">'+k.l+'</span></div>';}).join('')+'</div>';
+  h+='<p class="adm-sub">Numbers above are changes made in Settings (theme, style, cursor, haptics). Below: what visitors seen in the last 30 days are using right now.</p>';
+  if(!act) return h+'<p class="adm-empty">No visitors have reported their theme yet. Counts start with the next visit.</p>';
+  h+='<div class="adm-kpis">'+[
+    {l:'Active (30d)',n:act,u:'visitors'},
+    {l:'Customized',n:cu,u:(act?Math.round(cu/act*100):0)+'% of active'},
+    {l:'Haptics on',n:t.haptics_on||0,u:(act?Math.round((t.haptics_on||0)/act*100):0)+'% of active'}
+  ].map(function(k){return '<div class="adm-kpi"><span class="n">'+k.n+'</span><span class="u">'+k.u+'</span><span class="l">'+k.l+'</span></div>';}).join('')+'</div>';
+  h+='<p class="adm-h" style="font-size:12.5px">Theme in use</p>'+thBars(t.by_theme,act);
+  h+='<p class="adm-h" style="font-size:12.5px">Style in use</p>'+thBars(t.by_style,act);
+  var picks=t.picks_30d||[];
+  if(picks.length){
+    h+='<p class="adm-h" style="font-size:12.5px">Most picked in Settings <span style="font-weight:400;color:var(--muted)">(30d)</span></p><div class="adm-recent">'+picks.slice(0,12).map(function(r){
+      var p=String(r.k||'').split(':'),nm=p[1]||'';
+      var lab=(p[0]==='theme'?'Theme \u00b7 ':p[0]==='style'?'Style \u00b7 ':p[0]==='cursor'?'Cursor \u00b7 ':p[0]==='haptics'?'Haptics \u00b7 ':p[0]==='strength'?'Haptic strength \u00b7 ':'')+(TH_NAMES[nm]||nm);
+      return '<div class="adm-row"><span class="t">'+escHtml(lab)+'</span><span class="d"><b>'+(r.n||0)+'</b> taps \u00b7 '+(r.u||0)+' uniq</span></div>';
+    }).join('')+'</div>';
+  }
+  return h;
 }
 /* ---------- Bibwewadi timetable PDFs in the admin panel: on/off switch + private PDF list ---------- */
 function loadBbAdmin(){
@@ -4082,6 +4148,7 @@ function renderAdmin(){
   html+='<p class="adm-h">Classes <span style="font-weight:400;color:var(--muted)">(30d \u00b7 tap a slice for details)</span></p><div id="admCls">'+clsInner()+'</div>';
   html+='<p class="adm-h">Link clicks <span style="font-weight:400;color:var(--muted)">(30d)</span></p>'+rankList(d.link_clicks,'k','n');
   html+=pushAdminHTML();
+  html+=themeAdminHTML();
   html+=bbAdminHTML();
   html+=jpAdminHTML();
   html+=surveyAdminHTML();
@@ -4312,7 +4379,13 @@ function broGo(){
       sess=broEvApply(meta,sess);
       return {label:label,b:f.b,d:f.d,t:f.t,lang:lang,sess:sess};
     });
-    if(broEvWeek()&&(fr.some(function(f){var m=CLASSES[f.b].divs[f.d];return m.ev&&m.ev.has;})||(BRO.me&&CUR&&CUR.ev&&CUR.ev.has))) notes.push(EV_LABEL+' is included for this week.');
+    if(broEvWeek()){
+      var withEv=[],noEv=[];
+      list.forEach(function(p){var m=CLASSES[p.b].divs[p.d];(m.ev&&m.ev.has?withEv:noEv).push(p.label);});
+      if(BRO.me&&CUR){(CUR.ev&&CUR.ev.has?withEv:noEv).unshift('You');}
+      if(withEv.length) notes.push(EV_LABEL+' is included for: '+withEv.join(', ')+'.');
+      if(noEv.length) notes.push('No special timetable found for '+noEv.join(', ')+', so the regular timetable is used for them.');
+    }
     BRO.cmp={friends:list,notes:notes};
     broRecompute();broPaint();
     broLog('bro_compare','bro:'+list.map(function(p){return p.b+'-'+p.d+'-'+p.t+(p.lang?(isJpCode(p.lang)?'+JA':'+DE'):'');}).join(',')+(BRO.me?'+me':''));
@@ -4658,14 +4731,30 @@ function teacherFetchAll(){
         return (r.length&&pages<60)?next():rows;
       });
   }
-  return next();
+  return next().then(function(rows){
+    return teacherEvFetchAll().then(function(ev){rows.ev=ev;return rows;});
+  });
+}
+/* Vishwakarandak special timetable (all divisions). Replaces the regular timetable on 2-5 Nov for divisions that have rows in it. */
+function teacherEvFetchAll(){
+  if(ymd(new Date())>EV_TO) return Promise.resolve([]);   // event is over: no extra request
+  var rows=[],off=0,pages=0;
+  function next(){
+    return fetchSupa('tt_vishwakarandak_sessions?select=event_date,weekday,start_time,end_time,subject_code,subject_name,session_type,room,faculty_name,division'+
+        '&event_date=gte.'+EV_FROM+'&event_date=lte.'+EV_TO+'&order=event_date.asc,start_time.asc,division.asc&limit=1000&offset='+off)
+      .then(function(r){
+        r=r||[];rows=rows.concat(r);off+=r.length;pages++;
+        return (r.length&&pages<20)?next():rows;
+      });
+  }
+  return next().catch(function(e){console.error(e);return [];});   // failed: regular timetable is used
 }
 function teacherBuild(rows){
   var fac={},subs={};
   rows.forEach(function(r){
     var raw=String(r.faculty_name||'').trim();if(!raw) return;
     var key=raw.toUpperCase(),f=fac[key];
-    if(!f) f=fac[key]={key:key,raw:raw,h:humanName(raw),subs:{},ses:[],seen:{}};
+    if(!f) f=fac[key]={key:key,raw:raw,h:humanName(raw),subs:{},ses:[],seen:{},evs:[],evseen:{}};
     var code=r.subject_code||'OTHER',sn=r.subject_name||code;
     f.subs[code]=f.subs[code]||sn;
     var d=+r.weekday,s=toMin(r.start_time),e=toMin(r.end_time),room=r.room||'';
@@ -4680,6 +4769,23 @@ function teacherBuild(rows){
     var sb=subs[code]||(subs[code]={code:code,name:sn,list:[]});
     if(sb.list.indexOf(f)<0) sb.list.push(f);
   });
+  var evDivs={};
+  (rows.ev||[]).forEach(function(r){
+    if(r.division) evDivs[r.division]=1;
+    var raw=String(r.faculty_name||'').trim();if(!raw||!r.event_date) return;
+    var key=raw.toUpperCase(),f=fac[key];
+    if(!f) f=fac[key]={key:key,raw:raw,h:humanName(raw),subs:{},ses:[],seen:{},evs:[],evseen:{}};
+    var code=r.subject_code||'OTHER',sn=r.subject_name||code;
+    f.subs[code]=f.subs[code]||sn;
+    var s0=toMin(r.start_time),e0=toMin(r.end_time),room=r.room||'';
+    var k=[r.event_date,s0,e0,code,room].join('|'),x=f.evseen[k];
+    if(x){if(r.division&&x.divs.indexOf(r.division)<0) x.divs.push(r.division);return;}
+    x={date:r.event_date,d:+r.weekday,s:s0,e:e0,code:code,sub:sn,type:r.session_type||'Class',room:room,divs:r.division?[r.division]:[],bs:[],ev:true};
+    f.evseen[k]=x;f.evs.push(x);
+    var sb=subs[code]||(subs[code]={code:code,name:sn,list:[]});
+    if(sb.list.indexOf(f)<0) sb.list.push(f);
+  });
+  TEACH.evDivs=evDivs;
   TEACH.fac=fac;TEACH.subs=subs;
 }
 function teacherEnsure(){
@@ -4695,12 +4801,25 @@ function teacherEnsure(){
 
 /* ---- timetable maths ---- */
 function teacherUntil(s,now){var dl=(s.d-now.getDay()+7)%7;if(dl===0&&s.e<=mins(now)) dl=7;return dl*1440+s.s-mins(now);}
+function teacherEvDrop(sx,date){   // regular session is hidden on event days when every division it covers has a special timetable
+  var k=ymd(date);
+  if(k<EV_FROM||k>EV_TO||!TEACH.evDivs||!sx.divs.length) return false;
+  return sx.divs.every(function(d){return TEACH.evDivs[d];});
+}
 function teacherState(f){
-  var now=nowFloor(),day=now.getDay(),m=mins(now),cur=null,up=[];
-  f.ses.forEach(function(s){
-    if(s.d===day&&s.s<=m&&s.e>m){cur=s;up.push({s:s,w:7*1440+s.s-m});}
-    else up.push({s:s,w:teacherUntil(s,now)});
-  });
+  var now=nowFloor(),m=mins(now),cur=null,up=[];
+  for(var off=0;off<14;off++){
+    (function(off){
+      var date=dayStart(now,off),dow=date.getDay(),k=ymd(date),list=[];
+      f.ses.forEach(function(x){if(x.d===dow&&!teacherEvDrop(x,date)) list.push(x);});
+      (f.evs||[]).forEach(function(x){if(x.date===k) list.push(x);});
+      list.forEach(function(x){
+        if(off===0&&x.s<=m&&x.e>m){cur=x;return;}
+        if(off===0&&x.e<=m) return;
+        up.push({s:x,w:off*1440+x.s-m});
+      });
+    })(off);
+  }
   up.sort(function(a,b){return a.w-b.w;});
   return {cur:cur,next:up.slice(0,4),m:m};
 }
@@ -4712,7 +4831,7 @@ function teacherSorted(list){return list.slice().sort(function(a,b){return a.h.n
 function teacherName(f){return (f.h.title?f.h.title+' ':'')+f.h.name;}
 function teacherInit(f){var w=f.h.name.split(/\s+/).filter(Boolean);return ((w[0]||'?').charAt(0)+(w.length>1?w[w.length-1].charAt(0):'')).toUpperCase();}
 function teacherRoom(s){return s.room?'Room '+s.room:'Room not listed';}
-function teacherDivs(s){return s.divs.map(teacherDivLabel).join(', ');}
+function teacherDivs(s){return s.divs.map(teacherDivLabel).join(', ')+(s.ev?' \u00b7 Vishwakarandak':'');}
 
 /* ---- browse: subject sections of name plates ---- */
 function teacherPlate(f,code,showSubs){
@@ -4787,7 +4906,15 @@ function teacherDetailHTML(f){
     wk+='<div class="td-day"><b>'+DAYS[d]+'</b>'+ds.map(function(s){return '<p>'+esc(fmtRange(s.s,s.e))+' · '+esc(teacherRoom(s))+' · '+esc(s.sub)+'</p>';}).join('')+'</div>';
   }
   if(wk) html+='<details class="td-week"><summary>Full weekly schedule</summary>'+wk+'</details>';
-  html+='<p class="td-note">Based on the published FY timetable, not live location. Holidays, substitutions and one-off changes are not included.</p>';
+  if(f.evs&&f.evs.length&&ymd(new Date())<=EV_TO){
+    var dates={};f.evs.forEach(function(x){(dates[x.date]=dates[x.date]||[]).push(x);});
+    var ew=Object.keys(dates).sort().map(function(k){
+      var d0=parseISODate(k);
+      return '<div class="td-day"><b>'+DAYS[d0.getDay()]+' '+d0.getDate()+' '+MONS[d0.getMonth()]+'</b>'+dates[k].sort(function(a,b){return a.s-b.s;}).map(function(x){return '<p>'+esc(fmtRange(x.s,x.e))+' \u00b7 '+esc(teacherRoom(x))+' \u00b7 '+esc(x.sub)+'</p>';}).join('')+'</div>';
+    }).join('');
+    html+='<details class="td-week" open><summary>'+esc(EV_LABEL)+'</summary>'+ew+'</details>';
+  }
+  html+='<p class="td-note">Based on the published FY timetable, not live location. On 2\u20135 Nov the Vishwakarandak special timetable replaces the regular one for divisions that have it. Holidays, substitutions and one-off changes are not included.</p>';
   return html;
 }
 function teacherOpenDetail(key){
@@ -6045,7 +6172,7 @@ function rrTick(){rrCheck();rrBarSync(false);if(RRP.want&&!RRP.boot&&CUR){RRP.bo
     var a=b.getAttribute('data-set');
     if(a==='open') open(b);
     else if(a==='close') close();
-    else if(a==='theme'){var v=b.getAttribute('data-v');store.set('tt-theme',v);applyTheme(v);sync();}
+    else if(a==='theme'){var v=b.getAttribute('data-v');store.set('tt-theme',v);applyTheme(v);cuLog('theme:'+v);sync();}
     else if(a==='rr'){rrSetOn(!RR.on);sync();}
     else if(a==='change'){close();openPicker(true);}
     else if(a==='install'){close();installNow();}
@@ -6206,10 +6333,10 @@ function rrTick(){rrCheck();rrBarSync(false);if(RRP.want&&!RRP.boot&&CUR){RRP.bo
   dlg.addEventListener('click',function(e){
     var b=e.target.closest&&e.target.closest('[data-cu]'); if(!b) return;
     var a=b.getAttribute('data-cu'),v=b.getAttribute('data-v');
-    if(a==='style'){store.set('tt-style',v);window.__cuApply();fire('tick');}
-    else if(a==='cursor'){store.set('tt-cursor',v);window.__cuApply();fire('tick');}
-    else if(a==='haptics'){on=!on;store.set('tt-haptics',on?'1':'0');if(on){last.t=0;fire('medium');}}
-    else if(a==='hstr'){str=v;store.set('tt-hstr',v);last.t=0;fire('medium');}
+    if(a==='style'){store.set('tt-style',v);window.__cuApply();cuLog('style:'+v);fire('tick');}
+    else if(a==='cursor'){store.set('tt-cursor',v);window.__cuApply();cuLog('cursor:'+v);fire('tick');}
+    else if(a==='haptics'){on=!on;store.set('tt-haptics',on?'1':'0');cuLog('haptics:'+(on?'on':'off'));if(on){last.t=0;fire('medium');}}
+    else if(a==='hstr'){str=v;store.set('tt-hstr',v);cuLog('strength:'+v);last.t=0;fire('medium');}
     else if(a==='htest'){runTest();return;}
     cuSync();
   });
