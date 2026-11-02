@@ -46,6 +46,7 @@
   window.location.replace('rouge.html');
 })();
 </script>
+<script>try{var __t=localStorage.getItem("tt-theme");if(__t==="light"||__t==="dark")document.documentElement.setAttribute("data-theme",__t);}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <title>VIT Pune - FY Timetable</title>
@@ -1174,6 +1175,47 @@ dialog#rrApp::backdrop{background:rgba(12,16,32,.55)}
 }
 @media (max-width:420px){.rr-plan .pt{width:78px}.rr-tone select{max-width:130px}}
 </style>
+<style id="stStyle">
+/* ---------- Settings menu ---------- */
+.top{position:relative}
+@media (max-width:719px){.top{padding-top:50px}}
+.set-btn{position:absolute;top:0;right:0;width:42px;height:42px;display:grid;place-items:center;padding:0;border:1px solid var(--line);border-radius:12px;background:var(--wash);color:var(--ink);cursor:pointer}
+.set-btn:hover{background:var(--surface)}
+.set-btn svg{transition:transform .35s ease}
+.set-btn:hover svg,.set-btn:focus-visible svg{transform:rotate(60deg)}
+@media (prefers-reduced-motion:reduce){.set-btn svg{transition:none}.set-btn:hover svg,.set-btn:focus-visible svg{transform:none}}
+
+dialog#settings{padding:0;border:0;margin:auto;background:var(--surface);color:var(--ink);width:min(480px,calc(100vw - 24px));max-width:none;max-height:none;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(8,12,30,.4)}
+dialog#settings[open]{animation:sheetIn .2s ease-out}
+dialog#settings::backdrop{background:rgba(12,16,32,.55)}
+@media (prefers-reduced-motion:reduce){dialog#settings[open]{animation:none}}
+
+.terms-body .st-lead{margin:0 0 12px}
+.st-box{margin:0 0 12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--wash)}
+.st-box:last-child{margin-bottom:0}
+.st-box h4{margin:0 0 10px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.terms-body .st-box p{margin:0;font-size:12.5px}
+.st-class-n{font-family:var(--display);font-weight:800;font-size:26px;line-height:1.05}
+.terms-body .st-box p.st-class-n{font-size:26px;color:var(--ink)}
+.terms-body .st-box p.st-class-s{margin-top:3px}
+.st-set{display:flex;align-items:center;justify-content:space-between;gap:8px 12px;flex-wrap:wrap;padding:10px 0;border-top:1px solid var(--line)}
+.st-box>h4+.st-set,.st-box>p+.st-set{border-top:0;padding-top:0}
+.st-class-wrap+.st-set{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.st-l{flex:1 1 150px;min-width:0}
+.st-l>span{display:block;font-size:13px;font-weight:600;color:var(--ink)}
+.terms-body .st-box .st-l small{display:block;margin-top:1px;color:var(--muted);font-size:12px;line-height:1.4;font-weight:500}
+.st-box .chg{margin-top:4px}
+.st-box .chg.st-wide{width:100%;justify-content:center}
+.st-box .st-note{margin:0 0 4px}
+.st-link{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:44px;padding:6px 2px;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent;color:var(--ink);font-weight:600;font-size:13.5px;text-align:left;cursor:pointer}
+.st-box>h4+.st-link{border-top:0}
+.st-link:hover{background:var(--surface)}
+.st-link svg{flex:none;color:var(--muted)}
+.st-set .rr-btn{margin:0}
+.st-set .rr-btn[hidden]{display:none}
+.st-rr-state{margin:0}
+@media (max-width:420px){.st-set .seg{width:100%}.st-set .seg button{flex:1 1 0}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -1203,6 +1245,7 @@ dialog#rrApp::backdrop{background:rgba(12,16,32,.55)}
       <div class="clock-time" id="clockTime">--:--</div>
       <div class="clock-date" id="clockDate">&nbsp;</div>
     </div>
+    <button type="button" class="set-btn" data-set="open" aria-haspopup="dialog" aria-label="Settings" title="Settings"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </header>
 
   <div id="chgStrip" hidden role="status" aria-live="polite"></div>
@@ -1574,6 +1617,74 @@ dialog#rrApp::backdrop{background:rgba(12,16,32,.55)}
           <p class="about-proj-name"><a href="https://vedantbhat28.github.io/cppkit" target="_blank" rel="noopener" data-act="ext-link" data-label="cppkit">CPPkit</a> <span class="tag">Prototype</span></p>
           <p class="about-proj-d">An early, work-in-progress build.</p>
         </div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="settings" aria-labelledby="stTitle">
+    <div class="terms">
+      <div class="terms-head">
+        <h3 id="stTitle">Settings</h3>
+        <button type="button" class="terms-x" data-set="close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+      </div>
+      <div class="terms-body" id="stBody">
+        <p class="st-lead">Everything you can change in the timetable, in one place. Your choices are saved on this device.</p>
+
+        <section class="st-box" aria-labelledby="stH1">
+          <h4 id="stH1">Your class</h4>
+          <div class="st-class-wrap">
+            <p class="st-class-n" id="stClass">&mdash;</p>
+            <p class="st-class-s" id="stClassSub">&nbsp;</p>
+          </div>
+          <div class="st-set"><div class="st-l"><span id="stLblB">Lab batch</span></div>
+            <div class="seg" role="group" aria-labelledby="stLblB">
+              <button type="button" data-act="batch" data-v="B1" aria-pressed="false">B1</button>
+              <button type="button" data-act="batch" data-v="B2" aria-pressed="false">B2</button>
+              <button type="button" data-act="batch" data-v="B3" aria-pressed="false">B3</button>
+            </div>
+          </div>
+          <div class="st-set"><div class="st-l"><span>Roll number</span><small id="stRoll">&nbsp;</small></div></div>
+          <button type="button" class="chg st-wide" data-set="change"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5.5h10.5M10 3l2.5 2.5L10 8M14 10.5H3.5M6 8l-2.5 2.5L6 13"/></svg>Change class, roll number or German group</button>
+        </section>
+
+        <section class="st-box" aria-labelledby="stH2">
+          <h4 id="stH2">Display</h4>
+          <div class="st-set"><div class="st-l"><span id="stLblF">Clock</span></div>
+            <div class="seg" role="group" aria-labelledby="stLblF">
+              <button type="button" data-act="fmt" data-v="12" aria-pressed="false">12 h</button>
+              <button type="button" data-act="fmt" data-v="24" aria-pressed="false">24 h</button>
+            </div>
+          </div>
+          <div class="st-set"><div class="st-l"><span id="stLblT">Appearance</span><small>Auto follows your phone or computer.</small></div>
+            <div class="seg" role="group" aria-labelledby="stLblT">
+              <button type="button" data-set="theme" data-v="auto" aria-pressed="false">Auto</button>
+              <button type="button" data-set="theme" data-v="light" aria-pressed="false">Light</button>
+              <button type="button" data-set="theme" data-v="dark" aria-pressed="false">Dark</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="st-box" aria-labelledby="stH3">
+          <h4 id="stH3">Reminders</h4>
+          <div class="st-set"><div class="st-l"><span id="stLblR">Reminder Ranger <span class="rr-alpha">Alpha</span></span><small id="stRrState" role="status" aria-live="polite">Lecture reminders are off.</small></div>
+            <button type="button" class="rr-sw" role="switch" aria-checked="false" aria-labelledby="stLblR" data-set="rr"></button>
+          </div>
+          <button type="button" class="chg st-wide" data-rr="open" aria-haspopup="dialog"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 4.5h7M12.5 4.5H14M2 11.5h1.5M7 11.5h7"/><circle cx="10.5" cy="4.5" r="1.6"/><circle cx="5.2" cy="11.5" r="1.6"/></svg>Customize levels, sounds and background push</button>
+        </section>
+
+        <section class="st-box" id="stApp" aria-labelledby="stH4">
+          <h4 id="stH4">App</h4>
+          <div class="st-set"><div class="st-l"><span>Timetable app</span><small id="stInstallTxt">Opens faster, full-screen, straight from your home screen.</small></div>
+            <button type="button" class="rr-btn" id="stInstallBtn" data-set="install">Install</button>
+          </div>
+        </section>
+
+        <section class="st-box" aria-labelledby="stH5">
+          <h4 id="stH5">About</h4>
+          <button type="button" class="st-link" data-act="about-open">About Me<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5"/></svg></button>
+          <button type="button" class="st-link" data-act="terms-open">Terms &amp; conditions<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5"/></svg></button>
+          <button type="button" class="st-link" data-act="priv-open">How your roll number is kept safe<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5"/></svg></button>
+        </section>
       </div>
     </div>
   </dialog>
@@ -5699,6 +5810,80 @@ function rrTick(){rrCheck();rrBarSync(false);if(RRP.want&&!RRP.boot&&CUR){RRP.bo
     document.addEventListener('visibilitychange',function(){if(!document.hidden&&Date.now()-RRP.last>20*60000) rrpSchedule(1500);});
     setInterval(function(){rrpSchedule(0);},30*60000);
   }
+})();
+
+/* ---------- Settings menu: one place for every setting ---------- */
+(function(){
+  var dlg=$('#settings'); if(!dlg) return;
+  var opener=null;
+
+  function theme(){var t=store.get('tt-theme','auto');return (t==='light'||t==='dark')?t:'auto';}
+  function applyTheme(t){
+    var r=document.documentElement;
+    if(t==='light'||t==='dark') r.setAttribute('data-theme',t); else r.removeAttribute('data-theme');
+  }
+
+  function sync(){
+    if(!dlg.open) return;
+    // class
+    var cls=$('#stClass'),sub=$('#stClassSub'),roll=$('#stRoll');
+    if(CUR){
+      cls.textContent=branchLabel(st.branch)+'-'+st.div;
+      sub.textContent=campusFor(st.branch)+(st.lang?' \u00B7 '+langName(st.lang)+' ('+st.lang+') added':'');
+    }
+    roll.textContent=st.roll?'Saved on this device. Used only for German and Japanese classes.':'Not added. Only needed if you take German or Japanese.';
+    // theme
+    var th=theme();
+    Array.prototype.forEach.call(dlg.querySelectorAll('[data-set="theme"]'),function(b){
+      b.setAttribute('aria-pressed',String(b.getAttribute('data-v')===th));
+    });
+    // Reminder Ranger
+    var sw=dlg.querySelector('[data-set="rr"]');
+    if(sw) sw.setAttribute('aria-checked',String(!!RR.on));
+    try{$('#stRrState').textContent=rrStatusText();}catch(e){}
+    // install (hidden inside the installed app)
+    var box=$('#stApp');
+    if(isStandaloneApp()){box.hidden=true;}
+    else{
+      box.hidden=false;
+      var inst=appIsInstalled();
+      $('#stInstallBtn').hidden=inst;
+      $('#stInstallTxt').textContent=inst?'Installed on this device. Open it from your home screen or app drawer.':'Opens faster, full-screen, straight from your home screen.';
+    }
+  }
+
+  function open(b){
+    opener=b||null;
+    if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open','');
+    sync();
+  }
+  function close(){
+    if(typeof dlg.close==='function') dlg.close(); else dlg.removeAttribute('open');
+  }
+  dlg.addEventListener('close',function(){
+    if(opener&&document.contains(opener)) opener.focus({preventScroll:true});
+    opener=null;
+  });
+
+  document.addEventListener('click',function(e){
+    if(e.target===dlg){close();return;}   // tap on the dimmed backdrop
+    var b=e.target.closest&&e.target.closest('[data-set]'); if(!b) return;
+    var a=b.getAttribute('data-set');
+    if(a==='open') open(b);
+    else if(a==='close') close();
+    else if(a==='theme'){var v=b.getAttribute('data-v');store.set('tt-theme',v);applyTheme(v);sync();}
+    else if(a==='rr'){rrSetOn(!RR.on);sync();}
+    else if(a==='change'){close();openPicker(true);}
+    else if(a==='install'){close();installNow();}
+  });
+
+  // keep the dialog in step when Reminder Ranger changes from its own panel or bar
+  try{
+    var prev=rrBarSync;
+    rrBarSync=function(f){prev(f);try{sync();}catch(e){}};
+  }catch(e){}
+  var rra=$('#rrApp'); if(rra) rra.addEventListener('close',sync);
+  window.addEventListener('appinstalled',sync);
 })();
 
 boot();
