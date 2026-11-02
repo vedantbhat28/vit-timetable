@@ -675,7 +675,15 @@ a.tn-btn{display:inline-flex;align-items:center;justify-content:center;text-deco
 /* phones: compact chrome, week grid fits the screen (no sideways scroll) */
 @media (max-width:600px){
   :root{--hr:56px;--hrw:56px}
-  .top{align-items:center}
+  .top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 12px;align-items:start}
+  .top>div:first-child{display:contents}
+  .top h1{grid-column:1;grid-row:1}
+  .top .latest-badge{grid-column:1;grid-row:2}
+  .top .campus{grid-column:1;grid-row:3;margin-top:6px}
+  .top .hdr-actions{grid-column:1 / -1;grid-row:4}
+  .clock{grid-column:2;grid-row:1;padding-top:2px}
+  .clock-time{white-space:nowrap}
+  .clock-date{white-space:nowrap;margin-top:6px;line-height:1.2}
   .sub{display:none}
   .clock-date{font-size:12px}
   .controls{flex-wrap:nowrap;gap:8px;justify-content:space-between}
@@ -1153,6 +1161,17 @@ dialog#rrApp::backdrop{background:rgba(12,16,32,.55)}
 @keyframes rrIn{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
 @keyframes rrRing{0%,100%{transform:rotate(0)}20%{transform:rotate(16deg)}40%{transform:rotate(-14deg)}60%{transform:rotate(9deg)}80%{transform:rotate(-6deg)}}
 @media (prefers-reduced-motion:reduce){.rr-toast,.rr-toast[data-l="3"] .ti svg{animation:none}.rr-toast.out{transition:none}.rr-sw,.rr-sw::after{transition:none}}
+@media (max-width:600px){
+  .rr-bar{display:grid;grid-template-columns:38px minmax(0,1fr);align-items:center;gap:10px 12px;padding:10px}
+  .rr-txt{min-width:0}
+  .rr-btns{grid-column:1 / -1;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:stretch}
+  .rr-btns .seg{justify-content:center}
+  .rr-btns .seg button{flex:1 1 0;min-height:38px}
+  .rr-btns .chg{margin-top:0;justify-content:center;min-height:44px}
+  .rr-perm .rr-btn{flex:1 1 100%}
+  .rr-perm .rr-btns{display:flex;grid-column:auto;flex:1 1 100%}
+  .rr-perm .rr-btns .rr-btn{flex:1 1 0}
+}
 @media (max-width:420px){.rr-plan .pt{width:78px}.rr-tone select{max-width:130px}}
 </style>
 </head>
@@ -5389,9 +5408,9 @@ function rrPaint(){
   var body=$('#rrBody');if(!body) return;
   var ae=document.activeElement,fk=ae&&ae.getAttribute?ae.getAttribute('data-k'):null,sc=body.scrollTop;
   var perm=rrPerm(),h='';
-  h+='<p class="rr-lead">Reminders ranked by how easy a lecture is to miss. This is an alpha. By default it runs on this device only and works while the app is open. Turn on background push to get reminders even when the app is closed: that stores your push address and your next 7 days of reminder times, lecture names and rooms on our server. Language classes always stay on your device.</p>';
+  h+='<p class="rr-lead">Reminders ranked by how easy a lecture is to miss. This is an alpha. Allowing notifications also turns on background push, so reminders reach you even when the app is closed. This stores your push address and your next 7 days of reminder times, lecture names and rooms on our server. Language classes always stay on your device. You can turn background push off below.</p>';
   // permission
-  var pt=perm==='granted'?'Notifications are allowed.':perm==='default'?'Allow notifications to get banners when the app is in the background.':perm==='denied'?'Notifications are blocked in your browser settings. In-app banners and sounds still work.':'This browser does not support system notifications. In-app banners and sounds still work.';
+  var pt=perm==='granted'?'Notifications are allowed.':perm==='default'?'Allow notifications to get banners and background push, even when the app is closed.':perm==='denied'?'Notifications are blocked in your browser settings. In-app banners and sounds still work.':'This browser does not support system notifications. In-app banners and sounds still work.';
   h+='<div class="rr-box"><div class="rr-perm"><p>'+pt+'</p>'+(perm==='default'?'<button type="button" class="rr-btn" data-rr="perm">Allow notifications</button>':'')+'</div></div>';
   h+=rrpBox(perm);
   // today's plan
@@ -5436,7 +5455,7 @@ function rrSetOn(on){
   RR.on=on;rrSave();
   if(on){
     rrAudio();
-    rrAsk(function(){rrBarSync(true);if($('#rrApp').open) rrPaint();});
+    rrAsk(function(p){rrBarSync(true);if($('#rrApp').open) rrPaint();if(p==='granted') rrpEnable();});   // allowing notifications also turns on background push
   }else rrpDisable();   // switching Reminder Ranger off also removes this device from the push server
   rrBarSync(true);
 }
@@ -5454,7 +5473,7 @@ function rrAct(a,b){
   else if(a==='close') teacherDialog('#rrApp',false);
   else if(a==='on') rrSetOn(true);
   else if(a==='off') rrSetOn(false);
-  else if(a==='perm') rrAsk(function(){rrBarSync(true);rrPaint();});
+  else if(a==='perm') rrAsk(function(p){rrBarSync(true);rrPaint();if(p==='granted'&&RR.on) rrpEnable();});
   else if(a==='push-on') rrpEnable();
   else if(a==='push-off') rrpDisable();
   else if(a==='push-test') rrpTest();
@@ -5462,7 +5481,7 @@ function rrAct(a,b){
     var k=b.getAttribute('data-k'),l=+k.slice(3),f=k.slice(0,3);
     RR.lvl[l][f]=!RR.lvl[l][f];rrCommit();
     if(RR.lvl[l].snd) rrAudio();
-    if(RR.lvl[l].sil&&RR.on&&rrPerm()==='default') rrAsk(function(){rrBarSync(true);rrPaint();});
+    if(RR.lvl[l].sil&&RR.on&&rrPerm()==='default') rrAsk(function(p){rrBarSync(true);rrPaint();if(p==='granted') rrpEnable();});
     rrPaint();
   }
   else if(a==='lead'){RR.lvl[+b.getAttribute('data-l')].lead=+b.getAttribute('data-v');rrCommit();rrPaint();}
