@@ -1373,7 +1373,7 @@ dialog#settings::backdrop{background:rgba(12,16,32,.55)}
       <h1 id="h1">Timetable</h1>
       <span class="latest-badge" id="latestBadge" hidden><i aria-hidden="true"></i><span id="latestTxt">Latest schedule</span></span>
       <p class="campus" id="campusLine">&nbsp;</p>
-      <p class="sub" id="subLine">First year, semester 1.</p>
+      <p class="sub" id="subLine" hidden></p>
       <div class="hdr-actions">
         <button type="button" class="chg" data-act="change"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 5.5h10.5M10 3l2.5 2.5L10 8M14 10.5H3.5M6 8l-2.5 2.5L6 13"/></svg>Change class</button>
         <span class="forum-wrap"><a class="chg" href="forum.html" data-act="forum-open"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 3.5h11v7h-6l-3 2.5v-2.5h-2z"/></svg>Forum</a><button type="button" class="forum-tip" id="forumTip" data-act="forum-tip" hidden><span class="ft-spark" aria-hidden="true">&#10024;</span>Try out the new forums</button></span>
@@ -2882,7 +2882,9 @@ function render(){
   document.title=headTitle+' timetable';
   $('#campusLine').innerHTML='<svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 14.5S13 10.2 13 6.5a5 5 0 10-10 0C3 10.2 8 14.5 8 14.5z"/><circle cx="8" cy="6.5" r="1.8"/></svg><span>'+campusFor(st.branch)+'</span>';
   var lb=$('#latestBadge');if(lb){if(ymd(now)<=EV_TO){$('#latestTxt').textContent='Vishwakarandak';lb.hidden=false;}else lb.hidden=true;}   // badge shows the event until 5 Nov, then disappears
-  $('#subLine').textContent='First year, semester 1. Timetable version '+CUR.version+', valid '+fmtDateLong(CUR.effFrom)+' to '+fmtDateLong(CUR.effTo)+'.'+(st.lang?' '+langName(st.lang)+' ('+st.lang+') is added from the foreign language list.':'');
+  var subEl=$('#subLine');   // the version / validity line is gone; only the foreign-language note can still show
+  subEl.textContent=st.lang?langName(st.lang)+' ('+st.lang+') is added from the foreign language list.':'';
+  subEl.hidden=!st.lang;
   $('#footTxt').textContent="Built from timetable Form FF957 for First Year "+CUR.pdf+", version "+CUR.version+", effective "+fmtDateLong(CUR.effFrom)+" to "+fmtDateLong(CUR.effTo)+". Class blocks show faculty initials; tap a class for full names from the faculty list on page 2 of the PDF, pulled live from the TimeTable_VIT database. Holidays and exam windows follow the FY Academic Calendar 2026-27, Sem I.";
   $('#clockTime').textContent=fmtT(mins(now));
   $('#clockDate').textContent=DAYS[now.getDay()]+', '+now.getDate()+' '+MONS[now.getMonth()]+' '+now.getFullYear();
@@ -4220,7 +4222,7 @@ function renderAdmin(){
       {l:'All time',n:teacher.v_all||0,u:(teacher.u_all||0)+' uniq'}
     ].map(function(k){return '<div class="adm-kpi"><span class="n">'+k.n+'</span><span class="u">'+k.u+'</span><span class="l">'+k.l+'</span></div>';}).join('')+'</div>';
   }
-  [['study_planner','Study Planner opens','(clicks from the timetable)'],['study_planner_built','Study Planner plans built','(successful generations)']].forEach(function(x){
+  [['study_planner','Study Planner opens','(clicks from the timetable)'],['study_planner_built','Study Planner plans built','(successful generations)'],['leaderboard_open','Leaderboard opens','(division leaderboard)'],['leaderboard_share','Leaderboard shares','(taps on the share button)']].forEach(function(x){
     var w=d[x[0]];
     if(!w) return;
     html+='<p class="adm-h">'+x[1]+' <span style="font-weight:400;color:var(--muted)">'+x[2]+'</span></p>';
