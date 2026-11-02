@@ -149,9 +149,9 @@ h1{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);lin
 .clock-time{font-family:var(--display);font-weight:800;font-size:clamp(28px,6vw,40px);line-height:.92;font-variant-numeric:tabular-nums}
 .clock-date{color:var(--muted);font-size:12.5px;margin-top:4px}
 
-/* controls */
-.controls{display:flex;flex-wrap:wrap;gap:8px 18px;margin:12px 0 12px}
-.ctl{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+/* leaderboard shortcut (replaces the old batch / clock controls, which live in Settings now) */
+.lb-row{margin:12px 0}
+.lb-row .chg{margin-top:0}
 .seg{display:inline-flex;gap:2px;padding:3px;background:var(--wash);border:1px solid var(--line);border-radius:12px}
 .seg button{white-space:nowrap;border:0;background:transparent;border-radius:9px;padding:4px 12px;min-height:34px;min-width:44px;font-weight:600;font-size:13px;cursor:pointer}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
@@ -290,10 +290,6 @@ h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,4.4vw,26px);l
 .hol-box.exam .hol-title{color:#8a5d00}
 .hol-box .hol-sub{margin:6px 0 0;font-size:12.5px;color:var(--muted)}
 .hol-box .hol-sub a{color:inherit;font-weight:600;text-decoration:underline;text-underline-offset:2px}
-.day-off{position:relative}
-.day-off::before{content:'';position:absolute;inset:0;border-radius:12px;background:repeating-linear-gradient(135deg,rgba(0,0,0,.035) 0 10px,transparent 10px 20px);pointer-events:none}
-.tl-holiday{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;background:var(--surface);border-radius:10px;z-index:2}
-.tl-holiday p{margin:0;padding:0 20px;color:var(--muted);font-weight:600;font-size:13px}
 .wk-col.hol{background-color:rgba(217,83,79,.08)}
 .wk-col.exam-day{background-color:rgba(217,150,20,.08)}
 .wk-hol-label{position:absolute;top:6px;left:6px;right:6px;font-size:10px;font-weight:700;color:#a5352f;line-height:1.2;z-index:1}
@@ -326,8 +322,6 @@ h2{font-family:var(--display);font-weight:800;font-size:clamp(21px,4.4vw,26px);l
 /* ---- Bro connect (beta) ---- */
 .bro{margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 12px}
 .bro-tag{display:inline-block;padding:2px 10px;border-radius:99px;background:linear-gradient(135deg,#7C4DCB,#2F5BD6);color:#fff;font-size:11px;font-weight:700;letter-spacing:.04em}
-.bro-title{font-family:var(--display);font-weight:800;font-size:clamp(22px,5vw,28px);line-height:1;margin:8px 0 0}
-.bro-sub{margin:6px 0 12px;color:var(--muted);font-size:12.5px;max-width:52ch}
 .bro .btn{margin-top:0}
 .bro-you{margin:0 0 10px;font-size:13px;color:var(--muted)}
 .bro-you b{color:var(--ink)}
@@ -477,9 +471,8 @@ dialog#teacherDetail::backdrop{background:rgba(12,16,32,.55)}
 .feature-name{margin:0;font-weight:700;font-size:15px}.feature-desc{margin:0;color:var(--muted);font-size:12.5px;line-height:1.4}
 .feature-card .btn{margin-top:auto}a.btn{display:inline-flex;align-items:center;text-decoration:none}.ibtn{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--surface);color:var(--ink);font-family:Georgia,serif;font-weight:700;cursor:pointer}
 .teacher-search{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}.teacher-search input{min-height:42px;padding:7px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--wash);color:var(--ink);font:600 14px var(--body)}
-.teacher-search .btn{margin:0}.teacher-msg{margin:10px 0 0;min-height:18px;color:var(--muted);font-size:12.5px}.teacher-results{display:grid;gap:8px;margin-top:12px}.teacher-result{padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:var(--wash)}
-.teacher-result h4{margin:0;font-size:14px}.teacher-result p{margin:4px 0 0;color:var(--muted);font-size:12.5px}.teacher-live{color:#0d7b50!important;font-weight:700}.teacher-next{font-weight:600;color:var(--ink)!important}.teacher-note{margin:12px 0 0;color:var(--muted);font-size:11.5px;line-height:1.45}
-.teacher-pick{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:var(--wash);color:var(--ink);text-align:left;font:600 14px var(--body);cursor:pointer}.teacher-pick:hover{border-color:var(--focus)}.teacher-campus{font-weight:700;color:var(--ink)!important}
+.teacher-search .btn{margin:0}.teacher-msg{margin:10px 0 0;min-height:18px;color:var(--muted);font-size:12.5px}
+.teacher-pick{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:var(--wash);color:var(--ink);text-align:left;font:600 14px var(--body);cursor:pointer}.teacher-pick:hover{border-color:var(--focus)}
 .feature-nudge{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin:10px 0 2px;padding:7px 10px;border:0;background:transparent;color:var(--focus);font:600 12.5px var(--body);cursor:pointer}.feature-nudge .arrow{font-size:17px;line-height:1;animation:featureBob 1.4s ease-in-out infinite}@keyframes featureBob{50%{transform:translateY(3px)}}
 
 /* ---- Empty classrooms ---- */
@@ -642,7 +635,6 @@ body.diwali .hero{box-shadow:0 0 0 2px #ffb020,0 8px 28px rgba(255,160,32,.38)}
 .onl-list li b{display:block}
 .onl-list li span{color:var(--muted);font-size:12.5px}
 a.tn-btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
-.onl-pill{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:700;background:var(--focus);color:#fff;vertical-align:middle}
 .kv a.onl-join{display:inline-flex;align-items:center;min-height:40px;padding:7px 16px;border-radius:10px;background:var(--ink);color:var(--surface);font-weight:700;text-decoration:none}
 .tn-card{max-width:420px;display:flex;flex-direction:column;align-items:center;gap:10px}
 .tn-emoji{font-size:44px;line-height:1;animation:hiPop .6s ease-out}
@@ -650,18 +642,13 @@ a.tn-btn{display:inline-flex;align-items:center;justify-content:center;text-deco
 .tn-title{margin:2px 0 0;font-family:var(--display);font-weight:800;font-size:clamp(24px,6.5vw,30px);line-height:1.15}
 .tn-body{margin:4px 0 0;font-size:13.5px;line-height:1.5;color:var(--muted)}
 .tn-body b{color:var(--ink)}
-.tn-good{color:var(--focus)}
 .latest-badge{display:inline-flex;align-items:center;gap:6px;margin:8px 0 0;padding:4px 11px 4px 9px;border-radius:999px;font-size:11.5px;font-weight:700;letter-spacing:.02em;color:#fff;background:linear-gradient(135deg,#16a34a,#0d9488);box-shadow:0 2px 8px rgba(13,148,136,.3)}
 .latest-badge[hidden]{display:none}
 .latest-badge i{width:7px;height:7px;border-radius:50%;background:#fff;animation:pulseW 1.8s infinite}
-.tn-link{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-weight:700;color:var(--focus);text-decoration:none}
-.tn-link:hover{text-decoration:underline}
 .tn-btn{margin-top:16px;min-height:44px;padding:9px 22px;border:0;border-radius:11px;background:var(--ink);color:var(--surface);font-weight:700;font-size:14px;cursor:pointer}
 .tn-btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .tn-btn{position:relative;overflow:hidden;isolation:isolate}
 .tn-btn[disabled]{cursor:not-allowed;background:var(--wash);color:var(--muted);border:1px solid var(--line)}
-.tn-btn .tn-bar{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ink);opacity:.18;z-index:-1}
-.tn-btn.wait .tn-bar{animation:tnFill 2s linear forwards}
 @keyframes tnFill{from{width:0}to{width:100%}}
 @media (prefers-reduced-motion:reduce){#labNotice,#chgNotice,#susNotice,#roomNotice,#xtraNotice,#onlNotice,.tn-emoji{animation:none}}
 #rollWarn{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.55)}
@@ -720,10 +707,6 @@ a.tn-btn{display:inline-flex;align-items:center;justify-content:center;text-deco
   .clock-date{white-space:nowrap;margin-top:6px;line-height:1.2}
   .sub{display:none}
   .clock-date{font-size:12px}
-  .controls{flex-wrap:nowrap;gap:8px;justify-content:space-between}
-  .ctl{gap:6px;font-size:12px;min-width:0}
-  .ctl>span{white-space:nowrap}
-  .ctl-l{display:none}
   .seg button{padding:4px 9px;min-height:38px;min-width:38px;font-size:12.5px}
   .tab{min-height:54px}
   .wk-gut span,.tl-gut span{right:6px;font-size:10px}
@@ -931,7 +914,6 @@ dialog#plannerIntro::backdrop{background:rgba(12,16,32,.55)}
   dialog#plannerIntro[open]{animation-name:sheetUp}
 }
 @media (prefers-reduced-motion:reduce){dialog#plannerIntro[open]{animation:none}}
-.feature-card.pn-flash{animation:pnFlash 1.6s ease-out}
 @keyframes pnFlash{0%,60%{box-shadow:0 0 0 2px #6d28d9,0 0 22px rgba(99,102,241,.7)}100%{box-shadow:none}}
 
 /* ---- about-me dialog ---- */
@@ -943,6 +925,38 @@ dialog#about::backdrop{background:rgba(12,16,32,.55)}
   dialog#about[open]{animation-name:sheetUp}
 }
 @media (prefers-reduced-motion:reduce){dialog#about[open]{animation:none}}
+
+/* ---- division leaderboard dialog (colours come only from theme variables, so it follows every theme) ---- */
+dialog#leaderboard{padding:0;border:0;margin:auto;background:var(--surface);color:var(--ink);width:min(440px,calc(100vw - 24px));max-width:none;max-height:none;border-radius:18px;overflow:hidden;box-shadow:0 24px 70px rgba(8,12,30,.4)}
+dialog#leaderboard[open]{animation:sheetIn .2s ease-out}
+dialog#leaderboard::backdrop{background:rgba(12,16,32,.55)}
+@media (max-width:600px){
+  dialog#leaderboard{width:100%;margin:auto 0 0;border-radius:18px 18px 0 0}
+  dialog#leaderboard[open]{animation-name:sheetUp}
+}
+@media (prefers-reduced-motion:reduce){dialog#leaderboard[open]{animation:none}}
+.lb-me{display:flex;align-items:center;gap:14px;margin:0 0 12px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--wash)}
+.lb-me-rank{flex:none;min-width:58px;font-family:var(--display);font-weight:800;font-size:34px;line-height:1;text-align:center}
+.lb-me-t{min-width:0}
+.terms-body .lb-me-t p{margin:0}
+.terms-body .lb-me-n{color:var(--ink);font-family:var(--display);font-weight:800;font-size:18px;line-height:1.15}
+.terms-body .lb-me-s{margin-top:3px;font-size:12.5px}
+.lb-share{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:46px;margin:0 0 14px;padding:8px 14px;border:0;border-radius:12px;background:var(--ink);color:var(--surface);font-weight:700;font-size:13.5px;line-height:1.25;text-align:center;cursor:pointer}
+.lb-share svg{flex:none}
+.lb-share:focus-visible,.lb-q:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.lb-q{display:block;width:100%;box-sizing:border-box;min-height:44px;margin:0 0 10px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--wash);color:var(--ink);font:inherit;font-size:14px}
+.lb-q::placeholder{color:var(--muted)}
+.lb-list{list-style:none;margin:0;padding:0}
+.lb-li{display:flex;align-items:center;gap:10px;padding:10px 8px;border-top:1px solid var(--line)}
+.lb-li:first-child{border-top:0}
+.lb-li.me{border:1.5px solid var(--ink);border-radius:12px;background:var(--wash);margin:3px 0}
+.lb-pos{flex:none;width:32px;text-align:center;font-family:var(--display);font-weight:800;font-size:15px;color:var(--muted)}
+.lb-li:nth-child(-n+3) .lb-pos{color:var(--ink);font-size:18px}
+.lb-nm{flex:1 1 auto;min-width:0;font-weight:700;font-size:14px;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-nm small{margin-left:6px;font-weight:600;font-size:11px;color:var(--muted)}
+.lb-ct{flex:none;font-weight:700;font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums}
+.lb-ct small{font-weight:500;font-size:11px;color:var(--muted)}
+.terms-body p.lb-msg{margin:18px 0;text-align:center}
 .about-profile{display:flex;align-items:center;gap:12px;margin-bottom:16px}
 .about-avatar{flex:none;width:52px;height:52px;border-radius:14px;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:19px;letter-spacing:.02em}
 .about-name{margin:0;font-weight:700;font-size:16px;color:var(--ink)}
@@ -1239,14 +1253,12 @@ dialog#settings::backdrop{background:rgba(12,16,32,.55)}
 .terms-body .st-box .st-l small{display:block;margin-top:1px;color:var(--muted);font-size:12px;line-height:1.4;font-weight:500}
 .st-box .chg{margin-top:4px}
 .st-box .chg.st-wide{width:100%;justify-content:center}
-.st-box .st-note{margin:0 0 4px}
 .st-link{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:44px;padding:6px 2px;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent;color:var(--ink);font-weight:600;font-size:13.5px;text-align:left;cursor:pointer}
 .st-box>h4+.st-link{border-top:0}
 .st-link:hover{background:var(--surface)}
 .st-link svg{flex:none;color:var(--muted)}
 .st-set .rr-btn{margin:0}
 .st-set .rr-btn[hidden]{display:none}
-.st-rr-state{margin:0}
 @media (max-width:420px){.st-set .seg{width:100%}.st-set .seg button{flex:1 1 0}}
 
 /* ---------- Customize: themes, styles, haptics ---------- */
@@ -1377,20 +1389,8 @@ dialog#settings::backdrop{background:rgba(12,16,32,.55)}
 
   <div id="chgStrip" hidden role="status" aria-live="polite"></div>
 
-  <div class="controls">
-    <div class="ctl"><span id="lblB">Lab batch</span>
-      <div class="seg" role="group" aria-labelledby="lblB">
-        <button type="button" data-act="batch" data-v="B1" aria-pressed="false">B1</button>
-        <button type="button" data-act="batch" data-v="B2" aria-pressed="true">B2</button>
-        <button type="button" data-act="batch" data-v="B3" aria-pressed="false">B3</button>
-      </div>
-    </div>
-    <div class="ctl"><span id="lblF" class="ctl-l">Clock</span>
-      <div class="seg" role="group" aria-labelledby="lblF">
-        <button type="button" data-act="fmt" data-v="12" aria-pressed="true">12 h</button>
-        <button type="button" data-act="fmt" data-v="24" aria-pressed="false">24 h</button>
-      </div>
-    </div>
+  <div class="lb-row">
+    <button type="button" class="chg" data-act="lb-open" aria-haspopup="dialog"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 2.5h6v4a3 3 0 0 1-6 0zM5 4H2.5c0 2 1 3 2.6 3.2M11 4h2.5c0 2-1 3-2.6 3.2M8 9.5v2.5M5.5 13.5h5"/></svg>Leaderboard</button>
   </div>
 
   <main>
@@ -1744,6 +1744,21 @@ dialog#settings::backdrop{background:rgba(12,16,32,.55)}
           <p class="about-proj-name"><a href="https://vedantbhat28.github.io/cppkit" target="_blank" rel="noopener" data-act="ext-link" data-label="cppkit">CPPkit</a> <span class="tag">Prototype</span></p>
           <p class="about-proj-d">An early, work-in-progress build.</p>
         </div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="leaderboard" aria-labelledby="lbTitle">
+    <div class="terms">
+      <div class="terms-head">
+        <h3 id="lbTitle">Division Leaderboard</h3>
+        <button type="button" class="terms-x" data-act="lb-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button>
+      </div>
+      <div class="terms-body">
+        <div class="lb-me" id="lbMe" aria-live="polite"></div>
+        <button type="button" class="lb-share" data-act="lb-share" id="lbShare"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 10V2.5M5 5l3-3 3 3M3 8.5v4h10v-4"/></svg><span id="lbShareT">Share it with your friends to make your division reach the top</span></button>
+        <input type="search" class="lb-q" id="lbSearch" placeholder="Search a division, e.g. CSSE C" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search divisions">
+        <div id="lbList" aria-live="polite"></div>
       </div>
     </div>
   </dialog>
@@ -3468,10 +3483,94 @@ $('#about').addEventListener('close',function(){
   aboutOpener=null;
 });
 
+/* ---------- Division leaderboard ----------
+   Reads public.public_division_leaderboard() (visit counts per division, last 30 days: same numbers as the admin class ranking). */
+var LB={rows:null,at:0,busy:false,err:false,opener:null};
+var LB_SHARE_TEXT='Are you annoyed by the confusing College timetable PDF? Check out this platform to check your timetable: https://vedantbhat28.github.io/vit-timetable';
+function lbNorm(x){return String(x==null?'':x).toLowerCase().replace(/[^a-z0-9]+/g,'');}   // "CSSE-C", "csse c" and "CSSE  C" all become "cssec"
+function lbMine(){var b=st.branch||store.get('tt-branch',''),d=st.div||store.get('tt-div','');return b&&d?b+'-'+d:'';}
+function lbLabel(k){var i=k.indexOf('-');return i<0?k:branchLabel(k.slice(0,i))+' '+k.slice(i+1);}
+function lbRanked(){   // competition ranking: equal visit counts share a rank
+  var rows=(LB.rows||[]).filter(function(r){return r&&r.k&&r.k!=='(no class picked)'&&(r.n||0)>0;}).map(function(r){return {k:String(r.k),n:+r.n||0};});
+  rows.sort(function(a,b){return b.n-a.n||a.k.localeCompare(b.k);});
+  rows.forEach(function(r,i){r.rank=(i&&rows[i-1].n===r.n)?rows[i-1].rank:i+1;});
+  return rows;
+}
+function lbMatch(r,q){
+  var nq=lbNorm(q); if(!nq) return true;
+  return lbNorm(r.k).indexOf(nq)>=0||lbNorm(lbLabel(r.k)).indexOf(nq)>=0;   // matches "CSSE C" and "CSE Software C" alike
+}
+function lbRender(){
+  var me=$('#lbMe'),list=$('#lbList'); if(!me||!list) return;
+  if(LB.busy&&!LB.rows){me.innerHTML='<p class="lb-msg" style="margin:0">Loading\u2026</p>';list.innerHTML='';return;}
+  if(!LB.rows){
+    me.innerHTML='<p class="lb-msg" style="margin:0">The leaderboard could not be loaded. Check your connection and try again.</p>';
+    list.innerHTML='<button type="button" class="chg st-wide" data-act="lb-retry">Try again</button>';return;
+  }
+  var rows=lbRanked(),mine=lbMine(),mr=null;
+  rows.forEach(function(r){if(r.k===mine) mr=r;});
+  var mname=mine?lbLabel(mine):'your division';
+  me.innerHTML=mr
+    ?'<div class="lb-me-rank">#'+mr.rank+'</div><div class="lb-me-t"><p class="lb-me-n">'+esc(mname)+'</p><p class="lb-me-s">'+mr.n+' total visits \u00b7 '+rows.length+' divisions</p></div>'
+    :'<div class="lb-me-rank">\u2014</div><div class="lb-me-t"><p class="lb-me-n">'+esc(mname)+'</p><p class="lb-me-s">'+(mine?'Not on the board yet. Open the timetable and share it to get started.':'Pick your class to see where you stand.')+'</p></div>';
+  var q=($('#lbSearch')||{}).value||'';
+  var shown=rows.filter(function(r){return lbMatch(r,q);});
+  var exact=shown.filter(function(r){return lbNorm(r.k)===lbNorm(q);});   // a full code like "CS C" shows just that division, not CSCBI-A as well
+  if(exact.length) shown=exact;
+  if(!rows.length){list.innerHTML='<p class="lb-msg">No visits recorded yet.</p>';return;}
+  if(!shown.length){list.innerHTML='<p class="lb-msg">No division matches \u201c'+esc(q.trim())+'\u201d.</p>';return;}
+  list.innerHTML='<ol class="lb-list">'+shown.map(function(r){
+    var you=r.k===mine;
+    return '<li class="lb-li'+(you?' me':'')+'"><span class="lb-pos">'+(r.rank===1?'\ud83e\udd47':r.rank===2?'\ud83e\udd48':r.rank===3?'\ud83e\udd49':r.rank)+'</span>'+
+      '<span class="lb-nm">'+esc(lbLabel(r.k))+(you?'<small>You</small>':'')+'</span>'+
+      '<span class="lb-ct">'+r.n+' <small>visits</small></span></li>';
+  }).join('')+'</ol>';
+}
+function lbLoad(force){
+  if(LB.busy) return;
+  if(!force&&LB.rows&&Date.now()-LB.at<60000) return;
+  LB.busy=true; lbRender();
+  admRpc('public_division_leaderboard',{},15000).then(function(r){
+    LB.busy=false;
+    if(r.ok&&Array.isArray(r.j)){LB.rows=r.j;LB.at=Date.now();}
+    lbRender();
+  },function(){LB.busy=false;lbRender();});
+}
+function openLb(opener){
+  LB.opener=opener||null;
+  var s=$('#lbSearch'); if(s) s.value='';
+  var dlg=$('#leaderboard');
+  if(typeof dlg.showModal==='function') dlg.showModal(); else dlg.setAttribute('open','');
+  lbRender(); lbLoad(false);
+  logVisit('open_leaderboard',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});
+}
+function closeLb(){
+  var dlg=$('#leaderboard');
+  if(typeof dlg.close==='function') dlg.close(); else dlg.removeAttribute('open');
+}
+function lbShare(){
+  logVisit('leaderboard_share',{branch:st.branch||store.get('tt-branch',''),div:st.div||store.get('tt-div',''),batch:st.batch});
+  var t=$('#lbShareT'),orig='Share it with your friends to make your division reach the top';
+  function note(m){if(!t) return;t.textContent=m;setTimeout(function(){t.textContent=orig;},2200);}
+  if(navigator.share){
+    navigator.share({text:LB_SHARE_TEXT}).catch(function(){});   // the user closing the share menu is not an error
+    return;
+  }
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(LB_SHARE_TEXT).then(function(){note('Message copied. Paste it to your friends!');},function(){note('Could not copy. Share the site link instead.');});
+  }else note('Sharing is not supported on this browser.');
+}
+$('#lbSearch').addEventListener('input',lbRender);
+$('#leaderboard').addEventListener('close',function(){
+  if(LB.opener) LB.opener.focus({preventScroll:true});
+  LB.opener=null;
+});
+
 document.addEventListener('click',function(e){
   if(e.target&&e.target.id==='sheet'){closeSheet();return;}   // tap on the dimmed backdrop
   if(e.target&&e.target.id==='terms'){closeTerms();return;}
   if(e.target&&e.target.id==='about'){closeAbout();return;}
+  if(e.target&&e.target.id==='leaderboard'){closeLb();return;}
   if(e.target&&e.target.id==='forumIntro'){closeForumIntro();return;}
   if(e.target&&e.target.id==='plannerIntro'){closePlannerIntro();return;}
   if(e.target&&e.target.id==='privacy'){closePriv();return;}
@@ -3492,6 +3591,10 @@ document.addEventListener('click',function(e){
   if(a==='terms-close'){closeTerms();return;}
   if(a==='about-open'){openAbout(b);return;}
   if(a==='about-close'){closeAbout();return;}
+  if(a==='lb-open'){openLb(b);return;}
+  if(a==='lb-close'){closeLb();return;}
+  if(a==='lb-share'){lbShare();return;}
+  if(a==='lb-retry'){lbLoad(true);return;}
   if(a==='priv-open'){openPriv(b);return;}
   if(a==='priv-close'){closePriv();return;}
   if(a==='planner-intro-close'){closePlannerIntro();return;}
