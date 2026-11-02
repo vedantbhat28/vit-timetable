@@ -943,6 +943,18 @@ dialog#leaderboard::backdrop{background:rgba(12,16,32,.55)}
 .terms-body .lb-me-s{margin-top:3px;font-size:12.5px}
 .lb-share{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:46px;margin:0 0 14px;padding:8px 14px;border:0;border-radius:12px;background:var(--ink);color:var(--surface);font-weight:700;font-size:13.5px;line-height:1.25;text-align:center;cursor:pointer}
 .lb-share svg{flex:none}
+.lb-share[hidden]{display:none}
+.lb-load{display:flex;align-items:center;gap:14px;width:100%}
+.lb-spin{flex:none;width:34px;height:34px;border-radius:50%;border:3.5px solid var(--line);border-top-color:var(--ink);animation:lbSpin .8s linear infinite}
+.lb-sk{display:flex;align-items:center;gap:10px;padding:12px 8px;border-top:1px solid var(--line)}
+.lb-sk:first-child{border-top:0}
+.lb-sk i{display:block;height:14px;border-radius:7px;background:linear-gradient(90deg,color-mix(in srgb,var(--ink) 8%,transparent) 25%,color-mix(in srgb,var(--ink) 18%,transparent) 50%,color-mix(in srgb,var(--ink) 8%,transparent) 75%);background-size:200% 100%;animation:lbShim 1.2s ease-in-out infinite}
+.lb-sk i:nth-child(1){width:26px}.lb-sk i:nth-child(2){flex:1}.lb-sk i:nth-child(3){width:58px}
+.lb-sk:nth-child(2n) i:nth-child(2){max-width:70%}
+@keyframes lbSpin{to{transform:rotate(360deg)}}
+@keyframes lbShim{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.lb-spin,.lb-sk i{animation-duration:2.4s}}
+.tp-ev{margin:0 0 12px;padding:9px 12px;border:1px solid var(--line);border-radius:11px;background:var(--wash);font-size:12.5px;font-weight:600;color:var(--ink)}
 .lb-share:focus-visible,.lb-q:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .lb-q{display:block;width:100%;box-sizing:border-box;min-height:44px;margin:0 0 10px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--wash);color:var(--ink);font:inherit;font-size:14px}
 .lb-q::placeholder{color:var(--muted)}
@@ -1756,7 +1768,7 @@ dialog#settings::backdrop{background:rgba(12,16,32,.55)}
       </div>
       <div class="terms-body">
         <div class="lb-me" id="lbMe" aria-live="polite"></div>
-        <button type="button" class="lb-share" data-act="lb-share" id="lbShare"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 10V2.5M5 5l3-3 3 3M3 8.5v4h10v-4"/></svg><span id="lbShareT">Share it with your friends to make your division reach the top</span></button>
+        <button type="button" class="lb-share" data-act="lb-share" id="lbShare" hidden><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 10V2.5M5 5l3-3 3 3M3 8.5v4h10v-4"/></svg><span id="lbShareT">Share it with your friends to make your division reach the top</span></button>
         <input type="search" class="lb-q" id="lbSearch" placeholder="Search a division, e.g. CSSE C" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search divisions">
         <div id="lbList" aria-live="polite"></div>
       </div>
@@ -1900,7 +1912,7 @@ dialog#settings::backdrop{background:rgba(12,16,32,.55)}
     </div>
   </dialog>
   <dialog id="teacherInfo" aria-labelledby="teacherInfoT">
-    <div class="terms"><div class="terms-head"><h3 id="teacherInfoT">Find a teacher <span class="bro-tag">Experimental</span></h3><button type="button" class="terms-x" data-act="teacher-info-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div><div class="terms-body"><p>Faculty from the <b>FY timetable</b> are grouped by subject. Tap any name plate to see which room that teacher is in right now and the room and time of their next four periods. The search box on the side still lets you look a teacher up by name.</p><p>Campus labels are inferred from the branch: CS, CS-AIML, CS-AI and IT are at <b>Bibwewadi Campus</b>; all other branches are shown as <b>Kondhwa Campus</b>.</p><p>This is an experimental timetable helper, not live location tracking. It cannot account for attendance, substitutions, holidays, or last-minute changes—please verify before visiting.</p><div class="bro-acts"><button type="button" class="btn" data-act="teacher-info-ack">Got it, find a teacher</button></div></div></div>
+    <div class="terms"><div class="terms-head"><h3 id="teacherInfoT">Find a teacher <span class="bro-tag">Experimental</span></h3><button type="button" class="terms-x" data-act="teacher-info-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div><div class="terms-body"><p>Faculty from the <b>FY timetable</b> are grouped by subject. Tap any name plate to see which room that teacher is in right now and the room and time of their next four periods. The search box on the side still lets you look a teacher up by name.</p><p>From <b>2\u20135 Nov</b> the <b>Vishwakarandak special timetable</b> is used instead of the regular one for every division that has it.</p><p>Campus labels are inferred from the branch: CS, CS-AIML, CS-AI and IT are at <b>Bibwewadi Campus</b>; all other branches are shown as <b>Kondhwa Campus</b>.</p><p>This is an experimental timetable helper, not live location tracking. It cannot account for attendance, substitutions, holidays, or last-minute changes—please verify before visiting.</p><div class="bro-acts"><button type="button" class="btn" data-act="teacher-info-ack">Got it, find a teacher</button></div></div></div>
   </dialog>
   <dialog id="teacherApp" aria-labelledby="teacherAppT">
     <div class="terms"><div class="terms-head"><h3 id="teacherAppT">Find a teacher <span class="bro-tag">Beta</span></h3><button type="button" class="terms-x" data-act="teacher-close" aria-label="Close"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg></button></div>
@@ -3487,7 +3499,7 @@ $('#about').addEventListener('close',function(){
 
 /* ---------- Division leaderboard ----------
    Reads public.public_division_leaderboard() (visit counts per division, last 30 days: same numbers as the admin class ranking). */
-var LB={rows:null,at:0,busy:false,err:false,opener:null};
+var LB={rows:null,at:0,busy:false,err:false,opener:null,try:0};
 var LB_SHARE_TEXT='Are you annoyed by the confusing College timetable PDF? Check out this platform to check your timetable: https://vedantbhat28.github.io/vit-timetable';
 function lbNorm(x){return String(x==null?'':x).toLowerCase().replace(/[^a-z0-9]+/g,'');}   // "CSSE-C", "csse c" and "CSSE  C" all become "cssec"
 function lbMine(){var b=st.branch||store.get('tt-branch',''),d=st.div||store.get('tt-div','');return b&&d?b+'-'+d:'';}
@@ -3504,7 +3516,12 @@ function lbMatch(r,q){
 }
 function lbRender(){
   var me=$('#lbMe'),list=$('#lbList'); if(!me||!list) return;
-  if(LB.busy&&!LB.rows){me.innerHTML='<p class="lb-msg" style="margin:0">Loading\u2026</p>';list.innerHTML='';return;}
+  var shB=$('#lbShare'); if(shB) shB.hidden=!LB.rows;   // share button only appears once the board has loaded
+  if(LB.busy&&!LB.rows){
+    me.innerHTML='<div class="lb-load" role="status"><span class="lb-spin" aria-hidden="true"></span><div class="lb-me-t"><p class="lb-me-n">Loading leaderboard\u2026</p><p class="lb-me-s">'+(LB.try>1?'Almost there, crunching the numbers':'Counting the visits')+'</p></div></div>';
+    var sk='';for(var i=0;i<7;i++) sk+='<div class="lb-sk" aria-hidden="true"><i></i><i></i><i></i></div>';
+    list.innerHTML=sk;return;
+  }
   if(!LB.rows){
     me.innerHTML='<p class="lb-msg" style="margin:0">The leaderboard could not be loaded. Check your connection and try again.</p>';
     list.innerHTML='<button type="button" class="chg st-wide" data-act="lb-retry">Try again</button>';return;
@@ -3528,15 +3545,22 @@ function lbRender(){
       '<span class="lb-ct">'+r.n+' <small>visits</small></span></li>';
   }).join('')+'</ol>';
 }
+var LB_TIMEOUTS=[9000,15000,20000,20000];   // a big table can fail the first go and work the second: retry quietly instead of asking the user
 function lbLoad(force){
   if(LB.busy) return;
   if(!force&&LB.rows&&Date.now()-LB.at<60000) return;
-  LB.busy=true; lbRender();
-  admRpc('public_division_leaderboard',{},15000).then(function(r){
-    LB.busy=false;
-    if(r.ok&&Array.isArray(r.j)){LB.rows=r.j;LB.at=Date.now();}
-    lbRender();
-  },function(){LB.busy=false;lbRender();});
+  LB.busy=true; LB.try=0; lbRender();
+  (function attempt(){
+    var n=LB.try++;
+    function again(){
+      if(n+1<LB_TIMEOUTS.length){ if(n>=1) lbRender(); setTimeout(attempt,n===0?250:700); return; }
+      LB.busy=false; lbRender();   // every attempt failed: only now show the Try again button
+    }
+    admRpc('public_division_leaderboard',{},LB_TIMEOUTS[n]).then(function(r){
+      if(r.ok&&Array.isArray(r.j)){LB.busy=false;LB.rows=r.j;LB.at=Date.now();lbRender();return;}
+      again();
+    },again);
+  })();
 }
 function openLb(opener){
   LB.opener=opener||null;
@@ -4222,9 +4246,12 @@ function renderAdmin(){
       {l:'All time',n:teacher.v_all||0,u:(teacher.u_all||0)+' uniq'}
     ].map(function(k){return '<div class="adm-kpi"><span class="n">'+k.n+'</span><span class="u">'+k.u+'</span><span class="l">'+k.l+'</span></div>';}).join('')+'</div>';
   }
-  [['study_planner','Study Planner opens','(clicks from the timetable)'],['study_planner_built','Study Planner plans built','(successful generations)'],['leaderboard_open','Leaderboard opens','(division leaderboard)'],['leaderboard_share','Leaderboard shares','(taps on the share button)']].forEach(function(x){
-    var w=d[x[0]];
-    if(!w) return;
+  [['study_planner','Study Planner opens','(clicks from the timetable)'],['study_planner_built','Study Planner plans built','(successful generations)'],['leaderboard_open','Leaderboard opens','(division leaderboard)',['open_leaderboard','leaderboard','leaderboard_opens','lb_open']],['leaderboard_share','Leaderboard shares','(taps on the share button)',['share_leaderboard','leaderboard_shares','lb_share']]].forEach(function(x){
+    var w=d[x[0]]||(x[3]||[]).map(function(k){return d[k];}).filter(Boolean)[0];   // the RPC may name the key differently from the logged event
+    if(!w){
+      if(x[3]) html+='<p class="adm-h">'+x[1]+' <span style="font-weight:400;color:var(--muted)">'+x[2]+'</span></p><p class="adm-empty">The admin_traffic_stats function did not return this number. The page logs the event as <b>'+(x[0]==='leaderboard_open'?'open_leaderboard':'leaderboard_share')+'</b>; the function needs to count it.</p>';
+      return;
+    }
     html+='<p class="adm-h">'+x[1]+' <span style="font-weight:400;color:var(--muted)">'+x[2]+'</span></p>';
     html+='<div class="adm-kpis">'+[
       {l:'Live now',n:w.live_5m||0,u:'unique'},
@@ -4800,7 +4827,7 @@ function broPdf(){
 
 /* ---------- Find a teacher (Beta): timetable-based faculty availability ---------- */
 function teacherDialog(id,open){var d=$(id);if(!d)return;if(open){if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','');}else{if(typeof d.close==='function')d.close();else d.removeAttribute('open');}}
-var TEACH={loading:false,ok:false,err:false,fac:{},subs:{},slugs:null,filter:'',q:'',tid:0};
+var TEACH={auto:0,loading:false,ok:false,err:false,fac:{},subs:{},slugs:null,filter:'',q:'',tid:0};
 var teacherTimer=null;
 function teacherCampus(division){
   var branch=(String(division||'').toLowerCase().match(/^fy-([a-z0-9]+)/)||[])[1]||'';
@@ -4822,37 +4849,41 @@ function teacherAct(a){
   else if(a==='teacher-info-close') teacherDialog('#teacherInfo',false);
   else if(a==='teacher-info-ack'){store.set('tt-teacher-seen','1');teacherDialog('#teacherInfo',false);teacherShow();}
   else if(a==='teacher-detail-close') teacherDialog('#teacherDetail',false);
-  else if(a==='teacher-retry'){TEACH.err=false;teacherEnsure();}
+  else if(a==='teacher-retry'){TEACH.err=false;TEACH.auto=0;teacherEnsure();}
 }
 function teacherShow(){teacherDialog('#teacherApp',true);teacherEnsure();teacherFocus('#teacherChips button');}
 
 /* ---- data: every FY session with a named teacher, loaded once (paged) and grouped by teacher and by subject ---- */
+function teacherRetry(path,tries){   // large tables can fail the first time: try again quietly
+  var n=0;
+  function go(){return fetchSupa(path).catch(function(e){if(++n>=(tries||4)) throw e;return new Promise(function(res){setTimeout(res,400*n);}).then(go);});}
+  return go();
+}
+function teacherEvActive(){var k=ymd(new Date());return k>=EV_FROM&&k<=EV_TO;}
 function teacherFetchAll(){
   var rows=[],off=0,pages=0;
   function next(){
-    return fetchSupa('tt_sessions?select=weekday,start_time,end_time,subject_code,subject_name,session_type,batch,division,room,faculty_name&faculty_name=not.is.null&order=faculty_name.asc,weekday.asc,start_time.asc,division.asc&limit=1000&offset='+off)
+    return teacherRetry('tt_sessions?select=weekday,start_time,end_time,subject_code,subject_name,session_type,batch,division,room,faculty_name,faculty_initials&faculty_name=not.is.null&order=faculty_name.asc,weekday.asc,start_time.asc,division.asc&limit=1000&offset='+off)
       .then(function(r){
         r=r||[];rows=rows.concat(r);off+=r.length;pages++;
         return (r.length&&pages<60)?next():rows;
       });
   }
-  return next().then(function(rows){
-    return teacherEvFetchAll().then(function(ev){rows.ev=ev;return rows;});
-  });
+  return Promise.all([next(),teacherEvFetchAll()]).then(function(res){res[0].ev=res[1];return res[0];});
 }
 /* Vishwakarandak special timetable (all divisions). Replaces the regular timetable on 2-5 Nov for divisions that have rows in it. */
 function teacherEvFetchAll(){
   if(ymd(new Date())>EV_TO) return Promise.resolve([]);   // event is over: no extra request
   var rows=[],off=0,pages=0;
   function next(){
-    return fetchSupa('tt_vishwakarandak_sessions?select=event_date,weekday,start_time,end_time,subject_code,subject_name,session_type,room,faculty_name,division'+
+    return teacherRetry('tt_vishwakarandak_sessions?select=event_date,weekday,start_time,end_time,subject_code,subject_name,session_type,room,faculty_name,faculty_initials,division'+
         '&event_date=gte.'+EV_FROM+'&event_date=lte.'+EV_TO+'&order=event_date.asc,start_time.asc,division.asc&limit=1000&offset='+off)
       .then(function(r){
         r=r||[];rows=rows.concat(r);off+=r.length;pages++;
         return (r.length&&pages<20)?next():rows;
       });
   }
-  return next().catch(function(e){console.error(e);return [];});   // failed: regular timetable is used
+  return next();   // if it still fails, the whole load fails (and retries) so the old timetable is never shown by mistake
 }
 function teacherBuild(rows){
   var fac={},subs={};
@@ -4874,10 +4905,16 @@ function teacherBuild(rows){
     var sb=subs[code]||(subs[code]={code:code,name:sn,list:[]});
     if(sb.list.indexOf(f)<0) sb.list.push(f);
   });
-  var evDivs={};
+  var evDivs={},nm={};
+  rows.forEach(function(r){   // initials -> full name, from the regular timetable (per division first, then any)
+    if(!r.faculty_name||!r.faculty_initials) return;
+    var k1=(r.division||'')+'|'+r.faculty_initials;
+    if(!nm[k1]) nm[k1]=r.faculty_name;
+    if(!nm['|'+r.faculty_initials]) nm['|'+r.faculty_initials]=r.faculty_name;
+  });
   (rows.ev||[]).forEach(function(r){
     if(r.division) evDivs[r.division]=1;
-    var raw=String(r.faculty_name||'').trim();if(!raw||!r.event_date) return;
+    var raw=String(r.faculty_name||nm[(r.division||'')+'|'+(r.faculty_initials||'')]||nm['|'+(r.faculty_initials||'')]||'').trim();if(!raw||!r.event_date) return;
     var key=raw.toUpperCase(),f=fac[key];
     if(!f) f=fac[key]={key:key,raw:raw,h:humanName(raw),subs:{},ses:[],seen:{},evs:[],evseen:{}};
     var code=r.subject_code||'OTHER',sn=r.subject_name||code;
@@ -4900,23 +4937,26 @@ function teacherEnsure(){
   box.innerHTML='<p class="tp-state tp-load" role="status">Loading faculty…</p>';
   if(TEACH.loading) return;
   TEACH.loading=true;
-  teacherFetchAll().then(function(rows){TEACH.loading=false;teacherBuild(rows);TEACH.ok=true;if($('#teacherApp').open){teacherRender();if(TEACH.q) teacherLookup();}})
-    .catch(function(){TEACH.loading=false;TEACH.err=true;if($('#teacherApp').open) teacherEnsure();});
+  teacherFetchAll().then(function(rows){TEACH.loading=false;TEACH.auto=0;teacherBuild(rows);TEACH.ok=true;if($('#teacherApp').open){teacherRender();if(TEACH.q) teacherLookup();}})
+    .catch(function(){TEACH.loading=false;if(TEACH.auto<2){TEACH.auto++;teacherEnsure();return;}TEACH.err=true;if($('#teacherApp').open) teacherEnsure();});
 }
 
 /* ---- timetable maths ---- */
 function teacherUntil(s,now){var dl=(s.d-now.getDay()+7)%7;if(dl===0&&s.e<=mins(now)) dl=7;return dl*1440+s.s-mins(now);}
-function teacherEvDrop(sx,date){   // regular session is hidden on event days when every division it covers has a special timetable
+function teacherEvTrim(sx,date){   // on 2-5 Nov each division that has a special timetable loses its regular sessions; other divisions of a merged session stay
   var k=ymd(date);
-  if(k<EV_FROM||k>EV_TO||!TEACH.evDivs||!sx.divs.length) return false;
-  return sx.divs.every(function(d){return TEACH.evDivs[d];});
+  if(k<EV_FROM||k>EV_TO||!TEACH.evDivs||!sx.divs.length) return sx;
+  var rem=sx.divs.filter(function(d){return !TEACH.evDivs[d];});
+  if(!rem.length) return null;
+  if(rem.length===sx.divs.length) return sx;
+  var y={};for(var p in sx) y[p]=sx[p];y.divs=rem;return y;
 }
 function teacherState(f){
   var now=nowFloor(),m=mins(now),cur=null,up=[];
   for(var off=0;off<14;off++){
     (function(off){
       var date=dayStart(now,off),dow=date.getDay(),k=ymd(date),list=[];
-      f.ses.forEach(function(x){if(x.d===dow&&!teacherEvDrop(x,date)) list.push(x);});
+      f.ses.forEach(function(x){if(x.d!==dow) return;var y=teacherEvTrim(x,date);if(y) list.push(y);});
       (f.evs||[]).forEach(function(x){if(x.date===k) list.push(x);});
       list.forEach(function(x){
         if(off===0&&x.s<=m&&x.e>m){cur=x;return;}
@@ -4956,8 +4996,9 @@ function teacherRender(){
     subs.map(function(sb){return '<button type="button" class="tp-chip" data-act="teacher-chip" data-code="'+esc(sb.code)+'" aria-pressed="'+(TEACH.filter===sb.code)+'">'+esc(sb.name)+' <b>'+sb.list.length+'</b></button>';}).join('');
   var shown=TEACH.filter?subs.filter(function(sb){return sb.code===TEACH.filter;}):subs;
   if(!shown.length){box.innerHTML='<p class="tp-state">No faculty found in the timetable yet.</p>';sum.textContent='';return;}
+  var evBan=teacherEvActive()?'<p class="tp-ev">Showing the Vishwakarandak special timetable (2\u20135 Nov). The regular timetable resumes after.</p>':'';
   sum.textContent=total+' faculty across '+subs.length+' subjects · status as of '+fmtT(mins(nowFloor()))+'. Tap a name plate for location and upcoming periods.';
-  box.innerHTML=shown.map(function(sb){
+  box.innerHTML=evBan+shown.map(function(sb){
     var col=getSubj(sb.code,sb.name).color;
     return '<section class="tp-sub" aria-labelledby="tps-'+esc(sb.code)+'" style="--c:'+col+'"><header class="tp-sh"><h4 id="tps-'+esc(sb.code)+'">'+esc(sb.name)+'</h4><span>'+esc(sb.code)+' · '+sb.list.length+(sb.list.length===1?' teacher':' teachers')+'</span></header>'+
       '<div class="tp-grid">'+teacherSorted(sb.list).map(function(f){return teacherPlate(f,sb.code,false);}).join('')+'</div></section>';
@@ -5010,15 +5051,19 @@ function teacherDetailHTML(f){
     if(!ds.length) continue;
     wk+='<div class="td-day"><b>'+DAYS[d]+'</b>'+ds.map(function(s){return '<p>'+esc(fmtRange(s.s,s.e))+' · '+esc(teacherRoom(s))+' · '+esc(s.sub)+'</p>';}).join('')+'</div>';
   }
-  if(wk) html+='<details class="td-week"><summary>Full weekly schedule</summary>'+wk+'</details>';
+  var evOn=teacherEvActive();
+  var wkH=wk?'<details class="td-week"><summary>'+(evOn?'Regular weekly schedule (not followed 2\u20135 Nov)':'Full weekly schedule')+'</summary>'+wk+'</details>':'';
+  var evH='';
   if(f.evs&&f.evs.length&&ymd(new Date())<=EV_TO){
     var dates={};f.evs.forEach(function(x){(dates[x.date]=dates[x.date]||[]).push(x);});
     var ew=Object.keys(dates).sort().map(function(k){
       var d0=parseISODate(k);
       return '<div class="td-day"><b>'+DAYS[d0.getDay()]+' '+d0.getDate()+' '+MONS[d0.getMonth()]+'</b>'+dates[k].sort(function(a,b){return a.s-b.s;}).map(function(x){return '<p>'+esc(fmtRange(x.s,x.e))+' \u00b7 '+esc(teacherRoom(x))+' \u00b7 '+esc(x.sub)+'</p>';}).join('')+'</div>';
     }).join('');
-    html+='<details class="td-week" open><summary>'+esc(EV_LABEL)+'</summary>'+ew+'</details>';
+    evH='<details class="td-week" open><summary>'+esc(EV_LABEL)+'</summary>'+ew+'</details>';
   }
+  if(!evH&&evOn&&f.ses.length&&TEACH.evDivs&&f.ses.every(function(x){return x.divs.length&&x.divs.every(function(d){return TEACH.evDivs[d];});})) evH='<p class="td-note">Not listed in the Vishwakarandak special timetable, so no classes are expected from 2\u20135 Nov.</p>';
+  html+=evH+wkH;
   html+='<p class="td-note">Based on the published FY timetable, not live location. On 2\u20135 Nov the Vishwakarandak special timetable replaces the regular one for divisions that have it. Holidays, substitutions and one-off changes are not included.</p>';
   return html;
 }
