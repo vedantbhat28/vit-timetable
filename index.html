@@ -46,11 +46,28 @@
   window.location.replace('rouge.html');
 })();
 </script>
-<script>try{var __t=localStorage.getItem("tt-theme");if(__t==="light"||__t==="dark")document.documentElement.setAttribute("data-theme",__t);}catch(e){}</script>
+<script>(function(){var R=document.documentElement,M=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)");
+function g(k,d){try{return localStorage.getItem(k)||d}catch(e){return d}}
+window.__cuApply=function(){
+  var t=g("tt-theme","auto");if(["light","dark","midnight"].indexOf(t)<0)t="auto";
+  var s=g("tt-style","default");if(["material","glass","liquid"].indexOf(s)<0)s="default";
+  var b=parseInt(g("tt-blur","18"),10);if(!(b>=0&&b<=40))b=18;
+  if(t==="auto")R.removeAttribute("data-theme");else R.setAttribute("data-theme",t);
+  var e=t==="auto"?(M&&M.matches?"dark":"light"):t;
+  R.setAttribute("data-eff",e);R.setAttribute("data-style",s);
+  if(s==="glass"||s==="liquid")R.setAttribute("data-fx","1");else R.removeAttribute("data-fx");
+  R.style.setProperty("--blur",b+"px");
+  var m=document.querySelector('meta[name="theme-color"]');
+  if(m){if(!m._o)m._o=m.getAttribute("content");m.setAttribute("content",e==="midnight"?"#000000":m._o);}
+};
+try{if(M&&M.addEventListener)M.addEventListener("change",function(){if(g("tt-theme","auto")==="auto")window.__cuApply();});}catch(x){}
+window.__cuApply();document.addEventListener("DOMContentLoaded",window.__cuApply);
+})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
 <title>VIT Pune - FY Timetable</title>
 <link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap">
 <meta name="theme-color" content="#1B2340">
 <link rel="icon" href="icons/icon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
@@ -1215,6 +1232,79 @@ dialog#settings::backdrop{background:rgba(12,16,32,.55)}
 .st-set .rr-btn[hidden]{display:none}
 .st-rr-state{margin:0}
 @media (max-width:420px){.st-set .seg{width:100%}.st-set .seg button{flex:1 1 0}}
+
+/* ---------- Customize: themes, styles, haptics ---------- */
+.st-set[hidden],#cuHMore[hidden]{display:none}
+:root[data-theme="midnight"]{--ground:#000;--surface:#0B0D16;--ink:#E9ECF6;--muted:#9BA3BF;--line:#1F2438;--wash:#141828;--tint:30%;--bar-keep:62%;--focus:#8FA8FF;--danger:#FF6B6B;color-scheme:dark}
+:root[data-theme="midnight"] .inst-fab{color:#0F1320}
+
+/* settings controls */
+.cu-styles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
+@media (max-width:420px){.cu-styles{grid-template-columns:repeat(2,1fr)}}
+.cu-style{display:flex;flex-direction:column;gap:6px;min-height:44px;padding:6px 6px 8px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font-size:12px;font-weight:600;text-align:center;cursor:pointer}
+.cu-style[aria-pressed="true"]{border-color:var(--focus);box-shadow:0 0 0 1px var(--focus)}
+.cu-pv{display:block;position:relative;height:40px;border-radius:8px;overflow:hidden}
+.cu-pv::after{content:"";position:absolute;inset:9px 10px}
+.pv-default{background:var(--wash)}
+.pv-default::after{border:1px solid var(--line);border-radius:5px;background:var(--surface)}
+.pv-material{background:#FEF7FF}
+.pv-material::after{inset:12px 14px;border-radius:99px;background:#6750A4}
+.pv-glass{background:linear-gradient(135deg,#8FB3FF,#FFB3D1)}
+.pv-glass::after{border:1px solid rgba(255,255,255,.7);border-radius:8px;background:rgba(255,255,255,.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.pv-liquid{background:linear-gradient(135deg,#6FD3FF,#C79BFF 60%,#FFB3D1)}
+.pv-liquid::after{border-radius:14px;background:linear-gradient(135deg,rgba(255,255,255,.55),rgba(255,255,255,.08));box-shadow:inset 0 1px 1px rgba(255,255,255,.9),inset 0 -1px 1px rgba(255,255,255,.3)}
+.cu-val{flex:none;font-size:12.5px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.cu-range{flex:1 1 100%;width:100%;margin:2px 0 0;accent-color:var(--focus)}
+#cuHMore .st-set{border-top:1px solid var(--line)}
+.cu-det{padding:10px 0 0;border-top:1px solid var(--line);font-size:12.5px}
+.cu-det summary{cursor:pointer;font-weight:600;color:var(--muted);min-height:32px;display:flex;align-items:center}
+.cu-det ul{margin:4px 0 0;padding-left:18px;color:var(--muted)}
+.cu-det li{margin:3px 0}.cu-det b{color:var(--ink)}
+
+/* ===== Material You (Material 3) ===== */
+:root[data-style="material"]{--ground:#FEF7FF;--surface:#F3EDF7;--wash:#E8DEF8;--ink:#1D1B20;--muted:#49454F;--line:#CAC4D0;--focus:#6750A4;--m-p:#6750A4;--m-on:#fff;--m-pc:#E8DEF8;--body:Roboto,"Segoe UI",system-ui,-apple-system,Arial,sans-serif;--display:Roboto,"Segoe UI",system-ui,sans-serif}
+:root[data-style="material"][data-eff="dark"]{--ground:#141218;--surface:#211F26;--wash:#2B2930;--ink:#E6E0E9;--muted:#CAC4D0;--line:#49454F;--focus:#D0BCFF;--m-p:#D0BCFF;--m-on:#381E72;--m-pc:#4F378B;color-scheme:dark}
+:root[data-style="material"][data-eff="midnight"]{--ground:#000;--surface:#0F0D13;--wash:#1D1B20;--ink:#E6E0E9;--muted:#CAC4D0;--line:#2B2930;--focus:#D0BCFF;--m-p:#D0BCFF;--m-on:#381E72;--m-pc:#4F378B;color-scheme:dark}
+:root[data-style="material"] h1,:root[data-style="material"] .clock-time{font-weight:700;letter-spacing:-.01em}
+:root[data-style="material"] :is(.hero,.panel,.weekp,.st-box,.bro,.rw-card,.jp-card,.pk-card,.tp-card,.feature-card,.install-card,.sv-card,.rr-box){border-radius:24px;border-color:transparent}
+:root[data-style="material"] :is(#chgStrip,.ev-note,.rr-toast,.jp-toast,.rr-bar){border-radius:18px}
+:root[data-style="material"] :is(.rr-toast,.jp-toast){box-shadow:0 4px 8px 3px rgba(0,0,0,.15),0 1px 3px rgba(0,0,0,.3)}
+:root[data-style="material"] dialog[id]{border-radius:28px!important;box-shadow:0 8px 12px 6px rgba(0,0,0,.15),0 4px 4px rgba(0,0,0,.3)!important}
+:root[data-style="material"] .seg{border-radius:999px;border-color:var(--line)}
+:root[data-style="material"] .seg button{border-radius:999px}
+:root[data-style="material"] .tab{border-radius:16px}
+:root[data-style="material"] .set-btn,:root[data-style="material"] .terms-x{border-radius:16px;border-color:transparent;background:var(--m-pc);color:var(--ink)}
+:root[data-style="material"] .chg{border-radius:999px}
+:root[data-style="material"] :is(.seg button,.tab,.opt,.tp-chip,.sv-yn button)[aria-pressed="true"]{background:var(--m-pc);border-color:transparent;color:var(--ink)}
+:root[data-style="material"][data-eff="light"] :is(.seg button,.tab,.opt,.tp-chip,.sv-yn button)[aria-pressed="true"]{background:#D0BCFF}
+:root[data-style="material"] :is(.tn-btn,.rr-btn,.rr-tb):not(.alt):not([disabled]):not(.fi-later){background:var(--m-p);color:var(--m-on);border-color:transparent;border-radius:999px}
+:root[data-style="material"] .btn{background:var(--m-pc);color:var(--ink);border-color:transparent;border-radius:999px}
+:root[data-style="material"] :is(.tab,.seg button,.btn,.tn-btn,.rr-btn,.rr-tb,.opt,.tp-chip,.st-link,.cu-style){overflow:hidden}
+.cu-rip{position:absolute;border-radius:50%;pointer-events:none;background:currentColor;opacity:.2;transform:scale(0);animation:cuRip .55s ease-out forwards}
+@keyframes cuRip{to{transform:scale(1);opacity:0}}
+@media (prefers-reduced-motion:reduce){.cu-rip{display:none}}
+
+/* ===== Glass + Liquid glass (blur slider drives --blur) ===== */
+:root[data-fx]{--g-bg:rgba(255,255,255,.55);--g-bgd:rgba(255,255,255,.74);--g-bd:rgba(255,255,255,.7);--g-sh:0 8px 32px rgba(31,38,135,.16);--g1:#8FB3FF;--g2:#FFB3D1;--g3:#A8F0D4;--g-o:.75;--l-hi:.6}
+:root[data-fx][data-eff="dark"]{--g-bg:rgba(32,40,74,.5);--g-bgd:rgba(22,28,54,.72);--g-bd:rgba(255,255,255,.14);--g-sh:0 8px 32px rgba(0,0,0,.38);--g1:#3B4FD8;--g2:#8A2FBE;--g3:#0E8A8A;--g-o:.85;--l-hi:.28}
+:root[data-fx][data-eff="midnight"]{--g-bg:rgba(20,22,36,.5);--g-bgd:rgba(10,12,22,.74);--g-bd:rgba(255,255,255,.1);--g-sh:0 8px 32px rgba(0,0,0,.6);--g1:#1B2A7A;--g2:#4B1B7A;--g3:#0B5560;--g-o:.9;--l-hi:.2}
+:root[data-style="liquid"]{--g-bg:rgba(255,255,255,.28)}
+:root[data-style="liquid"][data-eff="dark"]{--g-bg:rgba(40,50,92,.3)}
+:root[data-style="liquid"][data-eff="midnight"]{--g-bg:rgba(30,34,56,.3)}
+:root[data-fx] body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:var(--g-o);background:radial-gradient(60vmax 60vmax at 12% 8%,var(--g1),transparent 60%),radial-gradient(55vmax 55vmax at 92% 30%,var(--g2),transparent 60%),radial-gradient(60vmax 60vmax at 40% 100%,var(--g3),transparent 60%)}
+:root[data-fx] :is(.panel,.weekp,#chgStrip,.ev-note,.bro,.rr-toast,.rr-bar,.jp-toast,.install-card,.pk-card,.feature-card,.tp-card,.rw-card,.jp-card,.sv-card,.set-btn,.chg,.seg,.st-box,.rr-box,.terms-x){background-color:var(--g-bg)!important;border-top-color:var(--g-bd)!important;border-right-color:var(--g-bd)!important;border-bottom-color:var(--g-bd)!important;-webkit-backdrop-filter:blur(var(--blur)) saturate(1.6);backdrop-filter:blur(var(--blur)) saturate(1.6)}
+:root[data-fx] :is(.panel,.weekp,.bro,.rr-toast,.jp-toast,.rr-bar,.install-card,.feature-card){box-shadow:var(--g-sh),inset 0 1px 0 rgba(255,255,255,.3)}
+:root[data-fx] dialog[id]{background-color:var(--g-bgd)!important;border:1px solid var(--g-bd)!important;-webkit-backdrop-filter:blur(var(--blur)) saturate(1.6);backdrop-filter:blur(var(--blur)) saturate(1.6)}
+:root[data-fx] dialog::backdrop{background:rgba(12,16,32,.28)!important}
+:root[data-fx] :is(#labNotice,#chgNotice,#susNotice,#roomNotice,#xtraNotice,#onlNotice){background-color:var(--g-bgd)!important;-webkit-backdrop-filter:blur(var(--blur)) saturate(1.6);backdrop-filter:blur(var(--blur)) saturate(1.6)}
+/* liquid: stronger refraction feel, specular rim, rounder shapes */
+:root[data-style="liquid"] :is(.panel,.weekp,#chgStrip,.ev-note,.bro,.rr-toast,.rr-bar,.jp-toast,.install-card,.pk-card,.feature-card,.tp-card,.rw-card,.jp-card,.sv-card,.set-btn,.chg,.seg,.st-box,.rr-box,.terms-x){-webkit-backdrop-filter:blur(var(--blur)) saturate(1.9) brightness(1.06);backdrop-filter:blur(var(--blur)) saturate(1.9) brightness(1.06);background-image:linear-gradient(135deg,rgba(255,255,255,var(--l-hi)),rgba(255,255,255,0) 42%,rgba(255,255,255,calc(var(--l-hi) * .4)) 100%);box-shadow:inset 0 1px 1px rgba(255,255,255,var(--l-hi)),inset 0 -1px 1px rgba(255,255,255,calc(var(--l-hi) * .3)),inset 0 0 18px rgba(255,255,255,calc(var(--l-hi) * .15)),0 10px 28px rgba(0,0,0,.14)}
+:root[data-style="liquid"] :is(.hero,.panel,.weekp,.bro,.st-box,.rw-card,.jp-card,.pk-card,.tp-card,.feature-card,.install-card,.sv-card,.rr-box){border-radius:26px}
+:root[data-style="liquid"] :is(#chgStrip,.ev-note,.rr-toast,.jp-toast,.rr-bar){border-radius:22px}
+:root[data-style="liquid"] :is(.seg,.chg){border-radius:999px}
+:root[data-style="liquid"] .seg button{border-radius:999px}
+:root[data-style="liquid"] dialog[id]{border-radius:30px!important;box-shadow:inset 0 1px 1px rgba(255,255,255,var(--l-hi)),0 24px 70px rgba(8,12,30,.4)!important}
+
 </style>
 </head>
 <body>
@@ -1630,6 +1720,54 @@ dialog#settings::backdrop{background:rgba(12,16,32,.55)}
       <div class="terms-body" id="stBody">
         <p class="st-lead">Everything you can change in the timetable, in one place. Your choices are saved on this device.</p>
 
+        <section class="st-box" aria-labelledby="stH0">
+          <h4 id="stH0">Customize</h4>
+          <div class="st-set"><div class="st-l"><span id="stLblT">Theme</span><small>Auto follows your phone or computer. Midnight is true black.</small></div>
+            <div class="seg" role="group" aria-labelledby="stLblT">
+              <button type="button" data-set="theme" data-v="auto" aria-pressed="false">Auto</button>
+              <button type="button" data-set="theme" data-v="light" aria-pressed="false">Light</button>
+              <button type="button" data-set="theme" data-v="dark" aria-pressed="false">Dark</button>
+              <button type="button" data-set="theme" data-v="midnight" aria-pressed="false">Midnight</button>
+            </div>
+          </div>
+          <div class="st-set"><div class="st-l"><span id="cuLblS">Style</span></div>
+            <div class="cu-styles" role="group" aria-labelledby="cuLblS">
+              <button type="button" class="cu-style" data-cu="style" data-v="default" aria-pressed="false"><i class="cu-pv pv-default"></i>Classic</button>
+              <button type="button" class="cu-style" data-cu="style" data-v="material" aria-pressed="false"><i class="cu-pv pv-material"></i>Material</button>
+              <button type="button" class="cu-style" data-cu="style" data-v="glass" aria-pressed="false"><i class="cu-pv pv-glass"></i>Glass</button>
+              <button type="button" class="cu-style" data-cu="style" data-v="liquid" aria-pressed="false"><i class="cu-pv pv-liquid"></i>Liquid glass</button>
+            </div>
+          </div>
+          <div class="st-set" id="cuBlurRow" hidden>
+            <div class="st-l"><span><label for="cuBlur">Blur</label></span></div><output class="cu-val" id="cuBlurV" for="cuBlur">18 px</output>
+            <input type="range" class="cu-range" id="cuBlur" min="0" max="40" step="1" value="18">
+          </div>
+          <div class="st-set"><div class="st-l"><span id="cuLblH">Haptics</span><small id="cuHNote">Feel taps, scrolling and alerts as vibration.</small></div>
+            <button type="button" class="rr-sw" role="switch" aria-checked="false" aria-labelledby="cuLblH" data-cu="haptics"></button>
+          </div>
+          <div id="cuHMore" hidden>
+            <div class="st-set"><div class="st-l"><span id="cuLblHS">Strength</span></div>
+              <div class="seg" role="group" aria-labelledby="cuLblHS">
+                <button type="button" data-cu="hstr" data-v="subtle" aria-pressed="false">Subtle</button>
+                <button type="button" data-cu="hstr" data-v="normal" aria-pressed="false">Normal</button>
+                <button type="button" data-cu="hstr" data-v="strong" aria-pressed="false">Strong</button>
+              </div>
+            </div>
+            <div class="st-set"><div class="st-l"><span>Feel every level</span><small id="cuTestL" role="status" aria-live="polite">Plays tick, tap, medium, then three alert levels.</small></div>
+              <button type="button" class="rr-btn" data-cu="htest" id="cuTest">Test</button>
+            </div>
+            <details class="cu-det"><summary>How haptics are tiered</summary>
+              <ul>
+                <li><b>Tick</b> &mdash; scrolling, day tabs, picking an option</li>
+                <li><b>Light</b> &mdash; any tap or button</li>
+                <li><b>Medium</b> &mdash; opening a sheet, main buttons, switching something on</li>
+                <li><b>Alerts</b> &mdash; info, warning and urgent toasts and full-screen notices, each stronger than the last</li>
+              </ul>
+            </details>
+          </div>
+        </section>
+
+
         <section class="st-box" aria-labelledby="stH1">
           <h4 id="stH1">Your class</h4>
           <div class="st-class-wrap">
@@ -1653,13 +1791,6 @@ dialog#settings::backdrop{background:rgba(12,16,32,.55)}
             <div class="seg" role="group" aria-labelledby="stLblF">
               <button type="button" data-act="fmt" data-v="12" aria-pressed="false">12 h</button>
               <button type="button" data-act="fmt" data-v="24" aria-pressed="false">24 h</button>
-            </div>
-          </div>
-          <div class="st-set"><div class="st-l"><span id="stLblT">Appearance</span><small>Auto follows your phone or computer.</small></div>
-            <div class="seg" role="group" aria-labelledby="stLblT">
-              <button type="button" data-set="theme" data-v="auto" aria-pressed="false">Auto</button>
-              <button type="button" data-set="theme" data-v="light" aria-pressed="false">Light</button>
-              <button type="button" data-set="theme" data-v="dark" aria-pressed="false">Dark</button>
             </div>
           </div>
         </section>
@@ -5817,10 +5948,9 @@ function rrTick(){rrCheck();rrBarSync(false);if(RRP.want&&!RRP.boot&&CUR){RRP.bo
   var dlg=$('#settings'); if(!dlg) return;
   var opener=null;
 
-  function theme(){var t=store.get('tt-theme','auto');return (t==='light'||t==='dark')?t:'auto';}
+  function theme(){var t=store.get('tt-theme','auto');return (t==='light'||t==='dark'||t==='midnight')?t:'auto';}
   function applyTheme(t){
-    var r=document.documentElement;
-    if(t==='light'||t==='dark') r.setAttribute('data-theme',t); else r.removeAttribute('data-theme');
+    if(window.__cuApply) window.__cuApply();
   }
 
   function sync(){
@@ -5837,6 +5967,7 @@ function rrTick(){rrCheck();rrBarSync(false);if(RRP.want&&!RRP.boot&&CUR){RRP.bo
     Array.prototype.forEach.call(dlg.querySelectorAll('[data-set="theme"]'),function(b){
       b.setAttribute('aria-pressed',String(b.getAttribute('data-v')===th));
     });
+    try{if(window.__cuSync) window.__cuSync();}catch(e){}
     // Reminder Ranger
     var sw=dlg.querySelector('[data-set="rr"]');
     if(sw) sw.setAttribute('aria-checked',String(!!RR.on));
@@ -5884,6 +6015,147 @@ function rrTick(){rrCheck();rrBarSync(false);if(RRP.want&&!RRP.boot&&CUR){RRP.bo
   }catch(e){}
   var rra=$('#rrApp'); if(rra) rra.addEventListener('close',sync);
   window.addEventListener('appinstalled',sync);
+})();
+
+/* ---------- Customize: style, blur and haptics ---------- */
+(function(){
+  var dlg=$('#settings'); if(!dlg) return;
+  function all(s){return Array.prototype.slice.call(dlg.querySelectorAll(s));}
+
+  /* haptic ladder: higher tier = stronger / longer. Gaps (odd entries) are pauses. */
+  var HP={tick:[8],light:[12],medium:[24],info:[18,60,18],warn:[30,60,30,60,30],urgent:[70,45,70,45,160]};
+  var PR={tick:1,light:2,medium:3,info:4,warn:5,urgent:6};
+  var SC={subtle:.6,normal:1,strong:1.6};
+  var on=store.get('tt-haptics','0')==='1', str=store.get('tt-hstr','normal'); if(!SC[str]) str='normal';
+  var ua=navigator.userAgent||'';
+  var canVib=typeof navigator.vibrate==='function';
+  var ios=!canVib&&(/iP(hone|ad|od)/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1));
+  var supported=canVib||ios, swEl=null, last={t:0,p:0};
+
+  function iosEl(){   // Safari fires a tap haptic when a hidden "switch" checkbox is toggled by a tap
+    if(swEl) return swEl;
+    var l=document.createElement('label'),i=document.createElement('input');
+    l.setAttribute('aria-hidden','true');l.style.cssText='position:fixed;left:-99px;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
+    i.type='checkbox';i.setAttribute('switch','');i.tabIndex=-1;l.appendChild(i);document.body.appendChild(l);
+    return (swEl=l);
+  }
+  function play(k){
+    var pat=HP[k],f=SC[str];
+    if(canVib){
+      try{navigator.vibrate(pat.map(function(v,i){return i%2===0?Math.max(8,Math.round(v*f)):v;}));}catch(e){}
+    }else if(ios){
+      var el=iosEl(),t=0,n=0;
+      pat.forEach(function(v,i){
+        if(i%2===0){ if(str==='subtle'&&n>0) return; n++; setTimeout(function(){try{el.click();}catch(e){}},t); }
+        t+=v;
+      });
+    }
+  }
+  function fire(k){
+    if(!on||!supported) return;
+    var n=Date.now(),p=PR[k];
+    if(n-last.t<60&&p<last.p) return;   // a stronger cue just fired: let it win
+    last.t=n;last.p=p;play(k);
+  }
+
+  /* taps: selection controls tick, main buttons are medium, everything else light */
+  document.addEventListener('click',function(e){
+    var t=e.target.closest&&e.target.closest('button,a,[role="switch"],[role="button"],summary,select,label'); if(!t||t.disabled) return;
+    if(t.closest('[data-cu]')) return;
+    var k='light';
+    if(t.matches('[role="switch"]')) k='medium';
+    else if(t.matches('[aria-pressed],.tab,.opt,.tp-chip')) k='tick';
+    else if(t.matches('.tn-btn,.btn,.rr-btn,.rr-tb,.btn2')) k='medium';
+    fire(k);
+  });
+
+  /* scrolling: a tick every few rows or one tab-width, and a bump at the very top/bottom.
+     Only while a finger, wheel or key is driving it, never for scrolls the app does itself. */
+  var usr=0;
+  function mark(){usr=Date.now()+1200;}
+  ['touchstart','touchmove','touchend','wheel','keydown'].forEach(function(ev){document.addEventListener(ev,mark,{passive:true,capture:true});});
+  document.addEventListener('scroll',function(e){
+    var t=e.target,el=(t===document)?(document.scrollingElement||document.documentElement):t;
+    if(!el||el.nodeType!==1) return;
+    var x=el.scrollLeft,y=el.scrollTop,s=el.__cu||(el.__cu={x:x,y:y,a:0,e:0});
+    var dx=x-s.x,dy=y-s.y; s.x=x;s.y=y;
+    if(!on||!canVib||Date.now()>usr) return;
+    var h=Math.abs(dx)>Math.abs(dy),d=h?Math.abs(dx):Math.abs(dy);
+    if(!d||d>700) return;
+    s.a+=d; var step=h?72:120;
+    if(s.a>=step){s.a=s.a%step;fire('tick');}
+    if(!h){
+      var edge=(y<=0&&dy<0)||(y>=el.scrollHeight-el.clientHeight-1&&dy>0);
+      if(edge&&!s.e){s.e=1;fire('light');}else if(!edge) s.e=0;
+    }
+  },{capture:true,passive:true});
+
+  /* alerts: toasts and full-screen notices, three levels */
+  var tb=$('#rrToasts');
+  if(tb) new MutationObserver(function(ms){ms.forEach(function(m){Array.prototype.forEach.call(m.addedNodes,function(n){
+    if(n.nodeType===1&&n.classList.contains('rr-toast')){var l=+n.getAttribute('data-l');fire(l>=3?'urgent':l===2?'warn':'info');}
+  });});}).observe(tb,{childList:true});
+  var jp=$('#jpToast'),jpIn=false;
+  if(jp) new MutationObserver(function(){var n=jp.classList.contains('in');if(n&&!jpIn)fire('info');jpIn=n;}).observe(jp,{attributes:true,attributeFilter:['class']});
+  var NT={labNotice:'urgent',susNotice:'urgent',chgNotice:'warn',roomNotice:'warn',xtraNotice:'info',onlNotice:'info'};
+  Object.keys(NT).forEach(function(id){
+    var el=document.getElementById(id); if(!el) return;
+    new MutationObserver(function(){if(!el.hidden&&!el.__sh){el.__sh=1;fire(NT[id]);}if(el.hidden)el.__sh=0;}).observe(el,{attributes:true,attributeFilter:['hidden']});
+  });
+  /* sheets and dialogs opening */
+  Array.prototype.forEach.call(document.querySelectorAll('dialog'),function(d){
+    new MutationObserver(function(){var o=d.hasAttribute('open');if(o&&!d.__o)fire('medium');d.__o=o;}).observe(d,{attributes:true,attributeFilter:['open']});
+  });
+
+  /* Material ripple */
+  document.addEventListener('pointerdown',function(e){
+    if(document.documentElement.getAttribute('data-style')!=='material') return;
+    var h=e.target.closest&&e.target.closest('.tab,.seg button,.btn,.tn-btn,.rr-btn,.rr-tb,.opt,.tp-chip,.st-link,.cu-style,.set-btn'); if(!h||h.disabled) return;
+    if(getComputedStyle(h).position==='static') h.style.position='relative';
+    var r=h.getBoundingClientRect(),d=Math.max(r.width,r.height)*2,s=document.createElement('span');
+    s.className='cu-rip';
+    s.style.cssText='width:'+d+'px;height:'+d+'px;left:'+(e.clientX-r.left-d/2)+'px;top:'+(e.clientY-r.top-d/2)+'px';
+    h.appendChild(s);setTimeout(function(){if(s.parentNode)s.parentNode.removeChild(s);},600);
+  },{passive:true});
+
+  /* settings panel */
+  function blur(){var b=parseInt(store.get('tt-blur','18'),10);return (b>=0&&b<=40)?b:18;}
+  function cuSync(){
+    var s=store.get('tt-style','default'); if(['material','glass','liquid'].indexOf(s)<0) s='default';
+    all('[data-cu="style"]').forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-v')===s));});
+    $('#cuBlurRow').hidden=!(s==='glass'||s==='liquid');
+    $('#cuBlur').value=blur();$('#cuBlurV').textContent=blur()+' px';
+    var sw=dlg.querySelector('[data-cu="haptics"]');
+    sw.setAttribute('aria-checked',String(on&&supported));sw.disabled=!supported;
+    $('#cuHNote').textContent=!supported?'This browser cannot vibrate. Haptics work in Chrome on Android, and as tap feedback in Safari on iPhone.':
+      ios?'On iPhone you feel taps and buttons. Scroll and alert haptics need an Android phone.':'Feel taps, scrolling and alerts as vibration.';
+    $('#cuHMore').hidden=!(on&&supported);
+    all('[data-cu="hstr"]').forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-v')===str));});
+  }
+  window.__cuSync=cuSync;
+
+  var tt=null,TL=[['tick','Tick'],['light','Light tap'],['medium','Medium'],['info','Info alert'],['warn','Warning alert'],['urgent','Urgent alert']];
+  function runTest(){
+    clearInterval(tt);var i=0,out=$('#cuTestL');
+    function step(){
+      if(i>=TL.length){clearInterval(tt);out.textContent='Done. Each level should feel stronger than the last.';return;}
+      last.t=0;last.p=0;out.textContent=(i+1)+' of '+TL.length+': '+TL[i][1];play(TL[i][0]);i++;
+    }
+    step();tt=setInterval(step,800);
+  }
+  dlg.addEventListener('close',function(){clearInterval(tt);});
+  dlg.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('[data-cu]'); if(!b) return;
+    var a=b.getAttribute('data-cu'),v=b.getAttribute('data-v');
+    if(a==='style'){store.set('tt-style',v);window.__cuApply();fire('tick');}
+    else if(a==='haptics'){on=!on;store.set('tt-haptics',on?'1':'0');if(on){last.t=0;fire('medium');}}
+    else if(a==='hstr'){str=v;store.set('tt-hstr',v);last.t=0;fire('medium');}
+    else if(a==='htest'){runTest();return;}
+    cuSync();
+  });
+  $('#cuBlur').addEventListener('input',function(){
+    store.set('tt-blur',this.value);window.__cuApply();$('#cuBlurV').textContent=this.value+' px';
+  });
 })();
 
 boot();
