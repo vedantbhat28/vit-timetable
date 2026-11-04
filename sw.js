@@ -1,12 +1,12 @@
-// Service worker: keeps the site installable, a light network-first cache so the
-// app shell still opens offline (live class data still needs a connection), and
-// Web Push for Reminder Ranger (server: Supabase edge function tt-push-send).
-var CACHE = 'vit-tt-v2';
-var SHELL = ['./', './index.html', './manifest.json',
+// OLD-SITE service worker (github.io). Its only jobs now:
+//  1) make sure installed apps fetch the redirect page instead of an old cached copy,
+//  2) keep old push subscriptions working until people re-enable reminders on the new domain.
+var CACHE = 'vit-tt-old-redirect-v1';
+var SHELL = ['./', './index.html', './redirect.js', './manifest.json',
   './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', function (e) {
-  e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(SHELL); }));
+  e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(SHELL); }).catch(function () {}));
   self.skipWaiting();
 });
 
@@ -14,21 +14,34 @@ self.addEventListener('activate', function (e) {
   e.waitUntil(
     caches.keys().then(function (keys) {
       return Promise.all(keys.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); }));
-    })
+    }).then(function () { return self.clients.claim(); })
+      .then(function () { return self.clients.matchAll({ type: 'window' }); })
+      .then(function (wins) {
+        // reload any open old app window once, so it picks up the redirect right now
+        wins.forEach(function (w) { try { w.navigate(w.url); } catch (err) {} });
+      })
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', function (e) {
-  if (e.request.method !== 'GET') return;
+  var req = e.request;
+  if (req.method !== 'GET') return;
+  if (new URL(req.url).origin !== self.location.origin) return;
+  var nav = req.mode === 'navigate';
   e.respondWith(
-    fetch(e.request)
+    fetch(req, { cache: 'no-cache' })                         // always revalidate: GitHub Pages sends a 10 minute cache header
       .then(function (res) {
-        var copy = res.clone();
-        caches.open(CACHE).then(function (c) { c.put(e.request, copy); }).catch(function () {});
+        if (res && res.ok) {
+          var copy = res.clone();
+          caches.open(CACHE).then(function (c) { c.put(req, copy); }).catch(function () {});
+        }
         return res;
       })
-      .catch(function () { return caches.match(e.request); })
+      .catch(function () {
+        return caches.match(req).then(function (hit) {
+          return hit || (nav ? caches.match('./index.html') : undefined);
+        });
+      })
   );
 });
 
